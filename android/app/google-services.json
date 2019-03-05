@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "871930822313",
+    "firebase_url": "https://rallydev-40f78.firebaseio.com",
+    "project_id": "rallydev-40f78",
+    "storage_bucket": "rallydev-40f78.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871930822313:android:4f038984403403c9",
+        "android_client_info": {
+          "package_name": "rally.rallyapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "871930822313-e09jqua9mot842sqo5r3l9ehfatkmkot.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rally.rallyapp",
+            "certificate_hash": "3c6e89263eb7051acd5eead3704b26bcd35947ea"
+          }
+        },
+        {
+          "client_id": "871930822313-4j6q67768fnh8ujvpociar6qqnf56cik.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDswRlKWEDvaR-q630GugkokK7BJUEVCfY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "871930822313-4j6q67768fnh8ujvpociar6qqnf56cik.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
