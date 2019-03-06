@@ -130,8 +130,10 @@ class SignInPageState extends State<SignInPage> {
 
 
 Future<void> _setListeners() async{
+  print('Settings Listeners');
   final FirebaseUser user = await _auth.currentUser();
   var uid = user.uid;
+  print('userID: $uid');
 
   final FirebaseApp app = await FirebaseApp.configure(
     name: 'rallydev',
@@ -149,10 +151,79 @@ Future<void> _setListeners() async{
   );
 
   final FirebaseDatabase database = FirebaseDatabase(app:app);
-  database.reference().child('user/$uid/info').once().then((DataSnapshot snapshot) {
-    print('Reading from User Data: ${snapshot.value}');
+
+
+  // Setting friends Info Listener
+  database.reference().child('user/$uid/friends').once().then((DataSnapshot snapshot) {
+    var values = new Map<String, dynamic>.from(snapshot.value);
+    values.forEach((k, v) =>
+    {
+      // k represents each friend's uid pulled from the user's friend list
+      // Settings Listener on friends info CHANGE
+      database.reference().child('user/$k/info').onChildChanged.listen((event){
+        print(' -- CHANGED -- friend info');
+        print('friend id: $k');
+        print('friends info that changed: ${event.snapshot.key}: ${event.snapshot.value}');
+      }),
+
+      // Setting Listener on friend's events detail CHANGE
+      database.reference().child('user/$k/events').onChildChanged.listen((event) {
+        print(' -- CHANGED -- friend info');
+        print('friend id: $k');
+        print('details of event changed: ${event.snapshot.key}: ${event.snapshot.value}');      }),
+
+      // Setting Listener on friend's events ADD
+      database.reference().child('user/$k/events').onChildAdded.listen((event) {
+        print(' -- ADD -- friend event');
+        print('friend id: $k');
+        print('friends event added: ${event.snapshot.key}: ${event.snapshot.value}');      }),
+
+      // Setting Listener on friend's event REMOVE
+      database.reference().child('user/$k/events').onChildRemoved.listen((event) {
+        print(' -- REMOVE -- friend info');
+        print('friend id: $k');
+        print('friends event removed: ${event.snapshot.key}: ${event.snapshot.value}');      }),
+    });
+  });
+
+
+  // Setting Listener on User Info CHANGE
+  database.reference().child('user/$uid/info').onChildChanged.listen((event){
+    print(' -- CHANGE -- user info');
+    print('user info changed: ${event.snapshot.key} ${event.snapshot.value}');
+  });
+
+  // Setting Listener on friend ADD
+  database.reference().child('user/$uid/friends').onChildAdded.listen((event){
+    print(' -- ADD -- friend ');
+    print('friend added: ${event.snapshot.key} ${event.snapshot.value}');
+  });
+
+  // Setting Listener on friend REMOVE
+  database.reference().child('user/$uid/friends').onChildRemoved.listen((event){
+    print(' -- REMOVE -- friend ');
+    print('friend removed: ${event.snapshot.key} ${event.snapshot.value}');
+  });
+
+  // Setting Listener on User event CHANGE, effects the info details of that event
+  database.reference().child('user/$uid/events').onChildChanged.listen((event){
+    print(' -- CHANGE -- user events');
+    print('event that was changed: ${event.snapshot.key}: ${event.snapshot.value}');
+  });
+
+  // Setting Listener on User event ADD
+  database.reference().child('user/$uid/events').onChildAdded.listen((Event event){
+    print(' -- ADD -- user events');
+    print('event that was added: ${event.snapshot.key}: ${event.snapshot.value}');
+  });
+
+  // Setting Listener on User event REMOVE
+  database.reference().child('user/$uid/events').onChildRemoved.listen((Event event){
+    print(' -- REMOVE -- user events');
+    print('event that was removed: ${event.snapshot.key}: ${event.snapshot.value}');
   });
 }
+
 
 
 
