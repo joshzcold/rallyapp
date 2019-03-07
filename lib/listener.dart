@@ -9,7 +9,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final friendModel = FriendModel();
 final eventModel = EventModel();
 
-Future<void> _setListeners() async{
+setListeners() async{
   print('Settings Listeners');
   final FirebaseUser user = await _auth.currentUser();
   var uid = user.uid;

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:rallyapp/model/authModel.dart';
+import 'package:rallyapp/listener.dart';
 
 
 final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -86,6 +87,7 @@ class SignInPage extends StatelessWidget{
     );
     if (user != null) {
       authModel.setUser(user);
+      setListeners();
       Navigator.pushReplacementNamed(context, 'calendar');
     } else {
       // Throw Errors Here!!
@@ -112,6 +114,7 @@ class SignInPage extends StatelessWidget{
     assert(user.uid == currentUser.uid);
     if (user != null) {
       authModel.setUser(user);
+      setListeners();
       Navigator.pushReplacementNamed(context, 'calendar');
     } else {
       // Throw Errors Here!!
