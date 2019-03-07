@@ -5,13 +5,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rallyapp/model/eventModel.dart';
 import 'package:rallyapp/model/friendModel.dart';
 import 'package:rallyapp/model/authModel.dart';
+import 'package:rallyapp/model/stateModel.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final friendModel = FriendModel();
 final eventModel = EventModel();
 final authModel = AuthModel();
+final stateModel = StateModel();
 
-setListeners() async{
+
+Future setListeners() async{
+  await stateModel.toggleLoading();
   print('======================= Settings Listeners =======================');
   final FirebaseUser user = await _auth.currentUser();
   var uid = user.uid;
@@ -39,9 +43,10 @@ setListeners() async{
   //////////////////////////////////////////////////////////////////////////////
 
   // Grabbing user data
-  database.reference().child('user/$uid/info').once().then((snapshot) =>{
+  await database.reference().child('user/$uid/info').once().then((snapshot) =>{
   authModel.setUser(snapshot.value)
   });
+
 
   // Setting Listener on User Info CHANGE
   database.reference().child('user/$uid/info').onChildChanged.listen((event){
@@ -49,6 +54,7 @@ setListeners() async{
     print('user info changed: ${event.snapshot.key} ${event.snapshot.value}');
     authModel.replaceValue(event.snapshot.key, event.snapshot.value);
   });
+
 
   // Setting Listener on User event CHANGE, effects the info details of that event
   database.reference().child('user/$uid/events').onChildChanged.listen((event){
@@ -84,7 +90,7 @@ setListeners() async{
   //////// FRIEND RELATED LISTENERS
   ////////////////////////////////////////////////////////////////////////////
 
-  database.reference().child('user/$uid/friends').onChildAdded.listen((event){
+    database.reference().child('user/$uid/friends').onChildAdded.listen((event){
     var friendID = event.snapshot.key;
     print('friendID ============ $friendID');
     print(' -- ADD -- friend ');
@@ -118,4 +124,5 @@ setListeners() async{
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+  await stateModel.toggleLoading();
 }

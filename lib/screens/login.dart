@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:rallyapp/model/authModel.dart';
 import 'package:rallyapp/listener.dart';
 
@@ -9,11 +8,47 @@ import 'package:rallyapp/listener.dart';
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final authModel = AuthModel();
+final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+final TextEditingController _emailController = TextEditingController();
+final TextEditingController _passwordController = TextEditingController();
 
 class SignInPage extends StatelessWidget{
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  void signInWithEmailAndPassword(BuildContext context) async {
+    final FirebaseUser user = await _auth.signInWithEmailAndPassword(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+    if (user != null) {
+      await setListeners();
+      Navigator.pushReplacementNamed(context, '/calendar');
+    } else {
+      // Throw Errors Here!!
+    }
+  }
+
+  void signInWithGoogle(BuildContext context) async {
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+    await googleUser.authentication;
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    assert(user.email != null);
+    assert(user.displayName != null);
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+    if (user != null) {
+      await setListeners();
+      Navigator.pushReplacementNamed(context, '/calendar');
+    } else {
+      // Throw Errors Here!!
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +87,7 @@ class SignInPage extends StatelessWidget{
                 child: RaisedButton(
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
-                      _signInWithEmailAndPassword;
+                      signInWithEmailAndPassword(context);
                     }
                   },
                   child: const Text('SIGN IN'),
@@ -61,7 +96,9 @@ class SignInPage extends StatelessWidget{
               Container(
                 alignment: Alignment.center,
                 child: RaisedButton(
-                  onPressed: _signInWithGoogle,
+                  onPressed: (){
+                    signInWithGoogle(context);
+                  },
                   child: const Text('SIGN IN WITH GOOGLE'),
                 ),
               ),
@@ -78,42 +115,7 @@ class SignInPage extends StatelessWidget{
     _passwordController.dispose();
   }
 
-
-   _signInWithEmailAndPassword() async {
-    final FirebaseUser user = await _auth.signInWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    );
-    if (user != null) {
-      await setListeners();
-//      Navigator.pushReplacementNamed(context, 'calendar');
-    } else {
-      // Throw Errors Here!!
-    }
-  }
-
-   _signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
-    assert(user.email != null);
-    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
-
-    final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
-    if (user != null) {
-      await setListeners();
-//      Navigator.pushReplacementNamed(context, 'calendar');
-    } else {
-      // Throw Errors Here!!
-    }
-  }
-
 }
+
+
+
