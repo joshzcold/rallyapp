@@ -8,6 +8,7 @@ import 'package:rallyapp/listener.dart';
 
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
+final authModel = AuthModel();
 
 class SignInPage extends StatelessWidget{
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -51,7 +52,7 @@ class SignInPage extends StatelessWidget{
                 child: RaisedButton(
                   onPressed: () async {
                     if (_formKey.currentState.validate()) {
-                      _signInWithEmailAndPassword(context);
+                      _signInWithEmailAndPassword;
                     }
                   },
                   child: const Text('SIGN IN'),
@@ -60,7 +61,7 @@ class SignInPage extends StatelessWidget{
               Container(
                 alignment: Alignment.center,
                 child: RaisedButton(
-                  onPressed: _signInWithGoogle(context),
+                  onPressed: _signInWithGoogle,
                   child: const Text('SIGN IN WITH GOOGLE'),
                 ),
               ),
@@ -78,25 +79,20 @@ class SignInPage extends StatelessWidget{
   }
 
 
-   _signInWithEmailAndPassword(BuildContext context) async {
-    var authModel = ScopedModel.of<AuthModel>(context);
-
+   _signInWithEmailAndPassword() async {
     final FirebaseUser user = await _auth.signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
     );
     if (user != null) {
-      authModel.setUser(user);
-      setListeners();
-      Navigator.pushReplacementNamed(context, 'calendar');
+      await setListeners();
+//      Navigator.pushReplacementNamed(context, 'calendar');
     } else {
       // Throw Errors Here!!
     }
   }
 
-   _signInWithGoogle(BuildContext context) async {
-    var authModel = ScopedModel.of<AuthModel>(context);
-
+   _signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
     await googleUser.authentication;
@@ -113,9 +109,8 @@ class SignInPage extends StatelessWidget{
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
     if (user != null) {
-      authModel.setUser(user);
-      setListeners();
-      Navigator.pushReplacementNamed(context, 'calendar');
+      await setListeners();
+//      Navigator.pushReplacementNamed(context, 'calendar');
     } else {
       // Throw Errors Here!!
     }

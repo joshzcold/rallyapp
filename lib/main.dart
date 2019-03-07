@@ -6,15 +6,9 @@ import 'package:rallyapp/screens/calendar.dart';
 import 'package:rallyapp/screens/settings.dart';
 
 void main() {
-  // The app starts with initializing the model.
-  final auth = AuthModel();
   // Now we're ready to run the Flutter UI.
   runApp(
-    ScopedModel<AuthModel>(
-      // Here's where we provide the model to any interested widget below.
-      model: auth,
-      child: Rally(),
-    ),
+    new Rally()
   );
 }
 

@@ -1,31 +1,28 @@
 import 'package:scoped_model/scoped_model.dart';
 
 class EventModel extends Model{
-  final _events = [];
+  Map<dynamic, dynamic> _events = {};
 
   int get eventCount => _events.length;
 
   void add(key, value){
-    _events[key].add(value);
-    notifyListeners();
+    _events.addAll({key:value});
     print('Adding event to model: $key - $value');
+    notifyListeners();
   }
 
   void remove(key){
-    _events[key].remove();
+    _events.remove(key);
     notifyListeners();
-    print('Added removing event $key');
+    print('Removing event $key');
+    notifyListeners();
   }
 
-  void replace(key, value){
+  void replace(key, value) {
     // remove the specific event
-    print('Replacing event details to model BEFORE: $key - $value');
-    _events[key].remove(value);
-    // replace it with new event
-    _events[key].add(value);
+    _events.update(key, (dynamic val) => value);
+    print('Replacing event details to model: $key - $value');
     notifyListeners();
-    print('Replacing event details to model AFTER: ${_events[key]}');
-
   }
 
   void clear(){

@@ -4,16 +4,17 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rallyapp/model/eventModel.dart';
 import 'package:rallyapp/model/friendModel.dart';
+import 'package:rallyapp/model/authModel.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final friendModel = FriendModel();
 final eventModel = EventModel();
+final authModel = AuthModel();
 
 setListeners() async{
-  print('Settings Listeners');
+  print('======================= Settings Listeners =======================');
   final FirebaseUser user = await _auth.currentUser();
   var uid = user.uid;
-  print('userID: $uid');
 
   final FirebaseApp app = await FirebaseApp.configure(
     name: 'rallydev',
@@ -33,56 +34,20 @@ setListeners() async{
 
   final FirebaseDatabase database = FirebaseDatabase(app:app);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /////// USER RELATED LISTENERS
+  //////////////////////////////////////////////////////////////////////////////
 
-  // Setting friends Info Listener
-  database.reference().child('user/$uid/friends').once().then((DataSnapshot snapshot) {
-    var values = new Map<String, dynamic>.from(snapshot.value);
-    values.forEach((k, v) =>
-    {
-    // k represents each friend's uid pulled from the user's friend list
-    // Settings Listener on friends info CHANGE
-    database.reference().child('user/$k/info').onChildChanged.listen((event){
-      print(' -- CHANGED -- friend info');
-      friendModel.replace(k, event.snapshot.value);
-    }),
-
-    // Setting Listener on friend's events detail CHANGE
-    database.reference().child('user/$k/events').onChildChanged.listen((event) {
-      print(' -- CHANGED -- friend info');
-      eventModel.replace(k, event.snapshot.value);
-    }),
-
-    // Setting Listener on friend's events ADD
-    database.reference().child('user/$k/events').onChildAdded.listen((event) {
-      print(' -- ADD -- friend event');
-      eventModel.add(k, event.snapshot.value);
-     }),
-
-    // Setting Listener on friend's event REMOVE
-    database.reference().child('user/$k/events').onChildRemoved.listen((event) {
-      print(' -- REMOVE -- friend info');
-      eventModel.remove(k);
-     }),
-    });
+  // Grabbing user data
+  database.reference().child('user/$uid/info').once().then((snapshot) =>{
+  authModel.setUser(snapshot.value)
   });
-
 
   // Setting Listener on User Info CHANGE
   database.reference().child('user/$uid/info').onChildChanged.listen((event){
     print(' -- CHANGE -- user info');
     print('user info changed: ${event.snapshot.key} ${event.snapshot.value}');
-  });
-
-  // Setting Listener on friend ADD
-  database.reference().child('user/$uid/friends').onChildAdded.listen((event){
-    print(' -- ADD -- friend ');
-    friendModel.add(event.snapshot.key, event.snapshot.value);
-  });
-
-  // Setting Listener on friend REMOVE
-  database.reference().child('user/$uid/friends').onChildRemoved.listen((event){
-    print(' -- REMOVE -- friend ');
-    friendModel.remove(event.snapshot.key);
+    authModel.replaceValue(event.snapshot.key, event.snapshot.value);
   });
 
   // Setting Listener on User event CHANGE, effects the info details of that event
@@ -102,4 +67,55 @@ setListeners() async{
     print(' -- REMOVE -- user events');
     eventModel.remove(event.snapshot.key);
   });
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+
+  // Setting Listener on friend REMOVE
+  // TODO turn off listeners on removed friend's details
+  database.reference().child('user/$uid/friends').onChildRemoved.listen((event){
+    print(' -- REMOVE -- friend ');
+    friendModel.remove(event.snapshot.key);
+  });
+
+
+  ////////////////////////////////////////////////////////////////////////////
+  //////// FRIEND RELATED LISTENERS
+  ////////////////////////////////////////////////////////////////////////////
+
+  database.reference().child('user/$uid/friends').onChildAdded.listen((event){
+    var friendID = event.snapshot.key;
+    print('friendID ============ $friendID');
+    print(' -- ADD -- friend ');
+
+    // GRAB friend info
+    database.reference().child('user/$friendID/info').once().then((snapshot){
+      print('Grabbing friend Info: ${snapshot.value}');
+      friendModel.add(friendID,snapshot.value);
+    });
+    // Settings Listener on friends info CHANGE
+    database.reference().child('user/$friendID/info').onChildChanged.listen((event){
+      print(' -- CHANGED -- friend info');
+      friendModel.replace(friendID,event.snapshot.key,event.snapshot.value);
+    });
+    // Setting Listener on friend's events detail CHANGE
+    database.reference().child('user/$friendID/events').onChildChanged.listen((event) {
+      print(' -- CHANGED -- friend event');
+      eventModel.replace(event.snapshot.key, event.snapshot.value);
+    });
+    // Setting Listener on friend's events ADD
+    database.reference().child('user/$friendID/events').onChildAdded.listen((event) {
+      print(' -- ADD -- friend event');
+      eventModel.add(event.snapshot.key, event.snapshot.value);
+    });
+    // Setting Listener on friend's event REMOVE
+    database.reference().child('user/$friendID/events').onChildRemoved.listen((event) {
+      print(' -- REMOVE -- friend event');
+      eventModel.remove(event.snapshot.key);
+    });
+  });
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 }
