@@ -5,22 +5,27 @@ class EventModel extends Model{
 
   int get eventCount => _events.length;
 
-  void add(events){
-    _events.add(events);
+  void add(key, value){
+    _events[key].add(value);
     notifyListeners();
+    print('Adding event to model: $key - $value');
   }
 
   void remove(key){
-    _events.remove(key);
+    _events[key].remove();
     notifyListeners();
+    print('Added removing event $key');
   }
 
-  void replace(key, event){
+  void replace(key, value){
     // remove the specific event
-    _events.remove(key);
+    print('Replacing event details to model BEFORE: $key - $value');
+    _events[key].remove(value);
     // replace it with new event
-    _events.add(event);
+    _events[key].add(value);
     notifyListeners();
+    print('Replacing event details to model AFTER: ${_events[key]}');
+
   }
 
   void clear(){
