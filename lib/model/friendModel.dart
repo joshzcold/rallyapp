@@ -5,6 +5,7 @@ Map<dynamic, dynamic> friends = {};
 class FriendModel extends Model{
 
   int get friendCount => friends.length;
+  Map get friendList => friends;
 
   void add(key, value){
     friends.addAll({key: value});
