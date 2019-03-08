@@ -63,9 +63,9 @@ Future setListeners() async{
   });
 
   // Setting Listener on User event ADD
-  database.reference().child('user/$uid/events').onChildAdded.listen((Event event){
+  database.reference().child('user/$uid/events').onChildAdded.listen((Event event) async{
     print(' -- ADD -- user events');
-    eventModel.add(event.snapshot.key, event.snapshot.value);
+    await eventModel.add(event.snapshot.key, event.snapshot.value);
   });
 
   // Setting Listener on User event REMOVE
@@ -90,13 +90,13 @@ Future setListeners() async{
   //////// FRIEND RELATED LISTENERS
   ////////////////////////////////////////////////////////////////////////////
 
-    database.reference().child('user/$uid/friends').onChildAdded.listen((event){
+    database.reference().child('user/$uid/friends').onChildAdded.listen((event) async{
     var friendID = event.snapshot.key;
     print('friendID ============ $friendID');
     print(' -- ADD -- friend ');
 
     // GRAB friend info
-    database.reference().child('user/$friendID/info').once().then((snapshot){
+    await database.reference().child('user/$friendID/info').once().then((snapshot){
       print('Grabbing friend Info: ${snapshot.value}');
       friendModel.add(friendID,snapshot.value);
     });
@@ -111,7 +111,7 @@ Future setListeners() async{
       eventModel.replace(event.snapshot.key, event.snapshot.value);
     });
     // Setting Listener on friend's events ADD
-    database.reference().child('user/$friendID/events').onChildAdded.listen((event) {
+    database.reference().child('user/$friendID/events').onChildAdded.listen((event){
       print(' -- ADD -- friend event');
       eventModel.add(event.snapshot.key, event.snapshot.value);
     });
@@ -124,5 +124,4 @@ Future setListeners() async{
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-  await stateModel.toggleLoading();
 }
