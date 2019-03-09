@@ -6,6 +6,7 @@ class FriendsScreen extends StatefulWidget {
 }
 
 class FriendsScreenState extends State<FriendsScreen>{
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

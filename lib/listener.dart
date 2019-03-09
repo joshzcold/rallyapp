@@ -2,9 +2,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:rallyapp/blocs/eventModel.dart';
-import 'package:rallyapp/blocs/friendModel.dart';
-import 'package:rallyapp/blocs/authModel.dart';
+import 'package:rallyapp/blocs/eventBloc.dart';
+import 'package:rallyapp/blocs/friendBloc.dart';
+import 'package:rallyapp/blocs/authBloc.dart';
 import 'package:rallyapp/blocs/navigationBloc.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
