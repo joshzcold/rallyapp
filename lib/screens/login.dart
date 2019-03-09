@@ -20,7 +20,7 @@ class SignInPage extends StatelessWidget{
     );
     if (user != null) {
       await setListeners();
-      Navigator.pushReplacementNamed(context, '/calendar');
+      Navigator.pushReplacementNamed(context, '/main');
     } else {
       // Throw Errors Here!!
     }
@@ -44,7 +44,7 @@ class SignInPage extends StatelessWidget{
     assert(user.uid == currentUser.uid);
     if (user != null) {
       await setListeners();
-      Navigator.pushReplacementNamed(context, '/calendar');
+      Navigator.pushReplacementNamed(context, '/main');
     } else {
       // Throw Errors Here!!
     }

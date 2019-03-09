@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rallyapp/screens/login.dart';
-import 'package:rallyapp/screens/calendar.dart';
 import 'package:rallyapp/screens/settings.dart';
+import 'package:rallyapp/screens/mainScreen.dart';
 
 
 void main() {
@@ -13,22 +13,11 @@ class Rally extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.yellow,
-        textTheme: TextTheme(
-          display4: TextStyle(
-            fontFamily: 'Corben',
-            fontWeight: FontWeight.w700,
-            fontSize: 24,
-            color: Colors.black,
-          ),
-        ),
-      ),
+      title: 'Rally',
       initialRoute: '/',
       routes: {
         '/': (context) => SignInPage(),
-        '/calendar': (context) => Calendar(),
+        '/main': (context) => MainScreen(),
         '/settings': (context) => Settings(),
       },
     );
