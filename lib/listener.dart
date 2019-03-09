@@ -2,10 +2,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:rallyapp/model/eventModel.dart';
-import 'package:rallyapp/model/friendModel.dart';
-import 'package:rallyapp/model/authModel.dart';
-import 'package:rallyapp/model/navigationBloc.dart';
+import 'package:rallyapp/blocs/eventModel.dart';
+import 'package:rallyapp/blocs/friendModel.dart';
+import 'package:rallyapp/blocs/authModel.dart';
+import 'package:rallyapp/blocs/navigationBloc.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final friendModel = FriendModel();

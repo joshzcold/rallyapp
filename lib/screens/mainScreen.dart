@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rallyapp/model/navigationBloc.dart';
+import 'package:rallyapp/blocs/navigationBloc.dart';
 import 'package:rallyapp/screens/calendarScreen.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
 
