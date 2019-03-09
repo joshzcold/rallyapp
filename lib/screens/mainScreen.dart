@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/model/navigationBloc.dart';
+import 'package:rallyapp/screens/calendarScreen.dart';
+import 'package:rallyapp/screens/friendsScreen.dart';
 
 
 class MainScreen extends StatefulWidget {
@@ -36,16 +38,18 @@ class CounterPage extends StatelessWidget {
     final NavigationBloc _navigationBloc = BlocProvider.of<NavigationBloc>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Counter')),
+      appBar: AppBar(title: Text('Rally')),
       body: BlocBuilder<NavigationEvent, int>(
         bloc: _navigationBloc,
-        builder: (BuildContext context, int count) {
-          return Center(
-            child: Text(
-              '$count',
-              style: TextStyle(fontSize: 24.0),
-            ),
-          );
+        builder: (BuildContext context, int index) {
+          switch(index){
+            case 0:
+              return FriendsScreen();
+              break;
+            case 1:
+              return CalendarScreen();
+              break;
+          }
         },
       ),
       bottomNavigationBar: BlocBuilder<NavigationEvent, int>(
@@ -55,10 +59,9 @@ class CounterPage extends StatelessWidget {
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(icon: Icon(Icons.group), title: Text('Friends')),
               BottomNavigationBarItem(icon: Icon(Icons.calendar_today), title: Text('Calendar')),
-              BottomNavigationBarItem(icon: Icon(Icons.videogame_asset), title: Text('Somethig Else')),
             ],
             currentIndex: count,
-            fixedColor: Colors.deepPurple,
+            fixedColor: Colors.black,
             onTap:(index){
               switch(index){
                 case 0:
@@ -66,9 +69,6 @@ class CounterPage extends StatelessWidget {
                   break;
                 case 1:
                   _navigationBloc.dispatch(NavigationEvent.calendar);
-                  break;
-                case 2:
-                  _navigationBloc.dispatch(NavigationEvent.somethingElse);
                   break;
               }
             },
