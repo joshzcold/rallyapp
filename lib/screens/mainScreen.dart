@@ -1,42 +1,83 @@
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
-import 'package:rallyapp/model/stateModel.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/model/navigationBloc.dart';
 
-var stateModel = StateModel();
 
-class MainScreen extends StatelessWidget{
+class MainScreen extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => MainScreenState();
+}
+
+class MainScreenState extends State<MainScreen> {
+  final NavigationBloc _navigationBloc = NavigationBloc();
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModel<StateModel>(
-      model: StateModel(),
-      child: ScopedModelDescendant<StateModel>(builder: (context, child, model) =>
-       Scaffold(
-        body: Center(
-          child: Text('${model.currentIndex}'),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(Icons.group), title: Text('Friends')),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today), title: Text('Calendar')),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_view_day), title: Text('Events')),
-          ],
-          currentIndex: model.currentIndex,
-          fixedColor: Colors.deepPurple,
-          onTap: _setIndex,
-        ),
-      )),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      home: BlocProvider<NavigationBloc>(
+        bloc: _navigationBloc,
+        child: CounterPage(),
+      ),
     );
   }
 
-  void _setIndex(int index) {
-    print ('${stateModel.currentIndex}');
-    print(index);
-    stateModel.setPageIndex(index);
-    print ('${stateModel.currentIndex}');
+  @override
+  void dispose() {
+    _navigationBloc.dispose();
+    super.dispose();
   }
 }
+
+
+class CounterPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final NavigationBloc _navigationBloc = BlocProvider.of<NavigationBloc>(context);
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Counter')),
+      body: BlocBuilder<NavigationEvent, int>(
+        bloc: _navigationBloc,
+        builder: (BuildContext context, int count) {
+          return Center(
+            child: Text(
+              '$count',
+              style: TextStyle(fontSize: 24.0),
+            ),
+          );
+        },
+      ),
+      bottomNavigationBar: BlocBuilder<NavigationEvent, int>(
+        bloc: _navigationBloc,
+        builder: (BuildContext context, int count){
+          return BottomNavigationBar(
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: Icon(Icons.group), title: Text('Friends')),
+              BottomNavigationBarItem(icon: Icon(Icons.calendar_today), title: Text('Calendar')),
+              BottomNavigationBarItem(icon: Icon(Icons.videogame_asset), title: Text('Somethig Else')),
+            ],
+            currentIndex: count,
+            fixedColor: Colors.deepPurple,
+            onTap:(index){
+              switch(index){
+                case 0:
+                  _navigationBloc.dispatch(NavigationEvent.friends);
+                  break;
+                case 1:
+                  _navigationBloc.dispatch(NavigationEvent.calendar);
+                  break;
+                case 2:
+                  _navigationBloc.dispatch(NavigationEvent.somethingElse);
+                  break;
+              }
+            },
+          );
+        }
+      )
+    );
+  }
+
+}
+
 

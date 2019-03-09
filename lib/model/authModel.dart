@@ -1,18 +1,15 @@
-import 'package:scoped_model/scoped_model.dart';
 
 var userRally ={};
 
-class AuthModel extends Model{
+class AuthModel{
 
   void setUser(user){
     userRally = user;
     print('user has been set to $userRally');
-    notifyListeners();
   }
 
   void clearUser(){
     userRally.clear();
-    notifyListeners();
     print('user has been cleared');
   }
 
