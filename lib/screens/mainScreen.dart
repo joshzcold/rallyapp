@@ -3,43 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/navigationBloc.dart';
 import 'package:rallyapp/screens/calendarScreen.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
+import 'package:rallyapp/blocs/friends/friends.dart';
 
-
-class MainScreen extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => MainScreenState();
-}
-
-class MainScreenState extends State<MainScreen> {
-  final NavigationBloc _navigationBloc = NavigationBloc();
-
+class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      home: BlocProvider<NavigationBloc>(
-        bloc: _navigationBloc,
-        child: CounterPage(),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _navigationBloc.dispose();
-    super.dispose();
-  }
-}
-
-
-class CounterPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final NavigationBloc _navigationBloc = BlocProvider.of<NavigationBloc>(context);
+    print('context in NavScreen $context');
+    final _navigationBloc = BlocProvider.of<NavigationBloc>(context);
 
     return Scaffold(
       appBar: AppBar(title: Text('Rally')),
-      body: BlocBuilder<NavigationEvent, int>(
+      body: BlocBuilder(
         bloc: _navigationBloc,
         builder: (BuildContext context, int index) {
           switch(index){
@@ -47,12 +21,12 @@ class CounterPage extends StatelessWidget {
               return FriendsScreen();
               break;
             case 1:
-              return CalendarScreen();
+              return CounterPage();
               break;
           }
         },
       ),
-      bottomNavigationBar: BlocBuilder<NavigationEvent, int>(
+      bottomNavigationBar: BlocBuilder(
         bloc: _navigationBloc,
         builder: (BuildContext context, int count){
           return BottomNavigationBar(

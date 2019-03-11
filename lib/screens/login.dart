@@ -11,20 +11,20 @@ final TextEditingController _emailController = TextEditingController();
 final TextEditingController _passwordController = TextEditingController();
 
 class SignInPage extends StatelessWidget{
-  void signInWithEmailAndPassword(BuildContext context) async {
+  void signInWithEmailAndPassword(context) async {
     final FirebaseUser user = await _auth.signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
     );
     if (user != null) {
-      await setListeners();
+      await setListeners(context);
       Navigator.pushReplacementNamed(context, '/main');
     } else {
       // Throw Errors Here!!
     }
   }
 
-  void signInWithGoogle(BuildContext context) async {
+  void signInWithGoogle(context) async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
     await googleUser.authentication;
@@ -41,7 +41,8 @@ class SignInPage extends StatelessWidget{
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
     if (user != null) {
-      await setListeners();
+      await setListeners(context);
+      print('context in login $context');
       Navigator.pushReplacementNamed(context, '/main');
     } else {
       // Throw Errors Here!!

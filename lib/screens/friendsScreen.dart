@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:rallyapp/blocs/friends/friends.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class FriendsScreen extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => FriendsScreenState();
-}
-
-class FriendsScreenState extends State<FriendsScreen>{
-
+class FriendsScreen extends StatelessWidget{
+  
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new Text("Friends Screen"),
+    final _friendsBloc = BlocProvider.of<FriendsBloc>(context);
+
+    return BlocBuilder(
+      bloc: _friendsBloc,
+      builder: (BuildContext context, FriendsState state){
+//        final data = (state as FriendsLoaded);
+        print('what is friends: in the friends screen $friends');
+        return Scaffold(
+          body: Container(
+            child: Text(''),
+          ),
+        );
+      },
     );
   }
 }

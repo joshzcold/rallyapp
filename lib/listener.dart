@@ -2,19 +2,22 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:rallyapp/blocs/eventBloc.dart';
-import 'package:rallyapp/blocs/friendBloc.dart';
+import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:rallyapp/blocs/authBloc.dart';
 import 'package:rallyapp/blocs/navigationBloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc/bloc.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final friendModel = FriendModel();
-final eventModel = EventModel();
-final authModel = AuthModel();
+//final eventModel = EventModel();
+//final authModel = AuthModel();
 //final stateModel = StateModel();
 
 
-Future setListeners() async{
+Future setListeners(BuildContext context) async{
+  final friendBloc = BlocProvider.of<FriendsBloc>(context);
 //  await stateModel.toggleLoading();
   print('======================= Settings Listeners =======================');
   final FirebaseUser user = await _auth.currentUser();
@@ -89,17 +92,18 @@ Future setListeners() async{
 //  ////////////////////////////////////////////////////////////////////////////
 //  //////// FRIEND RELATED LISTENERS
 //  ////////////////////////////////////////////////////////////////////////////
-//
-//    database.reference().child('user/$uid/friends').onChildAdded.listen((event) async{
-//    var friendID = event.snapshot.key;
-//    print('friendID ============ $friendID');
-//    print(' -- ADD -- friend ');
-//
-//    // GRAB friend info
-//    await database.reference().child('user/$friendID/info').once().then((snapshot){
-//      print('Grabbing friend Info: ${snapshot.value}');
-//      friendModel.add(friendID,snapshot.value);
-//    });
+
+    database.reference().child('user/$uid/friends').onChildAdded.listen((event){
+      BuildContext context;
+    var friendID = event.snapshot.key;
+    print('friendID ============ $friendID');
+    print(' -- ADD -- friend ');
+
+    // GRAB friend info
+    database.reference().child('user/$friendID/info').once().then((snapshot){
+      print('Grabbing friend Info: ${snapshot.value}');
+      friendBloc.dispatch(AddFriends(friendID, snapshot.value));
+    });
 //    // Settings Listener on friends info CHANGE
 //    database.reference().child('user/$friendID/info').onChildChanged.listen((event){
 //      print(' -- CHANGED -- friend info');
@@ -120,7 +124,7 @@ Future setListeners() async{
 //      print(' -- REMOVE -- friend event');
 //      eventModel.remove(event.snapshot.key);
 //    });
-//  });
+  });
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////

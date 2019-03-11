@@ -1,27 +1,20 @@
+import 'package:bloc/bloc.dart';
 
-class EventModel{
-  Map<dynamic, dynamic> _events = {};
+enum CounterEvent { increment, decrement }
 
-  int get eventCount => _events.length;
+class CounterBloc extends Bloc<CounterEvent, int> {
+  @override
+  int get initialState => 0;
 
-  void add(key, value){
-    _events.addAll({key:value});
-    print('Adding event to model: $key - $value');
-  }
-
-  void remove(key){
-    _events.remove(key);
-    print('Removing event $key');
-  }
-
-  void replace(key, value) {
-    // remove the specific event
-    _events.update(key, (dynamic val) => value);
-    print('Replacing event details to model: $key - $value');
-  }
-
-  void clear(){
-    // clears events for what ever reason
-    _events.clear();
+  @override
+  Stream<int> mapEventToState(int currentState, CounterEvent event) async* {
+    switch (event) {
+      case CounterEvent.decrement:
+        yield currentState - 1;
+        break;
+      case CounterEvent.increment:
+        yield currentState + 1;
+        break;
+    }
   }
 }
