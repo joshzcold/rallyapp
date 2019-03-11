@@ -41,9 +41,10 @@ class SignInPage extends StatelessWidget{
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
     if (user != null) {
+      Navigator.pushReplacementNamed(context, '/main');
+
       await setListeners(context);
       print('context in login $context');
-      Navigator.pushReplacementNamed(context, '/main');
     } else {
       // Throw Errors Here!!
     }

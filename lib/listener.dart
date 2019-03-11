@@ -18,7 +18,9 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
 Future setListeners(BuildContext context) async{
   final friendBloc = BlocProvider.of<FriendsBloc>(context);
-//  await stateModel.toggleLoading();
+  final eventBloc = BlocProvider.of<CounterBloc>(context);
+  final navigationBloc = BlocProvider.of<NavigationBloc>(context);
+
   print('======================= Settings Listeners =======================');
   final FirebaseUser user = await _auth.currentUser();
   var uid = user.uid;

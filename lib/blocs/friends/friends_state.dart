@@ -12,10 +12,10 @@ class FriendsLoading extends FriendsState {
 class FriendsLoaded extends FriendsState {
   final friends;
 
-  FriendsLoaded({this.friends}) : super([friends]);
+  FriendsLoaded([this.friends = const []]) : super([friends]);
 
   @override
-  String toString() => 'FriendsLoaded { friends: $friends}';
+  String toString() => 'FriendsLoaded { friends: $friends }';
 }
 
 class FriendsNotLoaded extends FriendsState {

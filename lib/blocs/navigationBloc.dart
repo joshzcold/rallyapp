@@ -7,7 +7,7 @@ enum NavigationEvent {
 
 class NavigationBloc extends Bloc<NavigationEvent, int> {
   @override
-  int get initialState => 0;
+  int get initialState => 1;
 
   @override
   Stream<int> mapEventToState(int currentState, NavigationEvent event) async* {
