@@ -7,8 +7,6 @@ import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:rallyapp/blocs/app/navigationBloc.dart';
 import 'package:rallyapp/blocs/events/event_bloc.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
-import 'package:rallyapp/screens/friendsScreen.dart';
-
 
 void main() {
 runApp(Rally());
@@ -21,7 +19,7 @@ class Rally extends StatelessWidget {
       blocProviders:[
         BlocProvider<FriendsBloc>(bloc: FriendsBloc()),
         BlocProvider<NavigationBloc>(bloc: NavigationBloc()),
-        BlocProvider<CounterBloc>(bloc: CounterBloc()),
+        BlocProvider<EventsBloc>(bloc: EventsBloc()),
         BlocProvider<AuthBloc>(bloc: AuthBloc()),
       ],
         child: MaterialApp(

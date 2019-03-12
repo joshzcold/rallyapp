@@ -21,7 +21,7 @@ class MainScreen extends StatelessWidget {
               return FriendsScreen();
               break;
             case 1:
-              return CounterPage();
+              return CalendarPage();
               break;
           }
         },

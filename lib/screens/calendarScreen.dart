@@ -1,49 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rallyapp/blocs/events/event_bloc.dart';
+import 'package:rallyapp/blocs/events/event.dart';
 
 
-class CounterPage extends StatelessWidget {
+class CalendarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final CounterBloc _counterBloc = BlocProvider.of<CounterBloc>(context);
+    final EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
 
     return Scaffold(
-      body: BlocBuilder<CounterEvent, int>(
-        bloc: _counterBloc,
-        builder: (BuildContext context, int count) {
-          return Center(
-            child: Text(
-              '$count',
-              style: TextStyle(fontSize: 24.0),
-            ),
-          );
-        },
-      ),
-      floatingActionButton: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5.0),
-            child: FloatingActionButton(
-              child: Icon(Icons.add),
-              onPressed: () {
-                _counterBloc.dispatch(CounterEvent.increment);
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5.0),
-            child: FloatingActionButton(
-              child: Icon(Icons.remove),
-              onPressed: () {
-                _counterBloc.dispatch(CounterEvent.decrement);
-              },
-            ),
-          ),
-        ],
-      ),
+      body: BlocBuilder(
+          bloc: _eventsBloc,
+          builder: (BuildContext context, state) {
+            if (state is EventsLoading) {
+              print('EventsLoading...');
+              return new Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is EventsLoaded) {
+              print('EventsLoaded: ${state.events}');
+              return new Container(
+                child: Text('$state'),
+              );
+            }
+          }),
     );
   }
 }
