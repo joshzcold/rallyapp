@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rallyapp/screens/login.dart';
-import 'package:rallyapp/screens/settings.dart';
+import 'package:rallyapp/screens/loginScreen.dart';
+import 'package:rallyapp/screens/settingsScreen.dart';
 import 'package:rallyapp/screens/mainScreen.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:rallyapp/blocs/app/navigationBloc.dart';
