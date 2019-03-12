@@ -49,14 +49,12 @@ Future setListeners(BuildContext context) async{
   authBloc.dispatch(AddAuth(uid,snapshot.value))
   });
 
-
   // Setting Listener on User Info CHANGE
   database.reference().child('user/$uid/info').onChildChanged.listen((event){
     print(' -- CHANGE -- user info');
     print('user info changed: ${event.snapshot.key} ${event.snapshot.value}');
     authBloc.dispatch(ReplaceAuthInfo(uid, event.snapshot.key, event.snapshot.value));
   });
-
 
   // Setting Listener on User event CHANGE, effects the info details of that event
   database.reference().child('user/$uid/events').onChildChanged.listen((event){
@@ -79,50 +77,60 @@ Future setListeners(BuildContext context) async{
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-
   ////////////////////////////////////////////////////////////////////////////
   //////// FRIEND RELATED LISTENERS
   ////////////////////////////////////////////////////////////////////////////
 
-  // Setting Listener on friend REMOVE
-  // TODO turn off listeners on removed friend's details
-  database.reference().child('user/$uid/friends').onChildRemoved.listen((event){
-    print(' -- REMOVE -- friend ');
-    friendBloc.dispatch(RemoveFriends(event.snapshot.key));
-  });
+  // Storing each friends database subscriptions in a Map so they can be turned
+  // off later when the friend is removed.
+  var subscriptions = {};
 
   // Iterate through friends set listener on friend ADD event.
   database.reference().child('user/$uid/friends').onChildAdded.listen((event){
-      BuildContext context;
+    var i = 0;
     var friendID = event.snapshot.key;
+    subscriptions[friendID] = {};
     print('friendID ============ $friendID');
     print(' -- ADD -- friend ');
 
     // GRAB friend info
-    database.reference().child('user/$friendID/info').once().then((snapshot){
+   database.reference().child('user/$friendID/info').once().then((snapshot){
       print('Grabbing friend Info: ${snapshot.value}');
       friendBloc.dispatch(AddFriends(friendID, snapshot.value));
     });
     // Settings Listener on friends info CHANGE
-    database.reference().child('user/$friendID/info').onChildChanged.listen((event){
+    subscriptions[friendID][i++] = database.reference().child('user/$friendID/info').onChildChanged.listen((event){
       print(' -- CHANGED -- friend info');
       friendBloc.dispatch(ReplaceFriendInfo(event.snapshot.key, event.snapshot.value, friendID));
     });
     // Setting Listener on friend's events detail CHANGE
-    database.reference().child('user/$friendID/events').onChildChanged.listen((event) {
+    subscriptions[friendID][i++] = database.reference().child('user/$friendID/events').onChildChanged.listen((event) {
       print(' -- CHANGED -- friend event');
       eventBloc.dispatch(ReplaceEventInfo(event.snapshot.key, event.snapshot.value, friendID));
-
     });
     // Setting Listener on friend's events ADD
-    database.reference().child('user/$friendID/events').onChildAdded.listen((event){
+    subscriptions[friendID][i++] = database.reference().child('user/$friendID/events').onChildAdded.listen((event){
       print(' -- ADD -- friend event');
       eventBloc.dispatch(AddEvents(friendID, event.snapshot.key, event.snapshot.value));
     });
     // Setting Listener on friend's event REMOVE
-    database.reference().child('user/$friendID/events').onChildRemoved.listen((event) {
+    subscriptions[friendID][i++] = database.reference().child('user/$friendID/events').onChildRemoved.listen((event) {
       print(' -- REMOVE -- friend event');
       eventBloc.dispatch(RemoveEvents(friendID, event.snapshot.key));
+      i++;
+    });
+
+    // Setting Listener on friend REMOVE
+    database.reference().child('user/$uid/friends').onChildRemoved.listen((event){
+      print(' -- REMOVE -- friend ');
+      var friendID = event.snapshot.key;
+      friendBloc.dispatch(RemoveFriends(event.snapshot.key));
+
+      // Turning off listeners for removed friend...
+      var data = subscriptions[friendID];
+      data.forEach((key, value) => {
+        value.cancel()
+      });
     });
   });
   //////////////////////////////////////////////////////////////////////////////
