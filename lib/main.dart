@@ -7,6 +7,7 @@ import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:rallyapp/blocs/app/navigationBloc.dart';
 import 'package:rallyapp/blocs/events/event_bloc.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
+import 'package:rallyapp/screens/registerScreen.dart';
 
 void main() {
 runApp(Rally());
@@ -28,6 +29,7 @@ class Rally extends StatelessWidget {
           initialRoute: '/',
           routes: {
             '/': (context) => SignInPage(),
+            '/register': (context) => RegisterPage(),
             '/main': (context) => MainScreen(),
             '/settings': (context) => Settings(),
           },

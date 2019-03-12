@@ -15,24 +15,28 @@ class SignInPage extends StatelessWidget{
     final FirebaseUser user = await _auth.signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
+    ).catchError((error) =>
+      _showAlert(error.code, error.message, context)
     );
-    if (user != null) {
+    if (user != null && user.isEmailVerified) {
       await setListeners(context);
       Navigator.pushReplacementNamed(context, '/main');
     } else {
-      // Throw Errors Here!!
+      if(!user.isEmailVerified){ _showAlert("Email Verification","Account email is not verified, "
+          "a new verification email has been sent to ${user.email}", context);}
+      user.sendEmailVerification();
     }
   }
 
   void signInWithGoogle(context) async {
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn().catchError((error) => _showAlert(error.code, error.message, context));
     final GoogleSignInAuthentication googleAuth =
     await googleUser.authentication;
     final AuthCredential credential = GoogleAuthProvider.getCredential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    final FirebaseUser user = await _auth.signInWithCredential(credential).catchError((error) => _showAlert(error.code, error.message, context));
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);
@@ -42,12 +46,34 @@ class SignInPage extends StatelessWidget{
     assert(user.uid == currentUser.uid);
     if (user != null) {
       Navigator.pushReplacementNamed(context, '/main');
-
       await setListeners(context);
-      print('context in login $context');
     } else {
       // Throw Errors Here!!
     }
+  }
+
+  void _showAlert(title,text, context) {
+    // TODO process title for erro codes then make the title and message for friendly
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(title),
+          content: new Text(text),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -91,6 +117,16 @@ class SignInPage extends StatelessWidget{
                     }
                   },
                   child: const Text('SIGN IN'),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                alignment: Alignment.center,
+                child: RaisedButton(
+                  onPressed: ()  {
+                    Navigator.pushReplacementNamed(context, '/register');
+                  },
+                  child: const Text('SIGN UP'),
                 ),
               ),
               Container(
