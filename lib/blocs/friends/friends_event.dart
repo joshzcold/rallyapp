@@ -31,7 +31,7 @@ class ReplaceFriendInfo extends FriendsEvent{
   ReplaceFriendInfo(this.key, this.value, this.uid) : super([key, value, uid]);
 
   @override
-  String toString() => 'RemoveFriends { uid: $uid, key: $key, value: $value}';
+  String toString() => 'ReplaceFriendInfo { uid: $uid, key: $key, value: $value}';
 }
 
 class ClearFriends extends FriendsEvent{
