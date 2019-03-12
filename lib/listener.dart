@@ -83,17 +83,17 @@ Future setListeners(BuildContext context) async{
 //  //////////////////////////////////////////////////////////////////////////////
 //
 //
-//  // Setting Listener on friend REMOVE
-//  // TODO turn off listeners on removed friend's details
-//  database.reference().child('user/$uid/friends').onChildRemoved.listen((event){
-//    print(' -- REMOVE -- friend ');
-//    friendModel.remove(event.snapshot.key);
-//  });
-//
-//
-//  ////////////////////////////////////////////////////////////////////////////
-//  //////// FRIEND RELATED LISTENERS
-//  ////////////////////////////////////////////////////////////////////////////
+  // Setting Listener on friend REMOVE
+  // TODO turn off listeners on removed friend's details
+  database.reference().child('user/$uid/friends').onChildRemoved.listen((event){
+    print(' -- REMOVE -- friend ');
+    friendBloc.dispatch(RemoveFriends(event.snapshot.key));
+  });
+
+
+  ////////////////////////////////////////////////////////////////////////////
+  //////// FRIEND RELATED LISTENERS
+  ////////////////////////////////////////////////////////////////////////////
 
     database.reference().child('user/$uid/friends').onChildAdded.listen((event){
       BuildContext context;
@@ -106,15 +106,16 @@ Future setListeners(BuildContext context) async{
       print('Grabbing friend Info: ${snapshot.value}');
       friendBloc.dispatch(AddFriends(friendID, snapshot.value));
     });
-//    // Settings Listener on friends info CHANGE
-//    database.reference().child('user/$friendID/info').onChildChanged.listen((event){
-//      print(' -- CHANGED -- friend info');
-//      friendModel.replace(friendID,event.snapshot.key,event.snapshot.value);
-//    });
+    // Settings Listener on friends info CHANGE
+    database.reference().child('user/$friendID/info').onChildChanged.listen((event){
+      print(' -- CHANGED -- friend info');
+      friendBloc.dispatch(ReplaceFriendInfo(event.snapshot.key, event.snapshot.value, friendID));
+    });
 //    // Setting Listener on friend's events detail CHANGE
 //    database.reference().child('user/$friendID/events').onChildChanged.listen((event) {
 //      print(' -- CHANGED -- friend event');
 //      eventModel.replace(event.snapshot.key, event.snapshot.value);
+//
 //    });
 //    // Setting Listener on friend's events ADD
 //    database.reference().child('user/$friendID/events').onChildAdded.listen((event){

@@ -14,3 +14,28 @@ class AddFriends extends FriendsEvent{
   String toString() => 'AddFriends { key: $key, value: $value }';
 }
 
+class RemoveFriends extends FriendsEvent{
+  final String key;
+
+  RemoveFriends(this.key) : super([key]);
+
+  @override
+  String toString() => 'RemoveFriends { key: $key}';
+}
+
+class ReplaceFriendInfo extends FriendsEvent{
+  final String key;
+  final String value;
+  final String uid;
+
+  ReplaceFriendInfo(this.key, this.value, this.uid) : super([key, value, uid]);
+
+  @override
+  String toString() => 'RemoveFriends { uid: $uid, key: $key, value: $value}';
+}
+
+class ClearFriends extends FriendsEvent{
+  @override
+  String toString() => 'ClearFriends';
+}
+
