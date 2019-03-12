@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rallyapp/blocs/eventBloc.dart';
+import 'package:rallyapp/blocs/events/event_bloc.dart';
 
 
 class CounterPage extends StatelessWidget {

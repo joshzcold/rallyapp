@@ -3,10 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:rallyapp/blocs/eventBloc.dart';
+import 'package:rallyapp/blocs/events/event_bloc.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
-import 'package:rallyapp/blocs/authBloc.dart';
-import 'package:rallyapp/blocs/navigationBloc.dart';
+import 'package:rallyapp/blocs/auth/auth.dart';
+import 'package:rallyapp/blocs/app/navigationBloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc/bloc.dart';
 
@@ -18,6 +18,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
 Future setListeners(BuildContext context) async{
   final friendBloc = BlocProvider.of<FriendsBloc>(context);
+  final authBloc = BlocProvider.of<AuthBloc>(context);
   final eventBloc = BlocProvider.of<CounterBloc>(context);
   final navigationBloc = BlocProvider.of<NavigationBloc>(context);
 
@@ -47,18 +48,18 @@ Future setListeners(BuildContext context) async{
   /////// USER RELATED LISTENERS
   //////////////////////////////////////////////////////////////////////////////
 
-//  // Grabbing user data
-//  await database.reference().child('user/$uid/info').once().then((snapshot) =>{
-//  authModel.setUser(snapshot.value)
-//  });
-//
-//
-//  // Setting Listener on User Info CHANGE
-//  database.reference().child('user/$uid/info').onChildChanged.listen((event){
-//    print(' -- CHANGE -- user info');
-//    print('user info changed: ${event.snapshot.key} ${event.snapshot.value}');
-//    authModel.replaceValue(event.snapshot.key, event.snapshot.value);
-//  });
+  // Grabbing user data
+  database.reference().child('user/$uid/info').once().then((snapshot) =>{
+  authBloc.dispatch(AddAuth(uid,snapshot.value))
+  });
+
+
+  // Setting Listener on User Info CHANGE
+  database.reference().child('user/$uid/info').onChildChanged.listen((event){
+    print(' -- CHANGE -- user info');
+    print('user info changed: ${event.snapshot.key} ${event.snapshot.value}');
+    authBloc.dispatch(ReplaceAuthInfo(uid, event.snapshot.key, event.snapshot.value));
+  });
 //
 //
 //  // Setting Listener on User event CHANGE, effects the info details of that event

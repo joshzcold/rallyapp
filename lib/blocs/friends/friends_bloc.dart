@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
 
-Map<dynamic, dynamic> friends = {};
-
 class FriendsBloc extends Bloc<FriendsEvent, FriendsState>{
 
   @override
@@ -57,7 +55,6 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState>{
 
   Stream<FriendsState>_mapClearFriendsToState(currentState) async*{
     currentState = {};
-    final updatedFriends = Map.of(currentState);
-    yield FriendsLoaded(updatedFriends);
+    yield FriendsLoading();
   }
 }
