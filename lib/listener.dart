@@ -177,8 +177,6 @@ Future setListeners(BuildContext context) async{
   void getRallyID() {
     var rallyID =  generateRallyID();
     var items;
-    // Todo method to check if rallyID already exists... Currently database.once has trouble;
-
      database.reference().child('rally/').once().then((snapshot) =>{
       items = snapshot.value
     }).then((something){
