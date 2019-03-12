@@ -51,7 +51,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState>{
       currentState = currentState.friends;
     }
     final updatedFriends = Map.of(currentState);
-    updatedFriends[event.uid].update(event.key, event.value);
+    updatedFriends[event.uid].update(event.key, (dynamic val) => event.value);
     yield FriendsLoaded(updatedFriends);
   }
 
