@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
+import 'package:rallyapp/calendar/calendar.dart';
 
 
 class CalendarPage extends StatelessWidget {
@@ -19,9 +20,7 @@ class CalendarPage extends StatelessWidget {
               );
             } else if (state is EventsLoaded) {
               print('EventsLoaded: ${state.events}');
-              return new Container(
-                child: Text('$state'),
-              );
+              return Calendar();
             }
           }),
     );
