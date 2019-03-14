@@ -12,22 +12,38 @@ import 'package:rallyapp/calendar/week/weekView.dart';
 import 'package:rallyapp/calendar/month/monthView.dart';
 import 'package:rallyapp/calendar/agenda/agendaView.dart';
 import 'package:rallyapp/calendar/upcoming/upcomingView.dart';
-import 'package:rallyapp/calendar/calendarHeading.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
+
+final headerButtonsColor = Colors.black;
 
 class Calendar extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    final CalendarIndexBloc _calendarIndexBloc = BlocProvider.of<CalendarIndexBloc>(context);
-    return Column(
-        children: <Widget>[
-          CalendarHeading(
-            headerMargin: EdgeInsets.only(top: 30, bottom: 10),
-            headerButtonsColor: Colors.black54,
-            appBarColor: Colors.white,
-          ),
-          BlocBuilder(
-            bloc: _calendarIndexBloc,
+    final _calendarEventIndex = BlocProvider.of<CalendarIndexBloc>(context);
+    return Scaffold(
+        appBar:AppBar(
+          backgroundColor: Colors.white,
+          leading: _menu(context),
+          actions: <Widget>[
+            IconButton(
+              onPressed: () {
+                _calendarEventIndex.dispatch(CalendarIndexEvent.friends);
+              },
+              icon: Icon(Icons.group, color: headerButtonsColor),
+            ),
+            IconButton(
+              onPressed: () {
+                _calendarEventIndex.dispatch(CalendarIndexEvent.week);
+              },
+              icon: Icon(
+                Icons.calendar_today,
+                color: headerButtonsColor,
+              ),
+            ),
+          ],
+        ),
+          body: BlocBuilder(
+            bloc: _calendarEventIndex,
             builder: (BuildContext context, int index){
               switch(index){
                 case 0:
@@ -48,7 +64,29 @@ class Calendar extends StatelessWidget{
               }
             },
           ),
-        ],
+          floatingActionButton:
+          Container(
+            child: FloatingActionButton(
+                onPressed: (){},
+                backgroundColor: Colors.blue,
+                child: Icon(Icons.add)
+            ),
+          ),
       );
   }
+
+  Widget _menu(
+      context,
+      ) =>
+      IconButton(
+        onPressed: onMenuButtonPressed(
+          context,
+        ),
+        icon: Icon(
+          Icons.menu,
+          color: headerButtonsColor,
+        ),
+      );
+
+  onMenuButtonPressed(context) {}
 }
