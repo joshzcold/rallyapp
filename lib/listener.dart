@@ -174,12 +174,16 @@ Future setListeners(BuildContext context) async{
     
   }
 
+  // generateRallyID only sends back a random value combined with a username.
   void getRallyID() {
     var rallyID =  generateRallyID();
     var items;
      database.reference().child('rally/').once().then((snapshot) =>{
       items = snapshot.value
     }).then((something){
+      // check if the generated RallyID is found within the snapshot of the rally
+       // directory. Not the best way to check but since flutter doesn't currently
+       // have a function like .exists() this is what works for now...
       items.containsKey(rallyID)? getRallyID(): createInitialUserData(rallyID);
      });
   }
