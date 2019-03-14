@@ -5,7 +5,9 @@ enum CalendarIndexEvent {
   month,
   agenda,
   upcoming,
-  friends
+  friends,
+  menu,
+  settings,
 }
 
 class CalendarIndexBloc extends Bloc<CalendarIndexEvent, int> {
@@ -29,6 +31,12 @@ class CalendarIndexBloc extends Bloc<CalendarIndexEvent, int> {
         break;
       case CalendarIndexEvent.friends:
         yield currentState = 4;
+        break;
+      case CalendarIndexEvent.menu:
+        yield currentState = 5;
+        break;
+      case CalendarIndexEvent.settings:
+        yield currentState = 6;
         break;
     }
   }

@@ -7,7 +7,6 @@ import 'package:rallyapp/screens/registerScreen.dart';
 import 'package:rallyapp/screens/calendarScreen.dart';
 
 import 'package:rallyapp/blocs/friends/friends.dart';
-import 'package:rallyapp/blocs/app/navigationBloc.dart';
 import 'package:rallyapp/blocs/events/event_bloc.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/app/indexBloc.dart';
@@ -22,7 +21,6 @@ class Rally extends StatelessWidget {
     return BlocProviderTree(
       blocProviders:[
         BlocProvider<FriendsBloc>(bloc: FriendsBloc()),
-        BlocProvider<NavigationBloc>(bloc: NavigationBloc()),
         BlocProvider<EventsBloc>(bloc: EventsBloc()),
         BlocProvider<AuthBloc>(bloc: AuthBloc()),
         BlocProvider<CalendarIndexBloc>(bloc: CalendarIndexBloc()),
