@@ -6,10 +6,12 @@ class CalendarHeading extends StatelessWidget {
   CalendarHeading({
     @required this.headerMargin,
     @required this.headerButtonsColor,
+    @required this.appBarColor,
   });
 
   final Color headerButtonsColor;
   final EdgeInsetsGeometry headerMargin;
+  final Color appBarColor;
 
   Widget _menu(
     context,
@@ -27,14 +29,10 @@ class CalendarHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _calendarEventIndex = BlocProvider.of<CalendarIndexBloc>(context);
-    return Container(
-      margin: headerMargin,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          _menu(
-            context,
-          ),
+    return AppBar(
+      backgroundColor: appBarColor,
+      leading: _menu(context),
+      actions: <Widget>[
           IconButton(
             onPressed: () {
               _calendarEventIndex.dispatch(CalendarIndexEvent.friends);
@@ -51,8 +49,7 @@ class CalendarHeading extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 
   onJumpToTodayPressed(context) {}

@@ -22,8 +22,9 @@ class Calendar extends StatelessWidget{
     return Column(
         children: <Widget>[
           CalendarHeading(
-            headerMargin: EdgeInsets.all(8.0),
-            headerButtonsColor: Colors.black,
+            headerMargin: EdgeInsets.only(top: 30, bottom: 10),
+            headerButtonsColor: Colors.black54,
+            appBarColor: Colors.white,
           ),
           BlocBuilder(
             bloc: _calendarIndexBloc,
