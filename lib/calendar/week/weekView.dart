@@ -14,7 +14,7 @@ List<int> days = [1,2,3,4,5,6,7];
 class Week extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    print('$currentHour');
+    print('current hour: $currentHour');
     return Stack(
       children: <Widget>[
     SingleChildScrollView(
@@ -49,8 +49,9 @@ class EventCards extends StatelessWidget{
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(bloc: _eventsBloc, builder: (BuildContext context, state){
       return Stack(
-        children: state.events.entries
-            .map<Widget>((event)=> FractionallySizedBox(
+        children: state.events.entries.map((user)=>
+            user.value.entries.map<Widget>((event) =>
+            FractionallySizedBox(
           heightFactor: getHeightByTime(event),
           widthFactor: getWidthByScreenSize(context),
           child: Card(
@@ -58,12 +59,13 @@ class EventCards extends StatelessWidget{
               print('clicked on $event');
             }, child: Text('$event')),
           ),
-        )).toList(),
+        )).toList()).toList()
       );
     });
   }
 
   double getHeightByTime(event){
+    print('${event.value}');
     return 0.20;
   }
 
