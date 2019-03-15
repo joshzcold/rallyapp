@@ -44,7 +44,7 @@ class Week extends StatelessWidget {
             child: ConstrainedBox(
             constraints: BoxConstraints(
             minHeight: viewportConstraints.minHeight,
-            maxHeight: viewportConstraints.maxHeight + 1024
+            maxHeight: viewportConstraints.maxHeight + 1024,
             ),
             child: Stack(
               children: <Widget>[
@@ -56,24 +56,17 @@ class Week extends StatelessWidget {
                               decoration: BoxDecoration(
                                   border: Border(
                                       right: BorderSide(
-                                          color: Colors.grey, width: 0.5))),
+                                          color: Color(0xFFdadce0), width: 1))),
                               child: Column(
                                   children: timeHour
                                       .map((hour) => Expanded(child: Container(
                                       decoration: BoxDecoration(
                                           border: Border(
                                               bottom: BorderSide(
-                                                  color: Colors.grey,
-                                                  width: 0.5))),
+                                                  color: Color(0xFFdadce0), width: 1))),
                                       child: Row(
                                         children: <Widget>[
-                                          Container(
-                                              child: Center(
-                                                child: Text(
-                                                  '$columns : $hour',
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ))
+                                          Container()
                                         ],
                                       ))))
                                       .toList()))),
@@ -121,6 +114,7 @@ class Week extends StatelessWidget {
                         heightFactor: getHeightByTime(event),
                         widthFactor: getWidthByScreenSize(context),
                         child: Card(
+                          color: Colors.blue,
                           child: FlatButton(
                               onPressed: () {
                                 print('clicked on $event');

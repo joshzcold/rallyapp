@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
-import 'package:rallyapp/calendar/calendar.dart';
+import 'package:rallyapp/screens/mainScreen.dart';
+import 'package:rallyapp/calendar/week/weekView.dart';
 
 
 class CalendarPage extends StatelessWidget {
@@ -21,9 +22,17 @@ class CalendarPage extends StatelessWidget {
               );
             } else if (state is EventsLoaded) {
               print('EventsLoaded: ${state.events}');
-              return Calendar();
+              return Week();
             }
           }),
+      floatingActionButton:
+      Container(
+        child: FloatingActionButton(
+            onPressed: (){},
+            backgroundColor: Colors.blue,
+            child: Icon(Icons.add)
+        ),
+      ),
     );
   }
 }

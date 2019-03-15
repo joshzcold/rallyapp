@@ -30,7 +30,7 @@ class CalendarIndexBloc extends Bloc<CalendarIndexEvent, int> {
         yield currentState = 3;
         break;
       case CalendarIndexEvent.friends:
-        yield currentState = 4;
+        yield currentState = 1;
         break;
       case CalendarIndexEvent.menu:
         yield currentState = 5;
