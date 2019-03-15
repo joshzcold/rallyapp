@@ -15,10 +15,10 @@ class CalendarPage extends StatelessWidget {
           builder: (BuildContext context, state) {
             if (state is EventsLoading) {
               print('EventsLoading...');
-              return Calendar();
-//              return new Center(
-//                child: CircularProgressIndicator(),
-//              );
+//              return Calendar();
+              return new Center(
+                child: CircularProgressIndicator(),
+              );
             } else if (state is EventsLoaded) {
               print('EventsLoaded: ${state.events}');
               return Calendar();
