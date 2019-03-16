@@ -43,12 +43,15 @@ class Week extends StatelessWidget {
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           // You can change up this value later to increase or decrease the height
           // of the week grid.
-          double maxHeightWanted = viewportConstraints.maxHeight + 1024;
+          double maxHeightWanted = viewportConstraints.maxHeight + 800;
+          double maxPossibleWidth = viewportConstraints.maxWidth;
           return SingleChildScrollView(
           child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.minHeight,
                 maxHeight: maxHeightWanted,
+                minWidth: viewportConstraints.minWidth,
+                  maxWidth: maxPossibleWidth
               ),
               child: Stack(
                 children: <Widget>[
@@ -80,7 +83,7 @@ class Week extends StatelessWidget {
                                             .toList()))),
                           )
                           .toList()),
-                  eventCards(context, maxHeightWanted),
+                  eventCards(context, maxHeightWanted, maxPossibleWidth),
                 ],
               )));
     });
@@ -89,7 +92,6 @@ class Week extends StatelessWidget {
   double getHeightByTime(event, constraints) {
     double height = constraints;
     double hour = height/24;
-    print('event value ${event.value}');
     var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
     var eTime = DateTime.fromMillisecondsSinceEpoch(event.value['end']);
     var startValue = sTime.hour * 60 + sTime.minute;
@@ -107,7 +109,24 @@ class Week extends StatelessWidget {
     return reducedWidth;
   }
 
-  eventCards(context, constraints) {
+  double moveBoxDownBasedOfConstraints(MapEntry event, constraints) {
+    double height = constraints;
+    double hour = height/24;
+    var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
+    var hoursFromMidnight = (sTime.hour*60 + sTime.minute)/60;
+    double distanceDown = hoursFromMidnight*hour;
+    return distanceDown;
+  }
+
+  double moveBoxRightBasedOfConstraints(MapEntry event, constraints) {
+    double column = constraints/8;
+    var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
+    var dayInWeek = sTime.weekday + 1;
+    if(dayInWeek == 8){dayInWeek = 1;}
+    return (dayInWeek * column);
+  }
+
+  eventCards(context, maxHeight, maxWidth) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(
         bloc: _eventsBloc,
@@ -121,8 +140,10 @@ class Week extends StatelessWidget {
           return Stack(
               children: newDict.entries
                   .map<Widget>((event) => Positioned(
-                        height: getHeightByTime(event, constraints),
+                        height: getHeightByTime(event, maxHeight),
                         width: getWidthByScreenSize(context),
+                        top: moveBoxDownBasedOfConstraints(event, maxHeight),
+                        left: moveBoxRightBasedOfConstraints(event, maxWidth),
                         child: Card(
                           color: Colors.blue,
                           child: FlatButton(
@@ -135,4 +156,6 @@ class Week extends StatelessWidget {
                   .toList());
         });
   }
+
+
 }
