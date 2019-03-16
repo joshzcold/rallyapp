@@ -126,6 +126,14 @@ class Week extends StatelessWidget {
     return (dayInWeek * column);
   }
 
+  int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
   eventCards(context, maxHeight, maxWidth) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(
@@ -145,17 +153,39 @@ class Week extends StatelessWidget {
                         top: moveBoxDownBasedOfConstraints(event, maxHeight),
                         left: moveBoxRightBasedOfConstraints(event, maxWidth),
                         child: Card(
-                          color: Colors.blue,
+                          color: Color(_getColorFromHex(event.value['color'])),
                           child: FlatButton(
+                              padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
                               onPressed: () {
                                 print('clicked on $event');
                               },
-                              child: Text('EVENT')),
+                              child: Column(
+                                children: <Widget>[
+                                  // User Image
+                                    Container(
+                                        width: 30.0,
+                                        height: 30.0,
+                                        decoration: new BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: new DecorationImage(
+                                                fit: BoxFit.fill,
+                                                image: new NetworkImage(
+                                                    event.value['userPhoto'])))),
+                                  // User Name & Description
+                                    RichText(
+                                      text: TextSpan(
+                                        children: <TextSpan>[
+                                          TextSpan(text: '${event.value['userName']}', style: TextStyle(fontWeight: FontWeight.bold),),
+                                          TextSpan(text: '${event.value['title']}'),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              )
+                          ),
                         ),
                       ))
                   .toList());
         });
   }
-
-
 }
