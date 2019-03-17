@@ -134,22 +134,21 @@ class Week extends StatelessWidget {
     return int.parse(hexColor, radix: 16);
   }
 
-  List<Widget> _joinedFriends(event){
-  if(event.value['party']['friends'] != null){
-    return event.value['party']['friends'].entries.map<Widget>((friend) =>
-        Container(
-        width: 15.0,
-        height: 15.0,
-        decoration: new BoxDecoration(
-            shape: BoxShape.circle,
-            image: new DecorationImage(
-                fit: BoxFit.fill,
-                image: new NetworkImage(
-                    friend.value['userPhoto']))))
-    ).toList();
-  } else{
-    return <Widget>[Container()];
-  }
+  List<Widget> _joinedFriends(event) {
+    if (event.value['party']['friends'] != null) {
+      return event.value['party']['friends'].entries
+          .map<Widget>((friend) => Container(
+              width: 15.0,
+              height: 15.0,
+              decoration: new BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: new DecorationImage(
+                      fit: BoxFit.fill,
+                      image: new NetworkImage(friend.value['userPhoto'])))))
+          .toList();
+    } else {
+      return <Widget>[Container()];
+    }
   }
 
   eventCards(context, maxHeight, maxWidth) {
@@ -168,76 +167,78 @@ class Week extends StatelessWidget {
                   .map<Widget>((event) => Stack(
                         children: <Widget>[
                           Positioned(
-                              height: getHeightByTime(event, maxHeight),
-                              width: getWidthByScreenSize(context),
-                              top: moveBoxDownBasedOfConstraints(event, maxHeight),
-                              left: moveBoxRightBasedOfConstraints(event, maxWidth),
-                              child: Stack(
-                                children: <Widget>[
-                                  Card(
-                                    color: Color(
-                                        _getColorFromHex(event.value['color'])),
-                                    child: FlatButton(
-                                        padding:
-                                            EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                        onPressed: () {
-                                          print('clicked on $event');
-                                        },
-                                        child: SingleChildScrollView(
-                                          child: Column(
-                                            children: <Widget>[
-                                              // User Image
-                                              Container(
-                                                  width: 30.0,
-                                                  height: 30.0,
-                                                  decoration: new BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      image: new DecorationImage(
-                                                          fit: BoxFit.fill,
-                                                          image: new NetworkImage(
-                                                              event.value[
-                                                                  'userPhoto'])))),
-                                              // User Name & Description
-                                              RichText(
-                                                text: TextSpan(
-                                                  children: <TextSpan>[
-                                                    TextSpan(
+                            height: getHeightByTime(event, maxHeight),
+                            width: getWidthByScreenSize(context),
+                            top:
+                                moveBoxDownBasedOfConstraints(event, maxHeight),
+                            left:
+                                moveBoxRightBasedOfConstraints(event, maxWidth),
+                            child: Card(
+                              clipBehavior: Clip.hardEdge,
+                              color:
+                                  Color(_getColorFromHex(event.value['color'])),
+                              child: FlatButton(
+                                clipBehavior: Clip.hardEdge,
+                                  padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                  onPressed: () {
+                                    print('clicked on $event');
+                                  },
+                                      child: ListView(
+                                        padding: EdgeInsets.all(0),
+                                        children: <Widget>[
+                                          // User Image
+                                          Container(
+                                              width: 30.0,
+                                              height: 33.0,
+                                              decoration: new BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: new DecorationImage(
+                                                      fit: BoxFit.fill,
+                                                      image: new NetworkImage(
+                                                          event.value[
+                                                          'userPhoto'])))),
+                                          // User Name & Description
+                                            RichText(
+                                              softWrap: true,
+                                              overflow: TextOverflow.visible,
+                                              text: TextSpan(
+                                                children: <TextSpan>[
+                                                  TextSpan(
+                                                    text:
+                                                    '${event.value['userName']}',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                        FontWeight.bold),
+                                                  ),
+                                                  TextSpan(
                                                       text:
-                                                          '${event.value['userName']}',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                    TextSpan(
-                                                        text:
-                                                            '${event.value['title']}'),
-                                                  ],
-                                                ),
+                                                      '${event.value['title']}'),
+                                                ],
                                               ),
-                                            ],
-                                          ),
-                                        )),
+                                            ),
+                                        ],
+                                      ),
                                   ),
-                                ],
-                              )),
+                            ),
+                          ),
                           Positioned(
                             height: getHeightByTime(event, maxHeight) + 100,
                             width: 20,
-                            top: moveBoxDownBasedOfConstraints(event, maxHeight),
-                            left: moveBoxRightBasedOfConstraints(event, maxWidth) - 10,
+                            top:
+                                moveBoxDownBasedOfConstraints(event, maxHeight),
+                            left: moveBoxRightBasedOfConstraints(
+                                    event, maxWidth) -
+                                10,
                             child: GridView.count(
-                              primary: false,
-                              padding: const EdgeInsets.all(0),
-                              crossAxisSpacing: 0,
-                              crossAxisCount: 1,
-                              children: _joinedFriends(event)
-                            ),
+                                primary: false,
+                                padding: const EdgeInsets.all(0),
+                                crossAxisSpacing: 0,
+                                crossAxisCount: 1,
+                                children: _joinedFriends(event)),
                           )
                         ],
                       ))
                   .toList());
-
         });
   }
 }
-
