@@ -34,25 +34,23 @@ List<int> timeHour = [
 ];
 List<int> columns = [1, 2, 3, 4, 5, 6, 7, 8];
 
-
 class Week extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('current hour: $currentHour');
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
-          // You can change up this value later to increase or decrease the height
-          // of the week grid.
-          double maxHeightWanted = viewportConstraints.maxHeight + 800;
-          double maxPossibleWidth = viewportConstraints.maxWidth;
-          return SingleChildScrollView(
+      // You can change up this value later to increase or decrease the height
+      // of the week grid.
+      double maxHeightWanted = viewportConstraints.maxHeight + 800;
+      double maxPossibleWidth = viewportConstraints.maxWidth;
+      return SingleChildScrollView(
           child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: viewportConstraints.minHeight,
-                maxHeight: maxHeightWanted,
-                minWidth: viewportConstraints.minWidth,
-                  maxWidth: maxPossibleWidth
-              ),
+                  minHeight: viewportConstraints.minHeight,
+                  maxHeight: maxHeightWanted,
+                  minWidth: viewportConstraints.minWidth,
+                  maxWidth: maxPossibleWidth),
               child: Stack(
                 children: <Widget>[
                   Row(
@@ -91,13 +89,13 @@ class Week extends StatelessWidget {
 
   double getHeightByTime(event, constraints) {
     double height = constraints;
-    double hour = height/24;
+    double hour = height / 24;
     var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
     var eTime = DateTime.fromMillisecondsSinceEpoch(event.value['end']);
     var startValue = sTime.hour * 60 + sTime.minute;
     var endValue = eTime.hour * 60 + eTime.minute;
     var subtractedValue = endValue - startValue;
-    double numOfHours = subtractedValue/60;
+    double numOfHours = subtractedValue / 60;
     double result = hour * numOfHours;
     return result;
   }
@@ -111,18 +109,20 @@ class Week extends StatelessWidget {
 
   double moveBoxDownBasedOfConstraints(MapEntry event, constraints) {
     double height = constraints;
-    double hour = height/24;
+    double hour = height / 24;
     var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
-    var hoursFromMidnight = (sTime.hour*60 + sTime.minute)/60;
-    double distanceDown = hoursFromMidnight*hour;
+    var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
+    double distanceDown = hoursFromMidnight * hour;
     return distanceDown;
   }
 
   double moveBoxRightBasedOfConstraints(MapEntry event, constraints) {
-    double column = constraints/8;
+    double column = constraints / 8;
     var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
     var dayInWeek = sTime.weekday + 1;
-    if(dayInWeek == 8){dayInWeek = 1;}
+    if (dayInWeek == 8) {
+      dayInWeek = 1;
+    }
     return (dayInWeek * column);
   }
 
@@ -132,6 +132,24 @@ class Week extends StatelessWidget {
       hexColor = "FF" + hexColor;
     }
     return int.parse(hexColor, radix: 16);
+  }
+
+  List<Widget> _joinedFriends(event){
+  if(event.value['party']['friends'] != null){
+    return event.value['party']['friends'].entries.map<Widget>((friend) =>
+        Container(
+        width: 15.0,
+        height: 15.0,
+        decoration: new BoxDecoration(
+            shape: BoxShape.circle,
+            image: new DecorationImage(
+                fit: BoxFit.fill,
+                image: new NetworkImage(
+                    friend.value['userPhoto']))))
+    ).toList();
+  } else{
+    return <Widget>[Container()];
+  }
   }
 
   eventCards(context, maxHeight, maxWidth) {
@@ -147,45 +165,79 @@ class Week extends StatelessWidget {
               });
           return Stack(
               children: newDict.entries
-                  .map<Widget>((event) => Positioned(
-                        height: getHeightByTime(event, maxHeight),
-                        width: getWidthByScreenSize(context),
-                        top: moveBoxDownBasedOfConstraints(event, maxHeight),
-                        left: moveBoxRightBasedOfConstraints(event, maxWidth),
-                        child: Card(
-                          color: Color(_getColorFromHex(event.value['color'])),
-                          child: FlatButton(
-                              padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                              onPressed: () {
-                                print('clicked on $event');
-                              },
-                              child: Column(
+                  .map<Widget>((event) => Stack(
+                        children: <Widget>[
+                          Positioned(
+                              height: getHeightByTime(event, maxHeight),
+                              width: getWidthByScreenSize(context),
+                              top: moveBoxDownBasedOfConstraints(event, maxHeight),
+                              left: moveBoxRightBasedOfConstraints(event, maxWidth),
+                              child: Stack(
                                 children: <Widget>[
-                                  // User Image
-                                    Container(
-                                        width: 30.0,
-                                        height: 30.0,
-                                        decoration: new BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            image: new DecorationImage(
-                                                fit: BoxFit.fill,
-                                                image: new NetworkImage(
-                                                    event.value['userPhoto'])))),
-                                  // User Name & Description
-                                    RichText(
-                                      text: TextSpan(
-                                        children: <TextSpan>[
-                                          TextSpan(text: '${event.value['userName']}', style: TextStyle(fontWeight: FontWeight.bold),),
-                                          TextSpan(text: '${event.value['title']}'),
-                                        ],
-                                      ),
-                                    ),
+                                  Card(
+                                    color: Color(
+                                        _getColorFromHex(event.value['color'])),
+                                    child: FlatButton(
+                                        padding:
+                                            EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                        onPressed: () {
+                                          print('clicked on $event');
+                                        },
+                                        child: SingleChildScrollView(
+                                          child: Column(
+                                            children: <Widget>[
+                                              // User Image
+                                              Container(
+                                                  width: 30.0,
+                                                  height: 30.0,
+                                                  decoration: new BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      image: new DecorationImage(
+                                                          fit: BoxFit.fill,
+                                                          image: new NetworkImage(
+                                                              event.value[
+                                                                  'userPhoto'])))),
+                                              // User Name & Description
+                                              RichText(
+                                                text: TextSpan(
+                                                  children: <TextSpan>[
+                                                    TextSpan(
+                                                      text:
+                                                          '${event.value['userName']}',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    TextSpan(
+                                                        text:
+                                                            '${event.value['title']}'),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )),
+                                  ),
                                 ],
-                              )
-                          ),
-                        ),
+                              )),
+                          Positioned(
+                            height: getHeightByTime(event, maxHeight) + 100,
+                            width: 20,
+                            top: moveBoxDownBasedOfConstraints(event, maxHeight),
+                            left: moveBoxRightBasedOfConstraints(event, maxWidth) - 10,
+                            child: GridView.count(
+                              primary: false,
+                              padding: const EdgeInsets.all(0),
+                              crossAxisSpacing: 0,
+                              crossAxisCount: 1,
+                              children: _joinedFriends(event)
+                            ),
+                          )
+                        ],
                       ))
                   .toList());
+
         });
   }
 }
+
