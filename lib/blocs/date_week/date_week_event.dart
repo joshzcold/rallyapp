@@ -5,13 +5,13 @@ abstract class DateWeekEvent extends Equatable{
 }
 
 class AddDayToWeek extends DateWeekEvent{
-  final List<dynamic> weekRange;
+  final List weekRange;
 
   AddDayToWeek(this.weekRange): super([weekRange]);
 }
 
 class NextWeek extends DateWeekEvent{
-  final List<dynamic> weekRange;
+  final List weekRange;
 
   NextWeek(this.weekRange): super([weekRange]);
 }

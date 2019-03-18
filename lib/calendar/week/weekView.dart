@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:date_utils/date_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
+import 'package:rallyapp/blocs/date_week/date_week.dart';
 
 var currentHour = new DateTime.now().hour;
 
@@ -37,53 +38,57 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7, 8];
 class Week extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final dateWeekBloc = BlocProvider.of<DateWeekBloc>(context);
     print('current hour: $currentHour');
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints viewportConstraints) {
-      // You can change up this value later to increase or decrease the height
-      // of the week grid.
-      double maxHeightWanted = viewportConstraints.maxHeight + 800;
-      double maxPossibleWidth = viewportConstraints.maxWidth;
-      return SingleChildScrollView(
-          child: ConstrainedBox(
-              constraints: BoxConstraints(
-                  minHeight: viewportConstraints.minHeight,
-                  maxHeight: maxHeightWanted,
-                  minWidth: viewportConstraints.minWidth,
-                  maxWidth: maxPossibleWidth),
-              child: Stack(
-                children: <Widget>[
-                  Row(
-                      children: columns
-                          .map(
-                            (columns) => Expanded(
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                        border: Border(
-                                            right: BorderSide(
-                                                color: Color(0xFFdadce0),
-                                                width: 1))),
-                                    child: Column(
-                                        children: timeHour
-                                            .map((hour) => Expanded(
-                                                child: Container(
-                                                    decoration: BoxDecoration(
-                                                        border: Border(
-                                                            bottom: BorderSide(
-                                                                color: Color(
-                                                                    0xFFdadce0),
-                                                                width: 1))),
-                                                    child: Row(
-                                                      children: <Widget>[
-                                                        Container()
-                                                      ],
-                                                    ))))
-                                            .toList()))),
-                          )
-                          .toList()),
-                  eventCards(context, maxHeightWanted, maxPossibleWidth),
-                ],
-              )));
+    return BlocBuilder(bloc: dateWeekBloc,
+    builder: (BuildContext context, currentWeek){
+      return LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints viewportConstraints) {
+            // You can change up this value later to increase or decrease the height
+            // of the week grid.
+            double maxHeightWanted = viewportConstraints.maxHeight + 800;
+            double maxPossibleWidth = viewportConstraints.maxWidth;
+            return SingleChildScrollView(
+                child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                        minHeight: viewportConstraints.minHeight,
+                        maxHeight: maxHeightWanted,
+                        minWidth: viewportConstraints.minWidth,
+                        maxWidth: maxPossibleWidth),
+                    child: Stack(
+                      children: <Widget>[
+                        Row(
+                            children: columns
+                                .map(
+                                  (columns) => Expanded(
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          border: Border(
+                                              right: BorderSide(
+                                                  color: Color(0xFFdadce0),
+                                                  width: 1))),
+                                      child: Column(
+                                          children: timeHour
+                                              .map((hour) => Expanded(
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          bottom: BorderSide(
+                                                              color: Color(
+                                                                  0xFFdadce0),
+                                                              width: 1))),
+                                                  child: Row(
+                                                    children: <Widget>[
+                                                      Container()
+                                                    ],
+                                                  ))))
+                                              .toList()))),
+                            )
+                                .toList()),
+                        eventCards(context, maxHeightWanted, maxPossibleWidth, currentWeek),
+                      ],
+                    )));
+          });
     });
   }
 
@@ -151,15 +156,22 @@ class Week extends StatelessWidget {
     }
   }
 
-  eventCards(context, maxHeight, maxWidth) {
+  eventCards(context, maxHeight, maxWidth, currentWeek) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(
         bloc: _eventsBloc,
         builder: (BuildContext context, state) {
           Map<dynamic, dynamic> newDict = {};
             state.events.entries.forEach((item) => {
-                  item.value.forEach((key, value) => {
-                        newDict.addAll({key: value})
+                  item.value.forEach((key, value){
+                    int sTime = value['start'];
+                    DateTime startWeek = currentWeek.week.first;
+                    DateTime endWeek = currentWeek.week.last;
+                    //TODO set start week and end week to the limits of the week
+                        if(sTime >= startWeek.millisecondsSinceEpoch  &&
+                            sTime <= endWeek.millisecondsSinceEpoch ){
+                          newDict.addAll({key: value});
+                        }
                       })
                 });
           return Stack(
