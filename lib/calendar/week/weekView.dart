@@ -165,11 +165,10 @@ class Week extends StatelessWidget {
             state.events.entries.forEach((item) => {
                   item.value.forEach((key, value){
                     int sTime = value['start'];
-                    DateTime startWeek = currentWeek.week.first;
-                    DateTime endWeek = currentWeek.week.last;
+                    DateTime startWeek = currentWeek.week.first.subtract(Duration(hours: 6));
+                    DateTime endWeek = currentWeek.week.last.add(Duration(hours: 18)).subtract(Duration(minutes: 1));
                     //TODO set start week and end week to the limits of the week
-                        if(sTime >= startWeek.millisecondsSinceEpoch  &&
-                            sTime <= endWeek.millisecondsSinceEpoch ){
+                        if(sTime >= startWeek.millisecondsSinceEpoch && sTime <= endWeek.millisecondsSinceEpoch){
                           newDict.addAll({key: value});
                         }
                       })

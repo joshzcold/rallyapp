@@ -4,8 +4,8 @@ import 'package:rallyapp/blocs/date_week/date_week.dart';
 import 'package:date_utils/date_utils.dart';
 
 var currentDay = DateTime.now();
-var startOfWeek = Utils.firstDayOfWeek(currentDay);
-var endOfWeek = Utils.lastDayOfWeek(currentDay);
+var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
+var endOfWeek = Utils.lastDayOfWeek(currentDay).toLocal();
 var dateRange = Utils.daysInRange(startOfWeek, endOfWeek).toList();
 class DateWeekBloc extends Bloc<DateWeekEvent, DateWeekState>{
 
