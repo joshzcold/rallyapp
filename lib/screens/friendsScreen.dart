@@ -7,19 +7,35 @@ class FriendsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final _friendsBloc = BlocProvider.of<FriendsBloc>(context);
 
-    return Container(
-      color: Colors.deepPurple,
-      // Gotta find out eventually how to expand based on amount of friends.
-        constraints: BoxConstraints.expand(
-          height: Theme.of(context).textTheme.display1.fontSize * 1.1 + 200.0,
-        ),
-      child: BlocBuilder(
+    return Scaffold(
+      body: BlocBuilder(
           bloc: _friendsBloc,
           builder: (BuildContext context, state) {
             if (state is FriendsLoading) {
               print('FriendsLoading...');
-              return new Center(
-                child: CircularProgressIndicator(),
+              return  Center(
+                child: Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      const ListTile(
+                        leading: Icon(Icons.insert_emoticon),
+                        title: Text('NO FRIENDS'),
+                        subtitle: Text('Try sending your rallyID to your friends using Rally'),
+                      ),
+                      ButtonTheme.bar( // make buttons use the appropriate styles for cards
+                        child: ButtonBar(
+                          children: <Widget>[
+                            FlatButton(
+                              child: const Text('ADD FRIEND'),
+                              onPressed: () { /* ... */ },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             } else if (state is FriendsLoaded) {
               print('FriendsLoaded: ${state.friends.entries}');
@@ -47,6 +63,13 @@ class FriendsScreen extends StatelessWidget {
               );
             }
           }),
+      floatingActionButton: Container(
+        child: FloatingActionButton(
+            onPressed: (){},
+            backgroundColor: Colors.blue,
+            child: Icon(Icons.group_add)
+        ),
+      ),
     );
   }
 }

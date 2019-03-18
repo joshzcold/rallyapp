@@ -17,6 +17,8 @@ class EventsBloc extends Bloc<EventsEvent, EventsState>{
       yield* _mapReplaceFriendDetailToState(currentState, event);
     } else if(event is ClearEvents){
       yield* _mapClearEventsToState(currentState);
+    } else if (event is ManualDoneLoading){
+      yield* _mapManualDoneLoading(currentState);
     }
   }
 
@@ -60,5 +62,13 @@ class EventsBloc extends Bloc<EventsEvent, EventsState>{
   Stream<EventsState>_mapClearEventsToState(currentState) async*{
     currentState = {};
     yield EventsLoading();
+  }
+
+  Stream<EventsState>_mapManualDoneLoading(currentState) async*{
+    if(currentState is EventsLoading){
+      yield EventsLoaded({});
+    } else if(currentState is EventsLoaded){
+      yield EventsLoaded(currentState.events);
+    }
   }
 }

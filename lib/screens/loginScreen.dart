@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rallyapp/listener.dart';
 
@@ -11,6 +12,7 @@ final TextEditingController _emailController = TextEditingController();
 final TextEditingController _passwordController = TextEditingController();
 
 class SignInPage extends StatelessWidget{
+
   void signInWithEmailAndPassword(context) async {
     final FirebaseUser user = await _auth.signInWithEmailAndPassword(
       email: _emailController.text,
@@ -19,7 +21,7 @@ class SignInPage extends StatelessWidget{
       _showAlert(error.code, error.message, context)
     );
     if (user != null && user.isEmailVerified) {
-      await setListeners(context);
+      setListeners(context);
       Navigator.pushReplacementNamed(context, '/main');
     } else {
       if(!user.isEmailVerified){ _showAlert("Email Verification","Account email is not verified, "
@@ -45,8 +47,8 @@ class SignInPage extends StatelessWidget{
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
     if (user != null) {
+      setListeners(context);
       Navigator.pushReplacementNamed(context, '/main');
-      await setListeners(context);
     } else {
       // Throw Errors Here!!
     }

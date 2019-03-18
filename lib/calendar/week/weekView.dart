@@ -157,11 +157,11 @@ class Week extends StatelessWidget {
         bloc: _eventsBloc,
         builder: (BuildContext context, state) {
           Map<dynamic, dynamic> newDict = {};
-          state.events.entries.forEach((item) => {
-                item.value.forEach((key, value) => {
-                      newDict.addAll({key: value})
-                    })
-              });
+            state.events.entries.forEach((item) => {
+                  item.value.forEach((key, value) => {
+                        newDict.addAll({key: value})
+                      })
+                });
           return Stack(
               children: newDict.entries
                   .map<Widget>((event) => Stack(
@@ -179,46 +179,40 @@ class Week extends StatelessWidget {
                                   Color(_getColorFromHex(event.value['color'])),
                               child: FlatButton(
                                 clipBehavior: Clip.hardEdge,
-                                  padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                  onPressed: () {
-                                    print('clicked on $event');
-                                  },
-                                      child: ListView(
-                                        padding: EdgeInsets.all(0),
-                                        children: <Widget>[
-                                          // User Image
-                                          Container(
-                                              width: 30.0,
-                                              height: 33.0,
-                                              decoration: new BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  image: new DecorationImage(
-                                                      fit: BoxFit.fill,
-                                                      image: new NetworkImage(
-                                                          event.value[
-                                                          'userPhoto'])))),
-                                          // User Name & Description
-                                            RichText(
-                                              softWrap: true,
-                                              overflow: TextOverflow.visible,
-                                              text: TextSpan(
-                                                children: <TextSpan>[
-                                                  TextSpan(
-                                                    text:
-                                                    '${event.value['userName']}',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                        FontWeight.bold),
-                                                  ),
-                                                  TextSpan(
-                                                      text:
-                                                      '${event.value['title']}'),
-                                                ],
-                                              ),
-                                            ),
+                                padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                onPressed: () {
+                                  print('clicked on $event');
+                                },
+                                child: ListView(
+                                  padding: EdgeInsets.all(0),
+                                  children: <Widget>[
+                                    // User Image
+                                    Container(
+                                        width: 30.0,
+                                        height: 33.0,
+                                        decoration: new BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: new DecorationImage(
+                                                fit: BoxFit.fill,
+                                                image: new NetworkImage(event
+                                                    .value['userPhoto'])))),
+                                    // User Name & Description
+                                    RichText(
+                                      text: TextSpan(
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                            text: '${event.value['userName']}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          TextSpan(
+                                              text: '${event.value['title']}'),
                                         ],
                                       ),
-                                  ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                           Positioned(

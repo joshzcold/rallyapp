@@ -41,3 +41,7 @@ class ClearEvents extends EventsEvent{
   String toString() => 'ClearEvents';
 }
 
+class ManualDoneLoading extends EventsEvent{
+  @override
+  String toString() => 'ManualDoneLoading';
+}

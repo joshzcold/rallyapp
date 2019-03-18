@@ -15,7 +15,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
 
 
-Future setListeners(BuildContext context) async{
+ setListeners(BuildContext context) async{
   final friendBloc = BlocProvider.of<FriendsBloc>(context);
   final authBloc = BlocProvider.of<AuthBloc>(context);
   final eventBloc = BlocProvider.of<EventsBloc>(context);
@@ -58,7 +58,7 @@ Future setListeners(BuildContext context) async{
     return rallyID;
   }
 
-  void setUserFriendListeners(){
+  setUserFriendListeners() async{
     print('Setting Listeners ======================================================');
     //////////////////////////////////////////////////////////////////////////////
     /////// USER RELATED LISTENERS
@@ -66,8 +66,8 @@ Future setListeners(BuildContext context) async{
 
     // Grabbing user data
     database.reference().child('user/$uid/info').once().then((snapshot) =>{
-    authBloc.dispatch(AddAuth(uid,snapshot.value))
-    });
+      authBloc.dispatch(AddAuth(uid,snapshot.value)),
+    }).whenComplete((){eventBloc.dispatch(ManualDoneLoading());});
 
     // Setting Listener on User Info CHANGE
     database.reference().child('user/$uid/info').onChildChanged.listen((event){
@@ -83,7 +83,7 @@ Future setListeners(BuildContext context) async{
     });
 
     // Setting Listener on User event ADD
-    database.reference().child('user/$uid/events').onChildAdded.listen((Event event) async{
+    database.reference().child('user/$uid/events').onChildAdded.listen((Event event)  {
       print(' -- ADD -- user events');
       eventBloc.dispatch(AddEvents(uid, event.snapshot.key, event.snapshot.value));
     });
@@ -118,6 +118,7 @@ Future setListeners(BuildContext context) async{
         print('Grabbing friend Info: ${snapshot.value}');
         friendBloc.dispatch(AddFriends(friendID, snapshot.value));
       });
+
       // Settings Listener on friends info CHANGE
       subscriptions[friendID][i++] = database.reference().child('user/$friendID/info').onChildChanged.listen((event){
         print(' -- CHANGED -- friend info');
@@ -189,7 +190,7 @@ Future setListeners(BuildContext context) async{
   }
 
   // BIG OLE Check to make sure the user has data before setting listeners
-  database.reference().child('user/$uid/info').once().then((snapshot){
+  database.reference().child('user/$uid/info').once().then((snapshot) {
     snapshot.value == null? getRallyID() : setUserFriendListeners();
   });
 }

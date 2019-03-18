@@ -39,3 +39,7 @@ class ClearFriends extends FriendsEvent{
   String toString() => 'ClearFriends';
 }
 
+class ManualDoneLoadingFriends extends FriendsEvent{
+  @override
+  String toString() => 'ManualDoneLoadingFriends';
+}

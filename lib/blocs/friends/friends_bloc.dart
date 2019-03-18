@@ -17,6 +17,8 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState>{
       yield* _mapReplaceFriendDetailToState(currentState, event);
     } else if(event is ClearFriends){
       yield* _mapClearFriendsToState(currentState);
+    }else if (event is ManualDoneLoadingFriends) {
+      yield* _mapManualDoneLoading(currentState);
     }
   }
 
@@ -56,5 +58,13 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState>{
   Stream<FriendsState>_mapClearFriendsToState(currentState) async*{
     currentState = {};
     yield FriendsLoading();
+  }
+
+  Stream<FriendsState>_mapManualDoneLoading(currentState) async*{
+    if(currentState is FriendsLoading){
+      yield FriendsLoaded({});
+    } else if(currentState is FriendsLoaded){
+      yield FriendsLoaded(currentState.friends);
+    }
   }
 }
