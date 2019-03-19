@@ -7,31 +7,33 @@ import 'package:rallyapp/blocs/date_week/date_week.dart';
 
 var currentHour = new DateTime.now().hour;
 
-List<String> timeHour = [
-  "12 AM",
-  "1 AM",
-  "2 AM",
-  "3 AM",
-  "4 AM",
-  "5 AM",
-  "6 AM",
-  "7 AM",
-  "8 AM",
-  "9 AM",
-  "10 AM",
-  "11 AM",
-  "12 PM",
-  "1 PM",
-  "2 PM",
-  "3 PM",
-  "4 PM",
-  "5 PM",
-  "6 PM",
-  "7 PM",
-  "8 PM",
-  "9 PM",
-  "10 PM",
-  "11 PM"
+List<int> timeHour = [
+  24,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
+];
+List<String> displayHour = [
+  "1AM",
+  "2AM",
+  "3AM",
+  "4AM",
+  "5AM",
+  "6AM",
+  "7AM",
+  "8AM",
+  "9AM",
+  "10AM",
+  "11AM",
+  "12PM",
+  "1PM",
+  "2PM",
+  "3PM",
+  "4PM",
+  "5PM",
+  "6PM",
+  "7PM",
+  "8PM",
+  "9PM",
+  "10PM",
+  "11PM"
 ];
 List<int> columns = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -40,74 +42,88 @@ class Week extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateWeekBloc = BlocProvider.of<DateWeekBloc>(context);
     print('current hour: $currentHour');
-    return BlocBuilder(
-        bloc: dateWeekBloc,
-        builder: (BuildContext context, currentWeek) {
-          return LayoutBuilder(builder:
-              (BuildContext context, BoxConstraints viewportConstraints) {
-            // You can change up this value later to increase or decrease the height
-            // of the week grid.
-            double maxHeightWanted = viewportConstraints.maxHeight + 800;
-            double maxPossibleWidth = viewportConstraints.maxWidth;
-            return Stack(
-              children: <Widget>[
-                SingleChildScrollView(
-                    child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                            minHeight: viewportConstraints.minHeight,
-                            maxHeight: maxHeightWanted,
-                            minWidth: viewportConstraints.minWidth,
-                            maxWidth: maxPossibleWidth),
-                        child: Stack(
-                          children: <Widget>[
-                            Column(
-                                  children: timeHour
-                                      .map((hour) => Expanded(
-                                          child: Container(
-                                              decoration: BoxDecoration(),
-                                              child: Row(
-                                                children: <Widget>[
-                                                  Container(
-                                                    child: Text('$hour'),
-                                                  )
-                                                ],
-                                              ))))
-                                      .toList()),
-                            ClipPath(
-                                clipper: ClipLeftMostColumn(),
-                                child: Row(
-                                    children: columns
-                                        .map(
-                                          (columns) => Expanded(
-                                              child: Container(
-                                                  decoration: BoxDecoration(
-                                                      border: Border(
-                                                          right: BorderSide(
-                                                              color: Color(
-                                                                  0xFFdadce0),
-                                                              width: 1))),
-                                                  child: Column(
-                                                      children: timeHour
-                                                          .map((hour) => Expanded(
-                                                              child: Container(
-                                                                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFdadce0), width: 1))),
-                                                                  child: Row(
-                                                                    children: <
-                                                                        Widget>[
-                                                                      Container()
-                                                                    ],
-                                                                  ))))
-                                                          .toList()))),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: Icon(Icons.android, color: Colors.grey, size: 30,)
+      ),
+      body: BlocBuilder(
+          bloc: dateWeekBloc,
+          builder: (BuildContext context, currentWeek) {
+            return LayoutBuilder(builder:
+                (BuildContext context, BoxConstraints viewportConstraints) {
+              // You can change up this value later to increase or decrease the height
+              // of the week grid.
+              double maxHeightWanted = viewportConstraints.maxHeight + 800;
+              double maxPossibleWidth = viewportConstraints.maxWidth;
+              return Stack(
+                children: <Widget>[
+                  SingleChildScrollView(
+                      child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                              minHeight: viewportConstraints.minHeight,
+                              maxHeight: maxHeightWanted,
+                              minWidth: viewportConstraints.minWidth,
+                              maxWidth: maxPossibleWidth),
+                          child: Stack(
+                            children: <Widget>[
+                              Positioned(
+                                top: maxHeightWanted/24 - 8,
+                                left: maxPossibleWidth/8/8,
+                                child: Column(
+                                    children: displayHour
+                                        .map((hour) => Container(
+                                        height: maxHeightWanted/24,
+                                        child: RichText(
+                                          text: TextSpan(
+                                            style: DefaultTextStyle.of(context).style,
+                                            children: <TextSpan>[
+                                              TextSpan(text: '$hour', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                            ],
+                                          ),
                                         )
-                                        .toList())),
-                            eventCards(context, maxHeightWanted,
-                                maxPossibleWidth, currentWeek),
-                          ],
-                        )))
-              ],
-            );
-          });
-        });
+                                    ),
+                                    )
+                                        .toList()),)
+                              // This Column is the numbers on the left
+                              ,
+                              // This is the Grid. The ClipPath crops out a bit on the left side
+                              ClipPath(
+                                  clipper: ClipLeftMostColumn(),
+                                  child: Row(
+                                      children: columns
+                                          .map(
+                                            (columns) => Expanded(
+                                            child: Container(
+                                                decoration: BoxDecoration(
+                                                    border: Border(
+                                                        right: BorderSide(
+                                                            color: Color(
+                                                                0xFFdadce0),
+                                                            width: 1))),
+                                                child: Column(
+                                                    children: timeHour
+                                                        .map((hour) => Expanded(
+                                                        child: Container(
+                                                            decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFdadce0), width: 1))),
+                                                            child: Row(
+                                                              children: <
+                                                                  Widget>[
+                                                                Container()
+                                                              ],
+                                                            ))))
+                                                        .toList()))),
+                                      )
+                                          .toList())),
+                              eventCards(context, maxHeightWanted,
+                                  maxPossibleWidth, currentWeek),
+                            ],
+                          )))
+                ],
+              );
+            });
+          })
+    );
   }
 
   double getHeightByTime(event, constraints) {
@@ -149,6 +165,7 @@ class Week extends StatelessWidget {
     return (dayInWeek * column);
   }
 
+  // Didn't want to do this function, but all our color values are in hex format
   int _getColorFromHex(String hexColor) {
     hexColor = hexColor.toUpperCase().replaceAll("#", "");
     if (hexColor.length == 6) {
@@ -188,7 +205,6 @@ class Week extends StatelessWidget {
                   DateTime endWeek = currentWeek.week.last
                       .add(Duration(hours: 18))
                       .subtract(Duration(minutes: 1));
-                  //TODO set start week and end week to the limits of the week
                   if (sTime >= startWeek.millisecondsSinceEpoch &&
                       sTime <= endWeek.millisecondsSinceEpoch) {
                     newDict.addAll({key: value});
@@ -274,7 +290,7 @@ class ClipLeftMostColumn extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();
-    var columnIncrement = (size.width / 8) / 1.5;
+    var columnIncrement = (size.width / 8) / 1.3;
 
     // Draw a straight line from current point to the bottom left corner.
     path.lineTo(columnIncrement, size.height);
