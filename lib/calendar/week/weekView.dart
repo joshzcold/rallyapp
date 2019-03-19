@@ -7,31 +7,31 @@ import 'package:rallyapp/blocs/date_week/date_week.dart';
 
 var currentHour = new DateTime.now().hour;
 
-List<int> timeHour = [
-  24,
-  1,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11,
-  12,
-  13,
-  14,
-  15,
-  16,
-  17,
-  18,
-  19,
-  20,
-  21,
-  22,
-  23
+List<String> timeHour = [
+  "12 AM",
+  "1 AM",
+  "2 AM",
+  "3 AM",
+  "4 AM",
+  "5 AM",
+  "6 AM",
+  "7 AM",
+  "8 AM",
+  "9 AM",
+  "10 AM",
+  "11 AM",
+  "12 PM",
+  "1 PM",
+  "2 PM",
+  "3 PM",
+  "4 PM",
+  "5 PM",
+  "6 PM",
+  "7 PM",
+  "8 PM",
+  "9 PM",
+  "10 PM",
+  "11 PM"
 ];
 List<int> columns = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -60,38 +60,46 @@ class Week extends StatelessWidget {
                             maxWidth: maxPossibleWidth),
                         child: Stack(
                           children: <Widget>[
-
+                            Column(
+                                  children: timeHour
+                                      .map((hour) => Expanded(
+                                          child: Container(
+                                              decoration: BoxDecoration(),
+                                              child: Row(
+                                                children: <Widget>[
+                                                  Container(
+                                                    child: Text('$hour'),
+                                                  )
+                                                ],
+                                              ))))
+                                      .toList()),
                             ClipPath(
                                 clipper: ClipLeftMostColumn(),
                                 child: Row(
                                     children: columns
                                         .map(
                                           (columns) => Expanded(
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      right: BorderSide(
-                                                          color:
-                                                          Color(0xFFdadce0),
-                                                          width: 1))),
-                                              child: Column(
-                                                  children: timeHour.map((hour) => Expanded(
-                                                      child: Container(
-                                                          decoration: BoxDecoration(
-                                                              border: Border(
-                                                                  bottom: BorderSide(
-                                                                      color: Color(0xFFdadce0),
-                                                                      width: 1))),
-                                                          child: Row(children: <Widget>[
-                                                            Container()
-                                                          ],
-                                                          ))))
-                                                      .toList()))),
-                                    )
-                                        .toList())
-
-                            )
-                            ,
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          right: BorderSide(
+                                                              color: Color(
+                                                                  0xFFdadce0),
+                                                              width: 1))),
+                                                  child: Column(
+                                                      children: timeHour
+                                                          .map((hour) => Expanded(
+                                                              child: Container(
+                                                                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFdadce0), width: 1))),
+                                                                  child: Row(
+                                                                    children: <
+                                                                        Widget>[
+                                                                      Container()
+                                                                    ],
+                                                                  ))))
+                                                          .toList()))),
+                                        )
+                                        .toList())),
                             eventCards(context, maxHeightWanted,
                                 maxPossibleWidth, currentWeek),
                           ],
@@ -260,38 +268,34 @@ class Week extends StatelessWidget {
                   .toList());
         });
   }
-
-
 }
 
-class ClipLeftMostColumn extends CustomClipper<Path>{
-@override
-Path getClip(Size size) {
-  var path = Path();
-  var columnIncrement = (size.width/8)/1.5;
+class ClipLeftMostColumn extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+    var columnIncrement = (size.width / 8) / 1.5;
 
-  // Draw a straight line from current point to the bottom left corner.
-  path.lineTo(columnIncrement, size.height);
+    // Draw a straight line from current point to the bottom left corner.
+    path.lineTo(columnIncrement, size.height);
 
-  // Draw a straight line from current point to the top right corner.
-  path.lineTo(size.width, size.height);
+    // Draw a straight line from current point to the top right corner.
+    path.lineTo(size.width, size.height);
 
-  path.lineTo(size.width, 0.0);
+    path.lineTo(size.width, 0.0);
 
-  path.lineTo(columnIncrement, 0.0);
+    path.lineTo(columnIncrement, 0.0);
 
-  path.lineTo(columnIncrement, size.height);
+    path.lineTo(columnIncrement, size.height);
 
 //  path.lineTo(0.0, 0.0);
 
-  // Draws a straight line from current point to the first point of the path.
-  // In this case (0, 0), since that's where the paths start by default.
-  path.close();
-  return path;
+    // Draws a straight line from current point to the first point of the path.
+    // In this case (0, 0), since that's where the paths start by default.
+    path.close();
+    return path;
+  }
 
-}
-
-@override
-bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
