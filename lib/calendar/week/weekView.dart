@@ -7,117 +7,85 @@ import 'package:rallyapp/blocs/date_week/date_week.dart';
 var currentHour = new DateTime.now().hour;
 
 List<int> timeHour = [
-  24,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
+  24,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23
 ];
-List<String> displayHour = [
-  "1AM",
-  "2AM",
-  "3AM",
-  "4AM",
-  "5AM",
-  "6AM",
-  "7AM",
-  "8AM",
-  "9AM",
-  "10AM",
-  "11AM",
-  "12PM",
-  "1PM",
-  "2PM",
-  "3PM",
-  "4PM",
-  "5PM",
-  "6PM",
-  "7PM",
-  "8PM",
-  "9PM",
-  "10PM",
-  "11PM"
-];
-List<int> columns = [1, 2, 3, 4, 5, 6, 7, 8];
+
+List<int> columns = [1, 2, 3, 4, 5, 6, 7];
 
 class Calendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateWeekBloc = BlocProvider.of<DateWeekBloc>(context);
     return BlocBuilder(
-          bloc: dateWeekBloc,
-          builder: (BuildContext context, currentWeek) {
-            return LayoutBuilder(builder:
-                (BuildContext context, BoxConstraints viewportConstraints) {
-              // You can change up this value later to increase or decrease the height
-              // of the week grid.
-              double maxHeightWanted = viewportConstraints.maxHeight + 800;
-              double maxPossibleWidth = viewportConstraints.maxWidth;
-              return Stack(
-                children: <Widget>[
-                  SingleChildScrollView(
-                      child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                              minHeight: viewportConstraints.minHeight,
-                              maxHeight: maxHeightWanted,
-                              minWidth: viewportConstraints.minWidth,
-                              maxWidth: maxPossibleWidth),
-                          child: Stack(
-                            children: <Widget>[
-                              Positioned(
-                                top: maxHeightWanted/24 - 8,
-                                left: maxPossibleWidth/8/8,
+        bloc: dateWeekBloc,
+        builder: (BuildContext context, currentWeek) {
+          return LayoutBuilder(builder:
+              (BuildContext context, BoxConstraints viewportConstraints) {
+            // You can change up this value later to increase or decrease the height
+            // of the week grid.
+            double maxHeightWanted = viewportConstraints.maxHeight;
+            double maxPossibleWidth = MediaQuery.of(context).size.width - 50;
+            return ConstrainedBox(
+                constraints: BoxConstraints(
+                    minHeight: viewportConstraints.minHeight,
+                    maxHeight: maxHeightWanted,
+                    minWidth: viewportConstraints.minWidth,
+                    maxWidth: maxPossibleWidth),
+                child: Row(
+                    children: columns
+                        .map((columns) => Expanded(
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        right: BorderSide(
+                                            color: Color(0xFFdadce0),
+                                            width: 1))),
                                 child: Column(
-                                    children: displayHour
-                                        .map((hour) => Container(
-                                        height: maxHeightWanted/24,
-                                        child: RichText(
-                                          text: TextSpan(
-                                            style: DefaultTextStyle.of(context).style,
-                                            children: <TextSpan>[
-                                              TextSpan(text: '$hour', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                                            ],
-                                          ),
-                                        )
-                                    ),
-                                    )
-                                        .toList()),)
-                              // This Column is the numbers on the left
-                              ,
-                              // This is the Grid. The ClipPath crops out a bit on the left side
-                              ClipPath(
-                                  clipper: ClipLeftMostColumn(),
-                                  child: Row(
-                                      children: columns
-                                          .map(
-                                            (columns) => Expanded(
+                                    children: timeHour
+                                        .map((hour) => Expanded(
                                             child: Container(
                                                 decoration: BoxDecoration(
                                                     border: Border(
-                                                        right: BorderSide(
+                                                        bottom: BorderSide(
                                                             color: Color(
                                                                 0xFFdadce0),
                                                             width: 1))),
-                                                child: Column(
-                                                    children: timeHour
-                                                        .map((hour) => Expanded(
-                                                        child: Container(
-                                                            decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFFdadce0), width: 1))),
-                                                            child: Row(
-                                                              children: <
-                                                                  Widget>[
-                                                                Container()
-                                                              ],
-                                                            ))))
-                                                        .toList()))),
-                                      )
-                                          .toList())),
-                              eventCards(context, maxHeightWanted,
-                                  maxPossibleWidth, currentWeek),
-                              currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, currentWeek)
-                            ],
-                          )))
-                ],
-              );
-            });
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Container()
+                                                  ],
+                                                ))))
+                                        .toList()))))
+                        .toList()));
           });
 
+//                              eventCards(context, maxHeightWanted,
+//                                  maxPossibleWidth, currentWeek),
+//                              currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, currentWeek)
+        });
   }
 
   double getHeightByTime(event, constraints) {
@@ -156,7 +124,6 @@ class Calendar extends StatelessWidget {
     }
     return (dayInWeek * column);
   }
-
 
   double moveBoxDownBasedOfConstraints(event, constraints) {
     double height = constraints;
@@ -297,28 +264,35 @@ class Calendar extends StatelessWidget {
         });
   }
 
-  currentTimeIndicator(BuildContext context, double maxHeightWanted, double maxPossibleWidth, currentWeek) {
+  currentTimeIndicator(BuildContext context, double maxHeightWanted,
+      double maxPossibleWidth, currentWeek) {
     DateTime cday = DateTime.now();
     bool check = false;
-    for(DateTime day in currentWeek.week){
-      String value = day.year.toString()+day.month.toString()+day.day.toString();
-      String today = cday.year.toString()+cday.month.toString()+cday.day.toString();
+    for (DateTime day in currentWeek.week) {
+      String value =
+          day.year.toString() + day.month.toString() + day.day.toString();
+      String today =
+          cday.year.toString() + cday.month.toString() + cday.day.toString();
       if (today == value) {
         check = true;
         return Stack(
           children: <Widget>[
             Positioned(
-              top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted) -10,
+              top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted) -
+                  10,
               left: 0,
 //              moveIndicatorRightBasedOfConstraints(cday, maxPossibleWidth),
               child: Row(
                 children: <Widget>[
                   Container(
                     color: Colors.green,
-                    width: maxPossibleWidth/8 - 12.5,
+                    width: maxPossibleWidth / 8 - 12.5,
                     height: 3,
                   ),
-                  Icon(Icons.star, color: Colors.amber,),
+                  Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  ),
                 ],
               ),
             )
@@ -326,7 +300,7 @@ class Calendar extends StatelessWidget {
         );
       }
     }
-    if(check == false){
+    if (check == false) {
       return Container();
     }
   }
@@ -361,3 +335,42 @@ class ClipLeftMostColumn extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
+
+//return LayoutBuilder(builder:
+//                (BuildContext context, BoxConstraints viewportConstraints) {
+//              // You can change up this value later to increase or decrease the height
+//              // of the week grid.
+//              double maxHeightWanted = viewportConstraints.maxHeight + 800;
+//              double maxPossibleWidth = viewportConstraints.maxWidth;
+//                    return SingleChildScrollView(
+//                      child: ConstrainedBox(
+//                          constraints: BoxConstraints(
+//                              minHeight: viewportConstraints.minHeight,
+//                              maxHeight: maxHeightWanted,
+//                              minWidth: viewportConstraints.minWidth,
+//                              maxWidth: maxPossibleWidth),
+//                          child: Row(
+//                            children: <Widget>[
+//                              Stack(
+//                                children: <Widget>[
+//                                  Positioned(
+//                                    child: Column(
+//                                        children: displayHour
+//                                            .map((hour) => Container(
+//                                            height: 40,
+//                                            child: RichText(
+//                                              text: TextSpan(
+//                                                style: DefaultTextStyle.of(context).style,
+//                                                children: <TextSpan>[
+//                                                  TextSpan(text: '$hour', style: TextStyle(color: Colors.grey, fontSize: 12)),
+//                                                ],
+//                                              ),
+//                                            )
+//                                        ),
+//                                        ).toList()),)
+//                                ],
+//                              ),
+//                              Calendar()
+//                            ],
+//                          )));
+//                    });
