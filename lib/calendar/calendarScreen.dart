@@ -115,7 +115,8 @@ class CalendarPage extends StatelessWidget {
                                                                   color: Colors.grey, fontSize: 12)),
                                                             ]),
                                                         ))).toList())
-                                        )
+                                        ),
+                                        currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, week)
                                       ],
                                     )),
                                   Calendar(),
@@ -132,6 +133,57 @@ class CalendarPage extends StatelessWidget {
             ),
           );
         });
+  }
+
+
+  double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
+    double height = constraints;
+    double hour = height / 24;
+    var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
+    double distanceDown = hoursFromMidnight * hour;
+    return distanceDown;
+  }
+
+
+  currentTimeIndicator(BuildContext context, double maxHeightWanted,
+      double maxPossibleWidth, currentWeek) {
+    DateTime cday = DateTime.now();
+    bool check = false;
+    for (DateTime day in currentWeek.week) {
+      String value =
+          day.year.toString() + day.month.toString() + day.day.toString();
+      String today =
+          cday.year.toString() + cday.month.toString() + cday.day.toString();
+      if (today == value) {
+        check = true;
+        return Stack(
+          children: <Widget>[
+            Positioned(
+              top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted) -
+                  10,
+              left: 0,
+//              moveIndicatorRightBasedOfConstraints(cday, maxPossibleWidth),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    color: Colors.green,
+                    width: maxPossibleWidth / 8 - 35,
+                    height: 3,
+                  ),
+                  Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  ),
+                ],
+              ),
+            )
+          ],
+        );
+      }
+    }
+    if (check == false) {
+      return Container();
+    }
   }
 
   String calculateMonthToAbbrv(int month) {
@@ -212,19 +264,3 @@ class CalendarPage extends StatelessWidget {
     }
   }
 }
-
-//return LayoutBuilder(builder:
-//                (BuildContext context, BoxConstraints viewportConstraints) {
-//              // You can change up this value later to increase or decrease the height
-//              // of the week grid.
-//              double maxHeightWanted = viewportConstraints.maxHeight + 800;
-//              double maxPossibleWidth = viewportConstraints.maxWidth;}
-
-//SingleChildScrollView(
-//                      child: ConstrainedBox(
-//                          constraints: BoxConstraints(
-//                              minHeight: viewportConstraints.minHeight,
-//                              maxHeight: maxHeightWanted,
-//                              minWidth: viewportConstraints.minWidth,
-//                              maxWidth: maxPossibleWidth),
-//                          child:))

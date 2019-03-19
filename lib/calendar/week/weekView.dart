@@ -84,7 +84,6 @@ class Calendar extends StatelessWidget {
                             .toList()),
 
                     eventCards(context, maxHeightWanted, maxPossibleWidth, currentWeek),
-                    currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, currentWeek)
                   ],
                 )
                );
@@ -112,22 +111,6 @@ class Calendar extends StatelessWidget {
     return reducedWidth;
   }
 
-  double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
-    double height = constraints;
-    double hour = height / 24;
-    var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
-    double distanceDown = hoursFromMidnight * hour;
-    return distanceDown;
-  }
-
-//  double moveIndicatorRightBasedOfConstraints(sTime, constraints) {
-//    double column = constraints / 7;
-//    var dayInWeek = sTime.weekday + 1;
-//    if (dayInWeek == 8) {
-//      dayInWeek = 1;
-//    }
-//    return (dayInWeek * column);
-//  }
 
   double moveBoxDownBasedOfConstraints(event, constraints) {
     double height = constraints;
@@ -268,46 +251,7 @@ class Calendar extends StatelessWidget {
         });
   }
 
-  currentTimeIndicator(BuildContext context, double maxHeightWanted,
-      double maxPossibleWidth, currentWeek) {
-    DateTime cday = DateTime.now();
-    bool check = false;
-    for (DateTime day in currentWeek.week) {
-      String value =
-          day.year.toString() + day.month.toString() + day.day.toString();
-      String today =
-          cday.year.toString() + cday.month.toString() + cday.day.toString();
-      if (today == value) {
-        check = true;
-        return Stack(
-          children: <Widget>[
-            Positioned(
-              top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted) -
-                  10,
-              left: 0,
-//              moveIndicatorRightBasedOfConstraints(cday, maxPossibleWidth),
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    color: Colors.green,
-                    width: maxPossibleWidth / 8 - 12.5,
-                    height: 3,
-                  ),
-                  Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  ),
-                ],
-              ),
-            )
-          ],
-        );
-      }
-    }
-    if (check == false) {
-      return Container();
-    }
-  }
+
 }
 
 class ClipLeftMostColumn extends CustomClipper<Path> {
@@ -339,42 +283,3 @@ class ClipLeftMostColumn extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
-
-//return LayoutBuilder(builder:
-//                (BuildContext context, BoxConstraints viewportConstraints) {
-//              // You can change up this value later to increase or decrease the height
-//              // of the week grid.
-//              double maxHeightWanted = viewportConstraints.maxHeight + 800;
-//              double maxPossibleWidth = viewportConstraints.maxWidth;
-//                    return SingleChildScrollView(
-//                      child: ConstrainedBox(
-//                          constraints: BoxConstraints(
-//                              minHeight: viewportConstraints.minHeight,
-//                              maxHeight: maxHeightWanted,
-//                              minWidth: viewportConstraints.minWidth,
-//                              maxWidth: maxPossibleWidth),
-//                          child: Row(
-//                            children: <Widget>[
-//                              Stack(
-//                                children: <Widget>[
-//                                  Positioned(
-//                                    child: Column(
-//                                        children: displayHour
-//                                            .map((hour) => Container(
-//                                            height: 40,
-//                                            child: RichText(
-//                                              text: TextSpan(
-//                                                style: DefaultTextStyle.of(context).style,
-//                                                children: <TextSpan>[
-//                                                  TextSpan(text: '$hour', style: TextStyle(color: Colors.grey, fontSize: 12)),
-//                                                ],
-//                                              ),
-//                                            )
-//                                        ),
-//                                        ).toList()),)
-//                                ],
-//                              ),
-//                              Calendar()
-//                            ],
-//                          )));
-//                    });
