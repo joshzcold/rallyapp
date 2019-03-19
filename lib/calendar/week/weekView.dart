@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:date_utils/date_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/date_week/date_week.dart';
@@ -37,17 +36,11 @@ List<String> displayHour = [
 ];
 List<int> columns = [1, 2, 3, 4, 5, 6, 7, 8];
 
-class Week extends StatelessWidget {
+class Calendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateWeekBloc = BlocProvider.of<DateWeekBloc>(context);
-    print('current hour: $currentHour');
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Icon(Icons.android, color: Colors.grey, size: 30,)
-      ),
-      body: BlocBuilder(
+    return BlocBuilder(
           bloc: dateWeekBloc,
           builder: (BuildContext context, currentWeek) {
             return LayoutBuilder(builder:
@@ -117,13 +110,14 @@ class Week extends StatelessWidget {
                                           .toList())),
                               eventCards(context, maxHeightWanted,
                                   maxPossibleWidth, currentWeek),
+                              currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, currentWeek)
                             ],
                           )))
                 ],
               );
             });
-          })
-    );
+          });
+
   }
 
   double getHeightByTime(event, constraints) {
@@ -146,7 +140,25 @@ class Week extends StatelessWidget {
     return reducedWidth;
   }
 
-  double moveBoxDownBasedOfConstraints(MapEntry event, constraints) {
+  double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
+    double height = constraints;
+    double hour = height / 24;
+    var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
+    double distanceDown = hoursFromMidnight * hour;
+    return distanceDown;
+  }
+
+  double moveIndicatorRightBasedOfConstraints(sTime, constraints) {
+    double column = constraints / 8;
+    var dayInWeek = sTime.weekday + 1;
+    if (dayInWeek == 8) {
+      dayInWeek = 1;
+    }
+    return (dayInWeek * column);
+  }
+
+
+  double moveBoxDownBasedOfConstraints(event, constraints) {
     double height = constraints;
     double hour = height / 24;
     var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
@@ -155,7 +167,7 @@ class Week extends StatelessWidget {
     return distanceDown;
   }
 
-  double moveBoxRightBasedOfConstraints(MapEntry event, constraints) {
+  double moveBoxRightBasedOfConstraints(event, constraints) {
     double column = constraints / 8;
     var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
     var dayInWeek = sTime.weekday + 1;
@@ -283,6 +295,40 @@ class Week extends StatelessWidget {
                       ))
                   .toList());
         });
+  }
+
+  currentTimeIndicator(BuildContext context, double maxHeightWanted, double maxPossibleWidth, currentWeek) {
+    DateTime cday = DateTime.now();
+    bool check = false;
+    for(DateTime day in currentWeek.week){
+      String value = day.year.toString()+day.month.toString()+day.day.toString();
+      String today = cday.year.toString()+cday.month.toString()+cday.day.toString();
+      if (today == value) {
+        check = true;
+        return Stack(
+          children: <Widget>[
+            Positioned(
+              top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted),
+              left: 0,
+//              moveIndicatorRightBasedOfConstraints(cday, maxPossibleWidth),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    color: Colors.green,
+                    width: maxPossibleWidth/8 - 12.5,
+                    height: 3,
+                  ),
+                  Icon(Icons.star, color: Colors.amber,),
+                ],
+              ),
+            )
+          ],
+        );
+      }
+    }
+    if(check == false){
+      return Container();
+    }
   }
 }
 

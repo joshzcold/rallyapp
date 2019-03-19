@@ -1,17 +1,7 @@
-import 'dart:async';
 
-import 'package:intl/intl.dart' show DateFormat;
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
-import 'package:date_utils/date_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:rallyapp/blocs/app/indexBloc.dart';
-
-import 'package:rallyapp/calendar/week/weekView.dart';
-import 'package:rallyapp/calendar/month/monthView.dart';
-import 'package:rallyapp/calendar/agenda/agendaView.dart';
-import 'package:rallyapp/calendar/upcoming/upcomingView.dart';
 import 'package:rallyapp/calendar/calendarScreen.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
 
