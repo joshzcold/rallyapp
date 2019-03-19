@@ -54,9 +54,11 @@ class Calendar extends StatelessWidget {
                     maxHeight: maxHeightWanted,
                     minWidth: viewportConstraints.minWidth,
                     maxWidth: maxPossibleWidth),
-                child: Row(
-                    children: columns
-                        .map((columns) => Expanded(
+                child: Stack(
+                  children: <Widget>[
+                    Row(
+                        children: columns
+                            .map((columns) => Expanded(
                             child: Container(
                                 decoration: BoxDecoration(
                                     border: Border(
@@ -66,25 +68,27 @@ class Calendar extends StatelessWidget {
                                 child: Column(
                                     children: timeHour
                                         .map((hour) => Expanded(
-                                            child: Container(
-                                                decoration: BoxDecoration(
-                                                    border: Border(
-                                                        bottom: BorderSide(
-                                                            color: Color(
-                                                                0xFFdadce0),
-                                                            width: 1))),
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Container()
-                                                  ],
-                                                ))))
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border(
+                                                    bottom: BorderSide(
+                                                        color: Color(
+                                                            0xFFdadce0),
+                                                        width: 1))),
+                                            child: Row(
+                                              children: <Widget>[
+                                                Container()
+                                              ],
+                                            ))))
                                         .toList()))))
-                        .toList()));
-          });
+                            .toList()),
 
-//                              eventCards(context, maxHeightWanted,
-//                                  maxPossibleWidth, currentWeek),
-//                              currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, currentWeek)
+                    eventCards(context, maxHeightWanted, maxPossibleWidth, currentWeek),
+                    currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, currentWeek)
+                  ],
+                )
+               );
+          });
         });
   }
 
@@ -116,14 +120,14 @@ class Calendar extends StatelessWidget {
     return distanceDown;
   }
 
-  double moveIndicatorRightBasedOfConstraints(sTime, constraints) {
-    double column = constraints / 8;
-    var dayInWeek = sTime.weekday + 1;
-    if (dayInWeek == 8) {
-      dayInWeek = 1;
-    }
-    return (dayInWeek * column);
-  }
+//  double moveIndicatorRightBasedOfConstraints(sTime, constraints) {
+//    double column = constraints / 7;
+//    var dayInWeek = sTime.weekday + 1;
+//    if (dayInWeek == 8) {
+//      dayInWeek = 1;
+//    }
+//    return (dayInWeek * column);
+//  }
 
   double moveBoxDownBasedOfConstraints(event, constraints) {
     double height = constraints;
@@ -135,11 +139,11 @@ class Calendar extends StatelessWidget {
   }
 
   double moveBoxRightBasedOfConstraints(event, constraints) {
-    double column = constraints / 8;
+    double column = constraints / 7;
     var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
-    var dayInWeek = sTime.weekday + 1;
-    if (dayInWeek == 8) {
-      dayInWeek = 1;
+    var dayInWeek = sTime.weekday;
+    if (dayInWeek == 7) {
+      dayInWeek = 0;
     }
     return (dayInWeek * column);
   }

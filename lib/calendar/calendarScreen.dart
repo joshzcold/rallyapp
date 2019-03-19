@@ -67,13 +67,13 @@ class CalendarPage extends StatelessWidget {
             body: BlocBuilder(
                 bloc: _eventsBloc,
                 builder: (BuildContext context, state) {
-//                  if (state is EventsLoading) {
-//                    print('EventsLoading...');
-////              return Calendar();
-//                    return new Center(
-//                      child: CircularProgressIndicator(),
-//                    );
-//                  } else if (state is EventsLoaded) {
+                  if (state is EventsLoading) {
+                    print('EventsLoading...');
+//              return Calendar();
+                    return new Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is EventsLoaded) {
 
                   return LayoutBuilder(builder: (BuildContext context,
                       BoxConstraints viewportConstraints) {
@@ -91,12 +91,14 @@ class CalendarPage extends StatelessWidget {
                                 maxWidth: maxPossibleWidth),
                             child: Row(
                               children: <Widget>[
-                                ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                        minHeight: viewportConstraints.minHeight,
-                                        maxHeight: maxHeightWanted,
-                                        minWidth: viewportConstraints.minWidth,
-                                        maxWidth: 50),
+                                Container(
+                                  height: maxHeightWanted,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      border: Border(right: BorderSide(
+                                          color: Color(0xFFdadce0),
+                                          width: 1))
+                                    ),
                                     child: Stack(
                                       children: <Widget>[
                                         Positioned(
@@ -120,7 +122,7 @@ class CalendarPage extends StatelessWidget {
                               ],
                             )));
                   });
-//                  }
+                  }
                 }),
             floatingActionButton: Container(
               child: FloatingActionButton(
