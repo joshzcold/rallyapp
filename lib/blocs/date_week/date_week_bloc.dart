@@ -7,6 +7,7 @@ var currentDay = DateTime.now();
 var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
 var endOfWeek = Utils.lastDayOfWeek(currentDay).toLocal();
 var dateRange = Utils.daysInRange(startOfWeek, endOfWeek).toList();
+
 class DateWeekBloc extends Bloc<DateWeekEvent, DateWeekState>{
 
   @override

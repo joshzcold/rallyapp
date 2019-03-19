@@ -15,7 +15,6 @@ import 'package:rallyapp/calendar/upcoming/upcomingView.dart';
 import 'package:rallyapp/calendar/calendarScreen.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
 
-final headerButtonsColor = Colors.black;
 
 class MainScreen extends StatelessWidget {
   @override
