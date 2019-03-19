@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/date_week/date_week.dart';
 import 'package:rallyapp/calendar/week/weekView.dart';
-import 'package:date_utils/date_utils.dart';
 
 class CalendarPage extends StatelessWidget {
   @override
