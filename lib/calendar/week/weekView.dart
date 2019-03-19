@@ -308,7 +308,7 @@ class Calendar extends StatelessWidget {
         return Stack(
           children: <Widget>[
             Positioned(
-              top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted),
+              top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted) -10,
               left: 0,
 //              moveIndicatorRightBasedOfConstraints(cday, maxPossibleWidth),
               child: Row(
