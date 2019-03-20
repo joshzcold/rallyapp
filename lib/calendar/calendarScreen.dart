@@ -200,7 +200,7 @@ class CalendarPage extends StatelessWidget {
                 children: <Widget>[
                   Container(
                     color: Colors.green,
-                    width: maxPossibleWidth / 8 - 35,
+                    width: 50 / 2,
                     height: 3,
                   ),
                   Icon(
