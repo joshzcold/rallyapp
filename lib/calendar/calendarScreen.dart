@@ -52,9 +52,9 @@ class CalendarPage extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   );
                 } else if (state is EventsLoaded) {
-                  var maxHeightWanted =
-                      MediaQuery.of(context).size.height + 800;
+                  var maxHeightWanted = MediaQuery.of(context).size.height + 800;
                   var maxPossibleWidth = MediaQuery.of(context).size.width;
+                  var leftTimeColumnWidth = 50.0;
                   return Scaffold(
                       floatingActionButton: Container(
                         child: FloatingActionButton(
@@ -64,6 +64,7 @@ class CalendarPage extends StatelessWidget {
                       ),
                       body: ListView(
                         children: <Widget>[
+                          /// HEADER ABOVE CONTENT
                           StickyHeader(
                               header: new Container(
                                 decoration: BoxDecoration(
@@ -75,14 +76,41 @@ class CalendarPage extends StatelessWidget {
                                       )
                                     ]),
                                 height: 50.0,
-                                alignment: Alignment.centerLeft,
+                                child: Row(
+                                  children: <Widget>[
+                                    Container(
+                                      alignment: Alignment.center,
+                                      width: leftTimeColumnWidth,
+                                      child: new Text(
+                                        "${calculateMonthToAbbrv(startOfWeek.month)}",
+                                        style: TextStyle(
+                                            color: Colors.grey, fontSize: 20.0),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        child: Row(
+                                          children: week.week.map<Widget>((DateTime day) => Center(
+                                              child: calculateDayStyle(day, width)
+                                          )).toList(),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
+
+                              /// CONTENT BELOW HEADER:
+                              /// Calendar Grid
+                              /// Events
+                              /// Time Increments
+                              /// Time Indicator
                               content: Row(
                                 children: <Widget>[
                                   /// This is the Column on the left displaying time information
                                   Container(
                                       height: maxHeightWanted,
-                                      width: 50,
+                                      width: leftTimeColumnWidth,
                                       decoration: BoxDecoration(
                                           border: Border(
                                               right: BorderSide(
@@ -96,7 +124,7 @@ class CalendarPage extends StatelessWidget {
                                               top: maxHeightWanted / 24 / 2,
                                               child: Column(
                                                   children: displayHour.map((hour) => Container(
-                                                          width: 50,
+                                                          width: leftTimeColumnWidth,
                                                           height: maxHeightWanted / 24,
                                                           child: Row(
                                                             mainAxisAlignment:
@@ -134,14 +162,14 @@ class CalendarPage extends StatelessWidget {
                                                             ],
                                                           )))
                                                       .toList())),
-                                          currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, week)
+                                          currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, week, leftTimeColumnWidth)
                                         ],
                                       )),
 
                                   /// This is the Grid plus the calendar events.
                                   Container(
                                     height: maxHeightWanted,
-                                    width: maxPossibleWidth - 50,
+                                    width: maxPossibleWidth - leftTimeColumnWidth,
                                     child: Calendar(),
                                   )
                                 ],
@@ -162,7 +190,7 @@ class CalendarPage extends StatelessWidget {
   }
 
   currentTimeIndicator(BuildContext context, double maxHeightWanted,
-      double maxPossibleWidth, currentWeek) {
+      double maxPossibleWidth, currentWeek, leftTimeColumnWidth) {
     DateTime cday = DateTime.now();
     bool check = false;
     for (DateTime day in currentWeek.week) {
@@ -183,7 +211,7 @@ class CalendarPage extends StatelessWidget {
                 children: <Widget>[
                   Container(
                     color: Colors.green,
-                    width: 50 / 2,
+                    width: leftTimeColumnWidth / 2,
                     height: 3,
                   ),
                   Icon(
@@ -280,3 +308,26 @@ class CalendarPage extends StatelessWidget {
     }
   }
 }
+
+//AppBar(
+//                    leading: new Center(
+//                      child: Container(
+//                        decoration: BoxDecoration(
+//                          shape: BoxShape.circle,
+//                          color: Color.fromARGB(255, 255, 255, 255),
+//                        ),
+//                        width: width / 8,
+//                        child: new Text(
+//                          "${calculateMonthToAbbrv(startOfWeek.month)}",
+//                          style: TextStyle(
+//                              color: Colors.grey, fontSize: 20.0),
+//                        ),
+//                        alignment: FractionalOffset(0.5, 0.5),
+//                      ),
+//                    ),
+//                    backgroundColor: Colors.white,
+//                    actions: week.week
+//                        .map<Widget>((DateTime day) => Center(
+//                              child: calculateDayStyle(day, width)
+//                            ))
+//                        .toList())
