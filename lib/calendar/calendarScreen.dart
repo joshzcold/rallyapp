@@ -55,106 +55,99 @@ class CalendarPage extends StatelessWidget {
                   var maxHeightWanted =
                       MediaQuery.of(context).size.height + 800;
                   var maxPossibleWidth = MediaQuery.of(context).size.width;
-                  return ListView(
-                    children: <Widget>[
-                      StickyHeader(
-                          header: new Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [new BoxShadow(color: Colors.grey[500],
-                                blurRadius: 5.0,)]
-                            ),
-                            height: 50.0,
-                            alignment: Alignment.centerLeft,
-                          ),
-                          content: Row(
-                            children: <Widget>[
-                              /// This is the Column on the left displaying time information
-                              Container(
-                                  height: maxHeightWanted,
-                                  width: 50,
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          right: BorderSide(
-                                              color: Color(0xFFdadce0),
-                                              width: 1))),
-                                  child: Stack(
-                                    children: <Widget>[
-                                      /// These are the time increments
-                                      Positioned(
-                                          left: 5,
-                                          top: maxHeightWanted / 24 / 2,
-                                          child: Column(
-                                              children: displayHour
-                                                  .map((hour) => Container(
-                                                      width: 50,
-                                                      height:
-                                                          maxHeightWanted / 24,
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: <Widget>[
-                                                          RichText(
-                                                            text: TextSpan(
-                                                                style: DefaultTextStyle.of(
-                                                                        context)
-                                                                    .style,
-                                                                children: <
-                                                                    TextSpan>[
-                                                                  TextSpan(
-                                                                      text:
-                                                                          '$hour',
-                                                                      style: TextStyle(
-                                                                          color: Colors
-                                                                              .grey,
-                                                                          fontSize:
-                                                                              12)),
-                                                                ]),
-                                                          ),
-                                                        ],
-                                                      )))
-                                                  .toList())),
+                  return Scaffold(
+                      floatingActionButton: Container(
+                        child: FloatingActionButton(
+                            onPressed: () {},
+                            backgroundColor: Colors.blue,
+                            child: Icon(Icons.add)),
+                      ),
+                      body: ListView(
+                        children: <Widget>[
+                          StickyHeader(
+                              header: new Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      new BoxShadow(
+                                        color: Colors.grey[500],
+                                        blurRadius: 5.0,
+                                      )
+                                    ]),
+                                height: 50.0,
+                                alignment: Alignment.centerLeft,
+                              ),
+                              content: Row(
+                                children: <Widget>[
+                                  /// This is the Column on the left displaying time information
+                                  Container(
+                                      height: maxHeightWanted,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                          border: Border(
+                                              right: BorderSide(
+                                                  color: Color(0xFFdadce0),
+                                                  width: 1))),
+                                      child: Stack(
+                                        children: <Widget>[
+                                          /// These are the time increments
+                                          Positioned(
+                                              left: 5,
+                                              top: maxHeightWanted / 24 / 2,
+                                              child: Column(
+                                                  children: displayHour.map((hour) => Container(
+                                                          width: 50,
+                                                          height: maxHeightWanted / 24,
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment.spaceBetween,
+                                                            children: <Widget>[
+                                                              RichText(
+                                                                text: TextSpan(
+                                                                    style: DefaultTextStyle.of(context).style,
+                                                                    children: <TextSpan>[
+                                                                      TextSpan(
+                                                                          text: '$hour', style: TextStyle(color: Colors.grey,
+                                                                              fontSize: 12)),
+                                                                    ]),
+                                                              ),
+                                                            ],
+                                                          )))
+                                                      .toList())),
+                                          /// This creates the little ticks next to the Time increments
+                                          Positioned(
+                                              left: 35,
+                                              child: Column(
+                                                  children: timeHour
+                                                      .map((hour) => Container(
+                                                          width: 15,
+                                                          height: maxHeightWanted / 24,
+                                                          decoration: BoxDecoration(
+                                                              border: Border(
+                                                                  bottom: BorderSide(
+                                                                      color: Color(
+                                                                          0xFFdadce0),
+                                                                      width: 1))),
+                                                          child: Row(
+                                                            children: <Widget>[
+                                                              Container()
+                                                            ],
+                                                          )))
+                                                      .toList())),
+                                          currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, week)
+                                        ],
+                                      )),
 
-                                      /// This creates the little ticks next to the Time increments
-                                      Positioned(
-                                          left: 35,
-                                          child: Column(
-                                              children: timeHour
-                                                  .map((hour) => Container(
-                                                      width: 15,
-                                                      height:
-                                                          maxHeightWanted / 24,
-                                                      decoration: BoxDecoration(
-                                                          border: Border(
-                                                              bottom: BorderSide(
-                                                                  color: Color(
-                                                                      0xFFdadce0),
-                                                                  width: 1))),
-                                                      child: Row(
-                                                        children: <Widget>[
-                                                          Container()
-                                                        ],
-                                                      )))
-                                                  .toList())),
-                                      currentTimeIndicator(
-                                          context,
-                                          maxHeightWanted,
-                                          maxPossibleWidth,
-                                          week)
-                                    ],
-                                  )),
-
-                              /// This is the Grid plus the calendar events.
+                                  /// This is the Grid plus the calendar events.
                                   Container(
                                     height: maxHeightWanted,
-                                    width: maxPossibleWidth -50,
+                                    width: maxPossibleWidth - 50,
                                     child: Calendar(),
                                   )
-                            ],
-                          ))
-                    ],
-                  );
+                                ],
+                              ))
+                        ],
+                      ));
                 }
               });
         });
@@ -287,10 +280,3 @@ class CalendarPage extends StatelessWidget {
     }
   }
 }
-
-//floatingActionButton: Container(
-//              child: FloatingActionButton(
-//                  onPressed: () {},
-//                  backgroundColor: Colors.blue,
-//                  child: Icon(Icons.add)),
-//            ),
