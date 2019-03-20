@@ -30,6 +30,8 @@ List<String> displayHour = [
   "11PM"
 ];
 
+
+
 class CalendarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -91,6 +93,7 @@ class CalendarPage extends StatelessWidget {
                                 maxWidth: maxPossibleWidth),
                             child: Row(
                               children: <Widget>[
+                                /// This is the Column on the left displaying time information
                                 Container(
                                   height: maxHeightWanted,
                                     width: 50,
@@ -101,24 +104,54 @@ class CalendarPage extends StatelessWidget {
                                     ),
                                     child: Stack(
                                       children: <Widget>[
+                                        /// These are the time increments
                                         Positioned(
-                                          top: maxHeightWanted/24 - 8,
+                                          left: 5,
+                                          top: maxHeightWanted/24/2,
                                           child: Column(
                                               children: displayHour.map(
                                                     (hour) => Container(
+                                                      width: 50,
                                                         height: maxHeightWanted/24,
-                                                        child: RichText(
-                                                          text: TextSpan(
-                                                            style: DefaultTextStyle.of(context).style,
-                                                            children: <TextSpan>[
-                                                              TextSpan(text: '$hour', style: TextStyle(
-                                                                  color: Colors.grey, fontSize: 12)),
-                                                            ]),
-                                                        ))).toList())
+                                                        child:Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: <Widget>[
+                                                          RichText(
+                                                            text: TextSpan(
+                                                                style: DefaultTextStyle.of(context).style,
+                                                                children: <TextSpan>[
+                                                                  TextSpan(text: '$hour', style: TextStyle(
+                                                                      color: Colors.grey, fontSize: 12)),
+                                                                ]),
+                                                          ),
+                                                        ],
+                                                      )
+                                                        )).toList())
                                         ),
+                                        /// This creates the little ticks next to the Time increments
+                                        Positioned(
+                                          left: 35,
+                                            child: Column(
+                                            children: timeHour
+                                                .map((hour) => Container(
+                                                    width: 15,
+                                                    height: maxHeightWanted/24,
+                                                    decoration: BoxDecoration(
+                                                        border: Border(
+                                                            bottom: BorderSide(
+                                                                color: Color(
+                                                                    0xFFdadce0),
+                                                                width: 1))),
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Container()
+                                                      ],
+                                                    )))
+                                                .toList())),
                                         currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, week)
                                       ],
                                     )),
+                                  /// This is the Grid plus the calendar events.
                                   Calendar(),
                               ],
                             )));
