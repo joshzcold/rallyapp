@@ -54,48 +54,38 @@ class Calendar extends StatelessWidget {
                     maxHeight: maxHeightWanted,
                     minWidth: viewportConstraints.minWidth,
                     maxWidth: maxPossibleWidth),
-                child: Column(children: <Widget>[
-                  Container(
-                    color: Colors.red,
-                    height: 80,
-                    width: maxPossibleWidth,
-                  ),
-                  Container(
-                    height: maxHeightWanted - 80,
-                    width: maxPossibleWidth,
-                    child: Stack(
-                    children: <Widget>[
-                      Row(
-                          children: columns
-                              .map((columns) => Expanded(
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          right: BorderSide(
-                                              color: Color(0xFFdadce0),
-                                              width: 1))),
-                                  child: Column(
-                                      children: timeHour
-                                          .map((hour) => Expanded(
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      bottom: BorderSide(
-                                                          color: Color(
-                                                              0xFFdadce0),
-                                                          width: 1))),
-                                              child: Row(
-                                                children: <Widget>[
-                                                  Container()
-                                                ],
-                                              ))))
-                                          .toList()))))
-                              .toList()),
+                child: Stack(
+                  children: <Widget>[
+                    Row(
+                        children: columns
+                            .map((columns) => Expanded(
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        right: BorderSide(
+                                            color: Color(0xFFdadce0),
+                                            width: 1))),
+                                child: Column(
+                                    children: timeHour
+                                        .map((hour) => Expanded(
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border(
+                                                    bottom: BorderSide(
+                                                        color: Color(
+                                                            0xFFdadce0),
+                                                        width: 1))),
+                                            child: Row(
+                                              children: <Widget>[
+                                                Container()
+                                              ],
+                                            ))))
+                                        .toList()))))
+                            .toList()),
 
-                      eventCards(context, maxHeightWanted, maxPossibleWidth, currentWeek),
-                    ],
-                  ),)
-                ],)
+                    eventCards(context, maxHeightWanted, maxPossibleWidth, currentWeek),
+                  ],
+                )
                );
           });
         });
