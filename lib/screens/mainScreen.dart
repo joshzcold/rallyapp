@@ -1,10 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/app/indexBloc.dart';
 import 'package:rallyapp/calendar/calendarScreen.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
-
 
 class MainScreen extends StatelessWidget {
   @override
@@ -24,6 +22,12 @@ class MainScreen extends StatelessWidget {
           }
         },
       ),
+      appBar: PreferredSize(
+          child: AppBar(
+            elevation: 0.0,
+              backgroundColor: Colors.white,
+              ),
+          preferredSize: Size.fromHeight(1)),
       bottomNavigationBar: BlocBuilder(
           bloc: _calendarEventIndex,
           builder: (BuildContext context, int index) {
@@ -36,10 +40,10 @@ class MainScreen extends StatelessWidget {
                 ],
                 currentIndex: index,
                 fixedColor: Colors.blue,
-                onTap: (index){
-                  if(index == 0){
+                onTap: (index) {
+                  if (index == 0) {
                     _calendarEventIndex.dispatch(CalendarIndexEvent.week);
-                  } else if(index == 1){
+                  } else if (index == 1) {
                     _calendarEventIndex.dispatch(CalendarIndexEvent.friends);
                   }
                 });
@@ -47,3 +51,5 @@ class MainScreen extends StatelessWidget {
     );
   }
 }
+
+

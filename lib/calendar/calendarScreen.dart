@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/date_week/date_week.dart';
 import 'package:rallyapp/calendar/week/weekView.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 List<String> displayHour = [
   "1AM",
@@ -30,8 +31,6 @@ List<String> displayHour = [
   "11PM"
 ];
 
-
-
 class CalendarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -43,131 +42,123 @@ class CalendarPage extends StatelessWidget {
         builder: (BuildContext context, week) {
           DateTime startOfWeek = week.week.first;
           double width = MediaQuery.of(context).size.width;
-          return Scaffold(
-            appBar: PreferredSize(
-                child: AppBar(
-                    leading: new Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color.fromARGB(255, 255, 255, 255),
-                        ),
-                        width: width / 8,
-                        child: new Text(
-                          "${calculateMonthToAbbrv(startOfWeek.month)}",
-                          style: TextStyle(color: Colors.grey, fontSize: 20.0),
-                        ),
-                        alignment: FractionalOffset(0.5, 0.5),
-                      ),
-                    ),
-                    backgroundColor: Colors.white,
-                    actions: week.week
-                        .map<Widget>((DateTime day) =>
-                            Center(child: calculateDayStyle(day, width)))
-                        .toList()),
-                preferredSize: Size.fromHeight(50)),
-            body: BlocBuilder(
-                bloc: _eventsBloc,
-                builder: (BuildContext context, state) {
-                  if (state is EventsLoading) {
-                    print('EventsLoading...');
+          return BlocBuilder(
+              bloc: _eventsBloc,
+              builder: (BuildContext context, state) {
+                if (state is EventsLoading) {
+                  print('EventsLoading...');
 //              return Calendar();
-                    return new Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (state is EventsLoaded) {
-
-                  return LayoutBuilder(builder: (BuildContext context,
-                      BoxConstraints viewportConstraints) {
-                    // You can change up this value later to increase or decrease the height
-                    // of the week grid.
-                    double maxHeightWanted =
-                        viewportConstraints.maxHeight + 800;
-                    double maxPossibleWidth = viewportConstraints.maxWidth;
-                    return SingleChildScrollView(
-                        child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                                minHeight: viewportConstraints.minHeight,
-                                maxHeight: maxHeightWanted,
-                                minWidth: viewportConstraints.minWidth,
-                                maxWidth: maxPossibleWidth),
-                            child: Row(
-                              children: <Widget>[
-                                /// This is the Column on the left displaying time information
-                                Container(
+                  return new Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is EventsLoaded) {
+                  var maxHeightWanted =
+                      MediaQuery.of(context).size.height + 800;
+                  var maxPossibleWidth = MediaQuery.of(context).size.width;
+                  return ListView(
+                    children: <Widget>[
+                      StickyHeader(
+                          header: new Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [new BoxShadow(color: Colors.grey[500],
+                                blurRadius: 5.0,)]
+                            ),
+                            height: 50.0,
+                            alignment: Alignment.centerLeft,
+                          ),
+                          content: Row(
+                            children: <Widget>[
+                              /// This is the Column on the left displaying time information
+                              Container(
                                   height: maxHeightWanted,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                      border: Border(right: BorderSide(
-                                          color: Color(0xFFdadce0),
-                                          width: 1))
-                                    ),
-                                    child: Stack(
-                                      children: <Widget>[
-                                        /// These are the time increments
-                                        Positioned(
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          right: BorderSide(
+                                              color: Color(0xFFdadce0),
+                                              width: 1))),
+                                  child: Stack(
+                                    children: <Widget>[
+                                      /// These are the time increments
+                                      Positioned(
                                           left: 5,
-                                          top: maxHeightWanted/24/2,
+                                          top: maxHeightWanted / 24 / 2,
                                           child: Column(
-                                              children: displayHour.map(
-                                                    (hour) => Container(
+                                              children: displayHour
+                                                  .map((hour) => Container(
                                                       width: 50,
-                                                        height: maxHeightWanted/24,
-                                                        child:Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      height:
+                                                          maxHeightWanted / 24,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                         children: <Widget>[
                                                           RichText(
                                                             text: TextSpan(
-                                                                style: DefaultTextStyle.of(context).style,
-                                                                children: <TextSpan>[
-                                                                  TextSpan(text: '$hour', style: TextStyle(
-                                                                      color: Colors.grey, fontSize: 12)),
+                                                                style: DefaultTextStyle.of(
+                                                                        context)
+                                                                    .style,
+                                                                children: <
+                                                                    TextSpan>[
+                                                                  TextSpan(
+                                                                      text:
+                                                                          '$hour',
+                                                                      style: TextStyle(
+                                                                          color: Colors
+                                                                              .grey,
+                                                                          fontSize:
+                                                                              12)),
                                                                 ]),
                                                           ),
                                                         ],
-                                                      )
-                                                        )).toList())
-                                        ),
-                                        /// This creates the little ticks next to the Time increments
-                                        Positioned(
+                                                      )))
+                                                  .toList())),
+
+                                      /// This creates the little ticks next to the Time increments
+                                      Positioned(
                                           left: 35,
-                                            child: Column(
-                                            children: timeHour
-                                                .map((hour) => Container(
-                                                    width: 15,
-                                                    height: maxHeightWanted/24,
-                                                    decoration: BoxDecoration(
-                                                        border: Border(
-                                                            bottom: BorderSide(
-                                                                color: Color(
-                                                                    0xFFdadce0),
-                                                                width: 1))),
-                                                    child: Row(
-                                                      children: <Widget>[
-                                                        Container()
-                                                      ],
-                                                    )))
-                                                .toList())),
-                                        currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, week)
-                                      ],
-                                    )),
-                                  /// This is the Grid plus the calendar events.
-                                  Calendar(),
-                              ],
-                            )));
-                  });
-                  }
-                }),
-            floatingActionButton: Container(
-              child: FloatingActionButton(
-                  onPressed: () {},
-                  backgroundColor: Colors.blue,
-                  child: Icon(Icons.add)),
-            ),
-          );
+                                          child: Column(
+                                              children: timeHour
+                                                  .map((hour) => Container(
+                                                      width: 15,
+                                                      height:
+                                                          maxHeightWanted / 24,
+                                                      decoration: BoxDecoration(
+                                                          border: Border(
+                                                              bottom: BorderSide(
+                                                                  color: Color(
+                                                                      0xFFdadce0),
+                                                                  width: 1))),
+                                                      child: Row(
+                                                        children: <Widget>[
+                                                          Container()
+                                                        ],
+                                                      )))
+                                                  .toList())),
+                                      currentTimeIndicator(
+                                          context,
+                                          maxHeightWanted,
+                                          maxPossibleWidth,
+                                          week)
+                                    ],
+                                  )),
+
+                              /// This is the Grid plus the calendar events.
+                                  Container(
+                                    height: maxHeightWanted,
+                                    width: maxPossibleWidth -50,
+                                    child: Calendar(),
+                                  )
+                            ],
+                          ))
+                    ],
+                  );
+                }
+              });
         });
   }
-
 
   double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
     double height = constraints;
@@ -176,7 +167,6 @@ class CalendarPage extends StatelessWidget {
     double distanceDown = hoursFromMidnight * hour;
     return distanceDown;
   }
-
 
   currentTimeIndicator(BuildContext context, double maxHeightWanted,
       double maxPossibleWidth, currentWeek) {
@@ -297,3 +287,10 @@ class CalendarPage extends StatelessWidget {
     }
   }
 }
+
+//floatingActionButton: Container(
+//              child: FloatingActionButton(
+//                  onPressed: () {},
+//                  backgroundColor: Colors.blue,
+//                  child: Icon(Icons.add)),
+//            ),
