@@ -93,12 +93,54 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
                                     ))))
                             .toList()),
                     eventCards(context, maxHeightWanted, maxPossibleWidth, day),
+                    currentTimeIndicator(context, maxHeightWanted, day)
                   ],
                 ),
               ),
             );
           });
 }
+
+currentTimeIndicator(BuildContext context, double maxHeightWanted,day) {
+  DateTime cday = DateTime.now();
+  String value = day.year.toString() + day.month.toString() + day.day.toString();
+  String today = cday.year.toString() + cday.month.toString() + cday.day.toString();
+    if (today == value) {
+      return Stack(
+        children: <Widget>[
+          Positioned(
+            top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted) -
+                10,
+            left: 0,
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                Container(
+                  color: Colors.green,
+                  width: 50,
+                  height: 3,
+                ),
+              ],
+            ),
+          )
+        ],
+      );
+    } else{
+      return Container();
+    }
+}
+
+double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
+  double height = constraints;
+  double hour = height / 24;
+  var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
+  double distanceDown = hoursFromMidnight * hour;
+  return distanceDown;
+}
+
   calculateDayStyle(DateTime day, width) {
     DateTime cday = DateTime.now();
     String value = day.year.toString() + day.month.toString() + day.day.toString();

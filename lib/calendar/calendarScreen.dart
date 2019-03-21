@@ -206,12 +206,6 @@ class CalendarPage extends StatelessWidget {
                                                             ],
                                                           )))
                                                           .toList())),
-                                              currentTimeIndicator(
-                                                  context,
-                                                  maxHeightWanted,
-                                                  maxPossibleWidth,
-                                                  currentWeek,
-                                                  leftTimeColumnWidth)
                                             ],
                                           )))
                                 ],
@@ -245,54 +239,8 @@ class CalendarPage extends StatelessWidget {
 
   }
 
-  double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
-    double height = constraints;
-    double hour = height / 24;
-    var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
-    double distanceDown = hoursFromMidnight * hour;
-    return distanceDown;
-  }
 
-  currentTimeIndicator(BuildContext context, double maxHeightWanted,
-      double maxPossibleWidth, currentWeek, leftTimeColumnWidth) {
-    DateTime cday = DateTime.now();
-    bool check = false;
-    for (DateTime day in currentWeek) {
-      String value =
-          day.year.toString() + day.month.toString() + day.day.toString();
-      String today =
-          cday.year.toString() + cday.month.toString() + cday.day.toString();
-      if (today == value) {
-        check = true;
-        return Stack(
-          children: <Widget>[
-            Positioned(
-              top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted) -
-                  10,
-              left: 0,
-//              moveIndicatorRightBasedOfConstraints(cday, maxPossibleWidth),
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    color: Colors.green,
-                    width: leftTimeColumnWidth / 2,
-                    height: 3,
-                  ),
-                  Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  ),
-                ],
-              ),
-            )
-          ],
-        );
-      }
-    }
-    if (check == false) {
-      return Container();
-    }
-  }
+
 
   String calculateMonthToAbbrv(int month) {
     var result = "";
