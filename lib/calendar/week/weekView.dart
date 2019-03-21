@@ -142,7 +142,7 @@ class Calendar extends StatelessWidget {
           shape: BoxShape.circle,
           color: Color.fromARGB(255, 255, 255, 255),
         ),
-        width: width / 8,
+        width: width / 7,
         child: new Text(
           "${day.day}",
           style: TextStyle(color: Colors.grey, fontSize: 20.0),

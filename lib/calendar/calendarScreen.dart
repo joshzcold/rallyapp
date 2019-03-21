@@ -177,16 +177,39 @@ class CalendarPage extends StatelessWidget {
                               ),
                             ),
 
-
-
                             Container(
-                              width: maxPossibleWidth -leftTimeColumnWidth,
-                              child: ListView(
+                              width: maxPossibleWidth - leftTimeColumnWidth,
+                              child: PageView(
+                                scrollDirection: Axis.horizontal,
                                 children: <Widget>[
-                                    Calendar(),
+                                  Container(
+                                    width: maxPossibleWidth -leftTimeColumnWidth,
+                                    child: ListView(
+                                      children: <Widget>[
+                                        Calendar(),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    width: maxPossibleWidth -leftTimeColumnWidth,
+                                    child: ListView(
+                                      children: <Widget>[
+                                        Calendar(),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    width: maxPossibleWidth -leftTimeColumnWidth,
+                                    child: ListView(
+                                      children: <Widget>[
+                                        Calendar(),
+                                      ],
+                                    ),
+                                  )
                                 ],
                               ),
                             )
+
                             /// This is the Grid plus the calendar events.
                           ],
                         ),
