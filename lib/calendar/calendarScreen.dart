@@ -41,7 +41,6 @@ class CalendarPage extends StatelessWidget {
         bloc: _dateWeekBloc,
         builder: (BuildContext context, week) {
           DateTime startOfWeek = week.week.first;
-          double width = MediaQuery.of(context).size.width;
           return BlocBuilder(
               bloc: _eventsBloc,
               builder: (BuildContext context, state) {
@@ -52,7 +51,8 @@ class CalendarPage extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   );
                 } else if (state is EventsLoaded) {
-                  var maxHeightWanted = MediaQuery.of(context).size.height + 800;
+                  var maxHeightWanted =
+                      MediaQuery.of(context).size.height + 800;
                   var maxPossibleWidth = MediaQuery.of(context).size.width;
                   var leftTimeColumnWidth = 50.0;
                   return Scaffold(
@@ -62,120 +62,135 @@ class CalendarPage extends StatelessWidget {
                             backgroundColor: Colors.blue,
                             child: Icon(Icons.add)),
                       ),
-                      body: ListView(
-                        children: <Widget>[
-                          /// HEADER ABOVE CONTENT
-                          StickyHeader(
-                              header: new Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      new BoxShadow(
-                                        color: Colors.grey[500],
-                                        blurRadius: 5.0,
-                                      )
-                                    ]),
-                                height: 50.0,
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      alignment: Alignment.center,
-                                      width: leftTimeColumnWidth,
-                                      child: new Text(
-                                        "${calculateMonthToAbbrv(startOfWeek.month)}",
-                                        style: TextStyle(
-                                            color: Colors.grey, fontSize: 20.0),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Container(
+                      body: Row(
+                          children: <Widget>[
+                            Container(
+                              width: 50,
+                              child: ListView(
+                                children: <Widget>[
+                                  StickyHeader(
+                                      header: new Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              new BoxShadow(
+                                                color: Colors.grey[500],
+                                                blurRadius: 5.0,
+                                              )
+                                            ]),
+                                        height: 50.0,
                                         child: Row(
-                                          children: week.week.map<Widget>((DateTime day) => Center(
-                                              child: calculateDayStyle(day, width)
-                                          )).toList(),
+                                          children: <Widget>[
+                                            Container(
+                                              alignment: Alignment.center,
+                                              width: leftTimeColumnWidth,
+                                              child: new Text(
+                                                "${calculateMonthToAbbrv(startOfWeek.month)}",
+                                                style: TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 20.0),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    )
-                                  ],
-                                ),
-                              ),
 
-                              /// CONTENT BELOW HEADER:
-                              /// Calendar Grid
-                              /// Events
-                              /// Time Increments
-                              /// Time Indicator
-                              content: Row(
-                                children: <Widget>[
-                                  /// This is the Column on the left displaying time information
-                                  Container(
-                                      height: maxHeightWanted,
-                                      width: leftTimeColumnWidth,
-                                      decoration: BoxDecoration(
-                                          border: Border(
-                                              right: BorderSide(
-                                                  color: Color(0xFFdadce0),
-                                                  width: 1))),
-                                      child: Stack(
-                                        children: <Widget>[
-                                          /// These are the time increments
-                                          Positioned(
-                                              left: 5,
-                                              top: maxHeightWanted / 24 / 2,
-                                              child: Column(
-                                                  children: displayHour.map((hour) => Container(
-                                                          width: leftTimeColumnWidth,
-                                                          height: maxHeightWanted / 24,
+                                      /// This is the Column on the left displaying time information
+                                      content: Container(
+                                          height: maxHeightWanted,
+                                          width: leftTimeColumnWidth,
+                                          decoration: BoxDecoration(
+                                              border: Border(
+                                                  right: BorderSide(
+                                                      color: Color(0xFFdadce0),
+                                                      width: 1))),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              /// These are the time increments
+                                              Positioned(
+                                                  left: 5,
+                                                  top: maxHeightWanted / 24 / 2,
+                                                  child: Column(
+                                                      children: displayHour
+                                                          .map((hour) => Container(
+                                                          width:
+                                                          leftTimeColumnWidth,
+                                                          height:
+                                                          maxHeightWanted /
+                                                              24,
                                                           child: Row(
                                                             mainAxisAlignment:
-                                                                MainAxisAlignment.spaceBetween,
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                             children: <Widget>[
                                                               RichText(
                                                                 text: TextSpan(
-                                                                    style: DefaultTextStyle.of(context).style,
-                                                                    children: <TextSpan>[
+                                                                    style: DefaultTextStyle.of(
+                                                                        context)
+                                                                        .style,
+                                                                    children: <
+                                                                        TextSpan>[
                                                                       TextSpan(
-                                                                          text: '$hour', style: TextStyle(color: Colors.grey,
+                                                                          text:
+                                                                          '$hour',
+                                                                          style: TextStyle(
+                                                                              color: Colors.grey,
                                                                               fontSize: 12)),
                                                                     ]),
                                                               ),
                                                             ],
                                                           )))
-                                                      .toList())),
-                                          /// This creates the little ticks next to the Time increments
-                                          Positioned(
-                                              left: 35,
-                                              child: Column(
-                                                  children: timeHour
-                                                      .map((hour) => Container(
+                                                          .toList())),
+
+                                              /// This creates the little ticks next to the Time increments
+                                              Positioned(
+                                                  left: 35,
+                                                  child: Column(
+                                                      children: timeHour
+                                                          .map((hour) => Container(
                                                           width: 15,
-                                                          height: maxHeightWanted / 24,
+                                                          height:
+                                                          maxHeightWanted /
+                                                              24,
                                                           decoration: BoxDecoration(
                                                               border: Border(
                                                                   bottom: BorderSide(
                                                                       color: Color(
                                                                           0xFFdadce0),
-                                                                      width: 1))),
+                                                                      width:
+                                                                      1))),
                                                           child: Row(
                                                             children: <Widget>[
                                                               Container()
                                                             ],
                                                           )))
-                                                      .toList())),
-                                          currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, week, leftTimeColumnWidth)
-                                        ],
-                                      )),
-
-                                  /// This is the Grid plus the calendar events.
-                                  Container(
-                                    height: maxHeightWanted,
-                                    width: maxPossibleWidth - leftTimeColumnWidth,
-                                    child: Calendar(),
-                                  )
+                                                          .toList())),
+                                              currentTimeIndicator(
+                                                  context,
+                                                  maxHeightWanted,
+                                                  maxPossibleWidth,
+                                                  week,
+                                                  leftTimeColumnWidth)
+                                            ],
+                                          )))
                                 ],
-                              ))
-                        ],
-                      ));
+                              ),
+                            ),
+
+
+
+                            Container(
+                              width: maxPossibleWidth -leftTimeColumnWidth,
+                              child: ListView(
+                                children: <Widget>[
+                                    Calendar(),
+                                ],
+                              ),
+                            )
+                            /// This is the Grid plus the calendar events.
+                          ],
+                        ),
+                      );
                 }
               });
         });
@@ -271,41 +286,6 @@ class CalendarPage extends StatelessWidget {
         break;
     }
     return result;
-  }
-
-  calculateDayStyle(DateTime day, width) {
-    DateTime cday = DateTime.now();
-    String value =
-        day.year.toString() + day.month.toString() + day.day.toString();
-    String today =
-        cday.year.toString() + cday.month.toString() + cday.day.toString();
-    if (value == today) {
-      return Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color.fromARGB(255, 150, 150, 150),
-        ),
-        width: width / 8,
-        child: new Text(
-          "${day.day}",
-          style: TextStyle(color: Colors.white, fontSize: 20.0),
-        ),
-        alignment: FractionalOffset(0.5, 0.5),
-      );
-    } else {
-      return Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color.fromARGB(255, 255, 255, 255),
-        ),
-        width: width / 8,
-        child: new Text(
-          "${day.day}",
-          style: TextStyle(color: Colors.grey, fontSize: 20.0),
-        ),
-        alignment: FractionalOffset(0.5, 0.5),
-      );
-    }
   }
 }
 

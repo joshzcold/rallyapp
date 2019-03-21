@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/date_week/date_week.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 var currentHour = new DateTime.now().hour;
 
@@ -46,49 +47,109 @@ class Calendar extends StatelessWidget {
               (BuildContext context, BoxConstraints viewportConstraints) {
             // You can change up this value later to increase or decrease the height
             // of the week grid.
-            double maxHeightWanted = viewportConstraints.maxHeight;
-            double maxPossibleWidth = MediaQuery.of(context).size.width - 50;
-            return ConstrainedBox(
-                constraints: BoxConstraints(
-                    minHeight: viewportConstraints.minHeight,
-                    maxHeight: maxHeightWanted,
-                    minWidth: viewportConstraints.minWidth,
-                    maxWidth: maxPossibleWidth),
-                child: Stack(
-                  children: <Widget>[
-                    Row(
-                        children: columns
-                            .map((columns) => Expanded(
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        right: BorderSide(
-                                            color: Color(0xFFdadce0),
-                                            width: 1))),
-                                child: Column(
-                                    children: timeHour
-                                        .map((hour) => Expanded(
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    bottom: BorderSide(
-                                                        color: Color(
-                                                            0xFFdadce0),
-                                                        width: 1))),
-                                            child: Row(
-                                              children: <Widget>[
-                                                Container()
-                                              ],
-                                            ))))
-                                        .toList()))))
-                            .toList()),
-
-                    eventCards(context, maxHeightWanted, maxPossibleWidth, currentWeek),
-                  ],
-                )
-               );
+            // If you change the +800 after maxHeightWanted, change that value in
+            // the parent widget as well.
+            double maxHeightWanted = MediaQuery.of(context).size.height + 800;
+            double maxPossibleWidth = viewportConstraints.maxWidth;
+            return StickyHeader(
+                header: new Container(
+                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                    new BoxShadow(
+                      color: Colors.grey[500],
+                      blurRadius: 5.0,
+                    )
+                  ]),
+                  height: 50.0,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(
+                          child: Row(
+                            children: currentWeek.week
+                                .map<Widget>((DateTime day) => Center(
+                                child:
+                                calculateDayStyle(day, maxPossibleWidth)))
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                content: Container(
+                  height: maxHeightWanted,
+                  width: maxPossibleWidth,
+                  child: Stack(
+                        children: <Widget>[
+                          Row(
+                              children: columns
+                                  .map((columns) => Expanded(
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          border: Border(
+                                              right: BorderSide(
+                                                  color: Color(0xFFdadce0),
+                                                  width: 1))),
+                                      child: Column(
+                                          children: timeHour
+                                              .map((hour) => Expanded(
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          bottom: BorderSide(
+                                                              color: Color(
+                                                                  0xFFdadce0),
+                                                              width: 1))),
+                                                  child: Row(
+                                                    children: <Widget>[
+                                                      Container()
+                                                    ],
+                                                  ))))
+                                              .toList()))))
+                                  .toList()),
+//                          eventCards(context, maxHeightWanted, maxPossibleWidth,
+//                              currentWeek),
+                        ],
+                      ),
+                ),
+              );
           });
         });
+  }
+
+  calculateDayStyle(DateTime day, width) {
+    DateTime cday = DateTime.now();
+    String value =
+        day.year.toString() + day.month.toString() + day.day.toString();
+    String today =
+        cday.year.toString() + cday.month.toString() + cday.day.toString();
+    if (value == today) {
+      return Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color.fromARGB(255, 150, 150, 150),
+        ),
+        width: width / 7,
+        child: new Text(
+          "${day.day}",
+          style: TextStyle(color: Colors.white, fontSize: 20.0),
+        ),
+        alignment: FractionalOffset(0.5, 0.5),
+      );
+    } else {
+      return Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color.fromARGB(255, 255, 255, 255),
+        ),
+        width: width / 8,
+        child: new Text(
+          "${day.day}",
+          style: TextStyle(color: Colors.grey, fontSize: 20.0),
+        ),
+        alignment: FractionalOffset(0.5, 0.5),
+      );
+    }
   }
 
   double getHeightByTime(event, constraints) {
@@ -110,7 +171,6 @@ class Calendar extends StatelessWidget {
     double reducedWidth = weekWidth - 0;
     return reducedWidth;
   }
-
 
   double moveBoxDownBasedOfConstraints(event, constraints) {
     double height = constraints;
@@ -250,8 +310,6 @@ class Calendar extends StatelessWidget {
                   .toList());
         });
   }
-
-
 }
 
 class ClipLeftMostColumn extends CustomClipper<Path> {
