@@ -32,6 +32,8 @@ List<String> displayHour = [
   "11PM"
 ];
 
+double columnWidths = 50;
+
 class CalendarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -46,31 +48,15 @@ class CalendarPage extends StatelessWidget {
     var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
     var endOfWeek = Utils.lastDayOfWeek(currentDay).toLocal();
     var currentWeek = Utils.daysInRange(startOfWeek, endOfWeek).toList();
-    var startOfLastWeek = startOfWeek.subtract(Duration(days: 7));
 
     Widget forwardList = SliverList(
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-        var week = [];
-        if(index == 0){
-           week = currentWeek;
-           // if statement accounts for daylight savings messing with daysInRage
-           if(week.length == 8){
-             week.removeLast();
-           }
-        } else{
-          var startOfNextWeek = startOfWeek.add(Duration(days: index*7));
-          var endOfNextWeek = Utils.lastDayOfWeek(startOfNextWeek);
-           week = Utils.daysInRange(startOfNextWeek, endOfNextWeek).toList();
-          // if statement accounts for daylight savings messing with daysInRage
-          if(week.length == 8){
-            week.removeLast();
-          }
-        }
+        var day = currentDay.add(Duration(days: index));
         return Container(
-          width: maxPossibleWidth -leftTimeColumnWidth,
+          width: columnWidths,
           child: ListView(
             children: <Widget>[
-              calendar(context, week),
+              calendar(context, day),
             ],
           ),
         );
@@ -80,29 +66,17 @@ class CalendarPage extends StatelessWidget {
 
     Widget reverseList = SliverList(
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-        var week = [];
+        var day;
         if(index == 0){
-          var startOfPreviousWeek = startOfWeek.subtract(Duration(days: 7));
-          var endOfPreviousWeek = Utils.lastDayOfWeek(startOfPreviousWeek);
-          week = Utils.daysInRange(startOfPreviousWeek, endOfPreviousWeek).toList();
-          // if statement accounts for daylight savings messing with daysInRage
-          if(week.length == 8){
-            week.removeLast();
-          }
+           day = currentDay.subtract(Duration(days: 1));
         } else{
-          var startOfPreviousWeek = startOfLastWeek.subtract(Duration(days: index*7));
-          var endOfPreviousWeek = Utils.lastDayOfWeek(startOfPreviousWeek).toLocal();
-          week = Utils.daysInRange(startOfPreviousWeek, endOfPreviousWeek).toList();
-          // if statement accounts for daylight savings messing with daysInRage
-          if(week.length == 8){
-            week.removeLast();
-          }
+           day = currentDay.subtract(Duration(days: index + 1));
         }
         return Container(
-          width: maxPossibleWidth -leftTimeColumnWidth,
+          width: columnWidths,
           child: ListView(
             children: <Widget>[
-              calendar(context, week),
+              calendar(context, day),
             ],
           ),
         );
@@ -364,25 +338,3 @@ class CalendarPage extends StatelessWidget {
   }
 }
 
-//AppBar(
-//                    leading: new Center(
-//                      child: Container(
-//                        decoration: BoxDecoration(
-//                          shape: BoxShape.circle,
-//                          color: Color.fromARGB(255, 255, 255, 255),
-//                        ),
-//                        width: width / 8,
-//                        child: new Text(
-//                          "${calculateMonthToAbbrv(startOfWeek.month)}",
-//                          style: TextStyle(
-//                              color: Colors.grey, fontSize: 20.0),
-//                        ),
-//                        alignment: FractionalOffset(0.5, 0.5),
-//                      ),
-//                    ),
-//                    backgroundColor: Colors.white,
-//                    actions: week.week
-//                        .map<Widget>((DateTime day) => Center(
-//                              child: calculateDayStyle(day, width)
-//                            ))
-//                        .toList())

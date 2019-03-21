@@ -35,7 +35,8 @@ List<int> timeHour = [
 
 List<int> columns = [1, 2, 3, 4, 5, 6, 7];
 
- calendar(BuildContext context, week){
+
+ calendar(BuildContext context, day){
 
     return LayoutBuilder(builder:
               (BuildContext context, BoxConstraints viewportConstraints) {
@@ -56,59 +57,42 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
                     blurRadius: 5.0,
                   )
                 ]),
-                height: 50.0,
+                height: 50,
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: Container(
-                        child: Row(
-                          children: week
-                              .map<Widget>((DateTime day) =>
-                              Center(
-                                  child:
-                                  calculateDayStyle(day, maxPossibleWidth)))
-                              .toList(),
-                        ),
+                      child:Center(child:calculateDayStyle(day, maxPossibleWidth)),
+
                       ),
-                    ),
                   ],
                 ),
               ),
               content: Container(
                 height: maxHeightWanted,
-                width: maxPossibleWidth,
                 child: Stack(
                   children: <Widget>[
-                    Row(
-                        children: columns
-                            .map((columns) =>
+                    Column(
+                        children: timeHour
+                            .map((hour) =>
                             Expanded(
                                 child: Container(
                                     decoration: BoxDecoration(
                                         border: Border(
-                                            right: BorderSide(
-                                                color: Color(0xFFdadce0),
+                                        right: BorderSide(
+                                        color: Color(
+                  0xFFdadce0),
+                width: 1),
+                                            bottom: BorderSide(
+                                                color: Color(
+                                                    0xFFdadce0),
                                                 width: 1))),
-                                    child: Column(
-                                        children: timeHour
-                                            .map((hour) =>
-                                            Expanded(
-                                                child: Container(
-                                                    decoration: BoxDecoration(
-                                                        border: Border(
-                                                            bottom: BorderSide(
-                                                                color: Color(
-                                                                    0xFFdadce0),
-                                                                width: 1))),
-                                                    child: Row(
-                                                      children: <Widget>[
-                                                        Container()
-                                                      ],
-                                                    ))))
-                                            .toList()))))
+                                    child: Row(
+                                      children: <Widget>[
+                                        Container()
+                                      ],
+                                    ))))
                             .toList()),
-                    eventCards(context, maxHeightWanted, maxPossibleWidth,
-                        week),
+                    eventCards(context, maxHeightWanted, maxPossibleWidth, day),
                   ],
                 ),
               ),
@@ -117,17 +101,14 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
 }
   calculateDayStyle(DateTime day, width) {
     DateTime cday = DateTime.now();
-    String value =
-        day.year.toString() + day.month.toString() + day.day.toString();
-    String today =
-        cday.year.toString() + cday.month.toString() + cday.day.toString();
+    String value = day.year.toString() + day.month.toString() + day.day.toString();
+    String today = cday.year.toString() + cday.month.toString() + cday.day.toString();
     if (value == today) {
       return Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Color.fromARGB(255, 150, 150, 150),
         ),
-        width: width / 7,
         child: new Text(
           "${day.day}",
           style: TextStyle(color: Colors.white, fontSize: 20.0),
@@ -140,7 +121,6 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
           shape: BoxShape.circle,
           color: Color.fromARGB(255, 255, 255, 255),
         ),
-        width: width / 7,
         child: new Text(
           "${day.day}",
           style: TextStyle(color: Colors.grey, fontSize: 20.0),
@@ -215,7 +195,7 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
     }
   }
 
-  eventCards(context, maxHeight, maxWidth, week) {
+  eventCards(context, maxHeight, maxWidth, day) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(
         bloc: _eventsBloc,
@@ -225,8 +205,8 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
                 item.value.forEach((key, value) {
                   int sTime = value['start'];
                   DateTime startWeek =
-                      week.first.subtract(Duration(hours: 6));
-                  DateTime endWeek = week.last
+                      day.subtract(Duration(hours: 6));
+                  DateTime endWeek = day
                       .add(Duration(hours: 18))
                       .subtract(Duration(minutes: 1));
                   if (sTime >= startWeek.millisecondsSinceEpoch &&
@@ -244,8 +224,6 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
                             width: getWidthByScreenSize(context),
                             top:
                                 moveBoxDownBasedOfConstraints(event, maxHeight),
-                            left:
-                                moveBoxRightBasedOfConstraints(event, maxWidth),
                             child: Card(
                               clipBehavior: Clip.hardEdge,
                               color:
