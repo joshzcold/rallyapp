@@ -35,7 +35,7 @@ List<int> timeHour = [
 
 List<int> columns = [1, 2, 3, 4, 5, 6, 7];
 
- calendar(BuildContext context, currentWeek){
+ calendar(BuildContext context, week){
 
     return LayoutBuilder(builder:
               (BuildContext context, BoxConstraints viewportConstraints) {
@@ -62,7 +62,7 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
                     Expanded(
                       child: Container(
                         child: Row(
-                          children: currentWeek
+                          children: week
                               .map<Widget>((DateTime day) =>
                               Center(
                                   child:
@@ -108,7 +108,7 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
                                             .toList()))))
                             .toList()),
                     eventCards(context, maxHeightWanted, maxPossibleWidth,
-                        currentWeek),
+                        week),
                   ],
                 ),
               ),
@@ -215,7 +215,7 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
     }
   }
 
-  eventCards(context, maxHeight, maxWidth, currentWeek) {
+  eventCards(context, maxHeight, maxWidth, week) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(
         bloc: _eventsBloc,
@@ -225,8 +225,8 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
                 item.value.forEach((key, value) {
                   int sTime = value['start'];
                   DateTime startWeek =
-                      currentWeek.first.subtract(Duration(hours: 6));
-                  DateTime endWeek = currentWeek.last
+                      week.first.subtract(Duration(hours: 6));
+                  DateTime endWeek = week.last
                       .add(Duration(hours: 18))
                       .subtract(Duration(minutes: 1));
                   if (sTime >= startWeek.millisecondsSinceEpoch &&

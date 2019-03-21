@@ -45,15 +45,32 @@ class CalendarPage extends StatelessWidget {
     var currentDay = DateTime.now();
     var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
     var endOfWeek = Utils.lastDayOfWeek(currentDay).toLocal();
-    var dateRange = Utils.daysInRange(startOfWeek, endOfWeek).toList();
+    var currentWeek = Utils.daysInRange(startOfWeek, endOfWeek).toList();
+    var startOfLastWeek = startOfWeek.subtract(Duration(days: 7));
 
     Widget forwardList = SliverList(
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+        var week = [];
+        if(index == 0){
+           week = currentWeek;
+           // if statement accounts for daylight savings messing with daysInRage
+           if(week.length == 8){
+             week.removeLast();
+           }
+        } else{
+          var startofNextWeek = startOfWeek.add(Duration(days: index*7));
+          var endofNextWeek = Utils.lastDayOfWeek(startofNextWeek);
+           week = Utils.daysInRange(startofNextWeek, endofNextWeek).toList();
+          // if statement accounts for daylight savings messing with daysInRage
+          if(week.length == 8){
+            week.removeLast();
+          }
+        }
         return Container(
           width: maxPossibleWidth -leftTimeColumnWidth,
           child: ListView(
             children: <Widget>[
-              calendar(context, dateRange),
+              calendar(context, week),
             ],
           ),
         );
@@ -63,11 +80,29 @@ class CalendarPage extends StatelessWidget {
 
     Widget reverseList = SliverList(
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+        var week = [];
+        if(index == 0){
+          var startofPreviousWeek = startOfWeek.subtract(Duration(days: 7));
+          var endofPreviousWeek = Utils.lastDayOfWeek(startofPreviousWeek);
+          week = Utils.daysInRange(startofPreviousWeek, endofPreviousWeek).toList();
+          // if statement accounts for daylight savings messing with daysInRage
+          if(week.length == 8){
+            week.removeLast();
+          }
+        } else{
+          var startofPreviousWeek = startOfLastWeek.subtract(Duration(days: index*7));
+          var endofPreviousWeek = Utils.lastDayOfWeek(startofPreviousWeek).toLocal();
+          week = Utils.daysInRange(startofPreviousWeek, endofPreviousWeek).toList();
+          // if statement accounts for daylight savings messing with daysInRage
+          if(week.length == 8){
+            week.removeLast();
+          }
+        }
         return Container(
           width: maxPossibleWidth -leftTimeColumnWidth,
           child: ListView(
             children: <Widget>[
-              calendar(context, dateRange),
+              calendar(context, week),
             ],
           ),
         );
@@ -85,7 +120,7 @@ class CalendarPage extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   );
                 } else if (state is EventsLoaded) {
-                                DateTime startOfWeek = dateRange.first;
+                                DateTime startOfWeek = currentWeek.first;
 
                   return Scaffold(
                       floatingActionButton: Container(
@@ -201,7 +236,7 @@ class CalendarPage extends StatelessWidget {
                                                   context,
                                                   maxHeightWanted,
                                                   maxPossibleWidth,
-                                                  dateRange,
+                                                  currentWeek,
                                                   leftTimeColumnWidth)
                                             ],
                                           )))
