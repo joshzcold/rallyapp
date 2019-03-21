@@ -107,8 +107,8 @@ class Calendar extends StatelessWidget {
                                                   ))))
                                               .toList()))))
                                   .toList()),
-//                          eventCards(context, maxHeightWanted, maxPossibleWidth,
-//                              currentWeek),
+                          eventCards(context, maxHeightWanted, maxPossibleWidth,
+                              currentWeek),
                         ],
                       ),
                 ),
