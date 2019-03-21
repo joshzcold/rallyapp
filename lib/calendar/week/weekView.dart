@@ -36,87 +36,87 @@ List<int> timeHour = [
 
 List<int> columns = [1, 2, 3, 4, 5, 6, 7];
 
-class Calendar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+ calendar(BuildContext context, currentWeek){
+
     final dateWeekBloc = BlocProvider.of<DateWeekBloc>(context);
-    return BlocBuilder(
-        bloc: dateWeekBloc,
-        builder: (BuildContext context, currentWeek) {
-          return LayoutBuilder(builder:
+    return LayoutBuilder(builder:
               (BuildContext context, BoxConstraints viewportConstraints) {
             // You can change up this value later to increase or decrease the height
             // of the week grid.
             // If you change the +800 after maxHeightWanted, change that value in
             // the parent widget as well.
-            double maxHeightWanted = MediaQuery.of(context).size.height + 800;
+            double maxHeightWanted = MediaQuery
+                .of(context)
+                .size
+                .height + 800;
             double maxPossibleWidth = viewportConstraints.maxWidth;
             return StickyHeader(
-                header: new Container(
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                    new BoxShadow(
-                      color: Colors.grey[500],
-                      blurRadius: 5.0,
-                    )
-                  ]),
-                  height: 50.0,
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          child: Row(
-                            children: currentWeek.week
-                                .map<Widget>((DateTime day) => Center(
-                                child:
-                                calculateDayStyle(day, maxPossibleWidth)))
-                                .toList(),
-                          ),
+              header: new Container(
+                decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                  new BoxShadow(
+                    color: Colors.grey[500],
+                    blurRadius: 5.0,
+                  )
+                ]),
+                height: 50.0,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        child: Row(
+                          children: currentWeek
+                              .map<Widget>((DateTime day) =>
+                              Center(
+                                  child:
+                                  calculateDayStyle(day, maxPossibleWidth)))
+                              .toList(),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                content: Container(
-                  height: maxHeightWanted,
-                  width: maxPossibleWidth,
-                  child: Stack(
-                        children: <Widget>[
-                          Row(
-                              children: columns
-                                  .map((columns) => Expanded(
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border(
-                                              right: BorderSide(
-                                                  color: Color(0xFFdadce0),
-                                                  width: 1))),
-                                      child: Column(
-                                          children: timeHour
-                                              .map((hour) => Expanded(
-                                              child: Container(
-                                                  decoration: BoxDecoration(
-                                                      border: Border(
-                                                          bottom: BorderSide(
-                                                              color: Color(
-                                                                  0xFFdadce0),
-                                                              width: 1))),
-                                                  child: Row(
-                                                    children: <Widget>[
-                                                      Container()
-                                                    ],
-                                                  ))))
-                                              .toList()))))
-                                  .toList()),
-                          eventCards(context, maxHeightWanted, maxPossibleWidth,
-                              currentWeek),
-                        ],
-                      ),
+              ),
+              content: Container(
+                height: maxHeightWanted,
+                width: maxPossibleWidth,
+                child: Stack(
+                  children: <Widget>[
+                    Row(
+                        children: columns
+                            .map((columns) =>
+                            Expanded(
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            right: BorderSide(
+                                                color: Color(0xFFdadce0),
+                                                width: 1))),
+                                    child: Column(
+                                        children: timeHour
+                                            .map((hour) =>
+                                            Expanded(
+                                                child: Container(
+                                                    decoration: BoxDecoration(
+                                                        border: Border(
+                                                            bottom: BorderSide(
+                                                                color: Color(
+                                                                    0xFFdadce0),
+                                                                width: 1))),
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Container()
+                                                      ],
+                                                    ))))
+                                            .toList()))))
+                            .toList()),
+                    eventCards(context, maxHeightWanted, maxPossibleWidth,
+                        currentWeek),
+                  ],
                 ),
-              );
+              ),
+            );
           });
-        });
-  }
-
+}
   calculateDayStyle(DateTime day, width) {
     DateTime cday = DateTime.now();
     String value =
@@ -227,8 +227,8 @@ class Calendar extends StatelessWidget {
                 item.value.forEach((key, value) {
                   int sTime = value['start'];
                   DateTime startWeek =
-                      currentWeek.week.first.subtract(Duration(hours: 6));
-                  DateTime endWeek = currentWeek.week.last
+                      currentWeek.first.subtract(Duration(hours: 6));
+                  DateTime endWeek = currentWeek.last
                       .add(Duration(hours: 18))
                       .subtract(Duration(minutes: 1));
                   if (sTime >= startWeek.millisecondsSinceEpoch &&
@@ -310,7 +310,7 @@ class Calendar extends StatelessWidget {
                   .toList());
         });
   }
-}
+
 
 class ClipLeftMostColumn extends CustomClipper<Path> {
   @override

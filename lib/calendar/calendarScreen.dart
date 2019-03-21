@@ -1,3 +1,4 @@
+import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,13 +44,19 @@ class CalendarPage extends StatelessWidget {
     final EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
     final DateWeekBloc _dateWeekBloc = BlocProvider.of<DateWeekBloc>(context);
 
+
+    var currentDay = DateTime.now();
+    var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
+    var endOfWeek = Utils.lastDayOfWeek(currentDay).toLocal();
+    var dateRange = Utils.daysInRange(startOfWeek, endOfWeek).toList();
+
     Widget forwardList = SliverList(
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
         return Container(
           width: maxPossibleWidth -leftTimeColumnWidth,
           child: ListView(
             children: <Widget>[
-              Calendar(),
+              calendar(context, dateRange),
             ],
           ),
         );
@@ -63,18 +70,15 @@ class CalendarPage extends StatelessWidget {
           width: maxPossibleWidth -leftTimeColumnWidth,
           child: ListView(
             children: <Widget>[
-              Calendar(),
+              calendar(context, dateRange),
             ],
           ),
         );
       }),
     );
 
+
     return BlocBuilder(
-        bloc: _dateWeekBloc,
-        builder: (BuildContext context, week) {
-          DateTime startOfWeek = week.week.first;
-          return BlocBuilder(
               bloc: _eventsBloc,
               builder: (BuildContext context, state) {
                 if (state is EventsLoading) {
@@ -84,6 +88,7 @@ class CalendarPage extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   );
                 } else if (state is EventsLoaded) {
+                                DateTime startOfWeek = dateRange.first;
 
                   return Scaffold(
                       floatingActionButton: Container(
@@ -199,7 +204,7 @@ class CalendarPage extends StatelessWidget {
                                                   context,
                                                   maxHeightWanted,
                                                   maxPossibleWidth,
-                                                  week,
+                                                  dateRange,
                                                   leftTimeColumnWidth)
                                             ],
                                           )))
@@ -207,6 +212,8 @@ class CalendarPage extends StatelessWidget {
                               ),
                             ),
 
+                            /// Horizontally scrolling set of calendar widgets
+                            /// that get defined at the top of the class.
                             Container(
                               width: maxPossibleWidth -50,
                               height: maxHeightWanted,
@@ -229,7 +236,7 @@ class CalendarPage extends StatelessWidget {
                       );
                 }
               });
-        });
+
   }
 
   double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
@@ -244,7 +251,7 @@ class CalendarPage extends StatelessWidget {
       double maxPossibleWidth, currentWeek, leftTimeColumnWidth) {
     DateTime cday = DateTime.now();
     bool check = false;
-    for (DateTime day in currentWeek.week) {
+    for (DateTime day in currentWeek) {
       String value =
           day.year.toString() + day.month.toString() + day.day.toString();
       String today =
