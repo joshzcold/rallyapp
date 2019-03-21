@@ -58,9 +58,9 @@ class CalendarPage extends StatelessWidget {
              week.removeLast();
            }
         } else{
-          var startofNextWeek = startOfWeek.add(Duration(days: index*7));
-          var endofNextWeek = Utils.lastDayOfWeek(startofNextWeek);
-           week = Utils.daysInRange(startofNextWeek, endofNextWeek).toList();
+          var startOfNextWeek = startOfWeek.add(Duration(days: index*7));
+          var endOfNextWeek = Utils.lastDayOfWeek(startOfNextWeek);
+           week = Utils.daysInRange(startOfNextWeek, endOfNextWeek).toList();
           // if statement accounts for daylight savings messing with daysInRage
           if(week.length == 8){
             week.removeLast();
@@ -82,17 +82,17 @@ class CalendarPage extends StatelessWidget {
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
         var week = [];
         if(index == 0){
-          var startofPreviousWeek = startOfWeek.subtract(Duration(days: 7));
-          var endofPreviousWeek = Utils.lastDayOfWeek(startofPreviousWeek);
-          week = Utils.daysInRange(startofPreviousWeek, endofPreviousWeek).toList();
+          var startOfPreviousWeek = startOfWeek.subtract(Duration(days: 7));
+          var endOfPreviousWeek = Utils.lastDayOfWeek(startOfPreviousWeek);
+          week = Utils.daysInRange(startOfPreviousWeek, endOfPreviousWeek).toList();
           // if statement accounts for daylight savings messing with daysInRage
           if(week.length == 8){
             week.removeLast();
           }
         } else{
-          var startofPreviousWeek = startOfLastWeek.subtract(Duration(days: index*7));
-          var endofPreviousWeek = Utils.lastDayOfWeek(startofPreviousWeek).toLocal();
-          week = Utils.daysInRange(startofPreviousWeek, endofPreviousWeek).toList();
+          var startOfPreviousWeek = startOfLastWeek.subtract(Duration(days: index*7));
+          var endOfPreviousWeek = Utils.lastDayOfWeek(startOfPreviousWeek).toLocal();
+          week = Utils.daysInRange(startOfPreviousWeek, endOfPreviousWeek).toList();
           // if statement accounts for daylight savings messing with daysInRage
           if(week.length == 8){
             week.removeLast();
