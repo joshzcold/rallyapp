@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/date_week/date_week.dart';
@@ -34,8 +35,40 @@ List<String> displayHour = [
 class CalendarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var maxHeightWanted =
+        MediaQuery.of(context).size.height + 800;
+    var maxPossibleWidth = MediaQuery.of(context).size.width;
+    var leftTimeColumnWidth = 50.0;
+    Key forwardListKey = UniqueKey();
     final EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
     final DateWeekBloc _dateWeekBloc = BlocProvider.of<DateWeekBloc>(context);
+
+    Widget forwardList = SliverList(
+      delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+        return Container(
+          width: maxPossibleWidth -leftTimeColumnWidth,
+          child: ListView(
+            children: <Widget>[
+              Calendar(),
+            ],
+          ),
+        );
+      }),
+      key: forwardListKey,
+    );
+
+    Widget reverseList = SliverList(
+      delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+        return Container(
+          width: maxPossibleWidth -leftTimeColumnWidth,
+          child: ListView(
+            children: <Widget>[
+              Calendar(),
+            ],
+          ),
+        );
+      }),
+    );
 
     return BlocBuilder(
         bloc: _dateWeekBloc,
@@ -51,10 +84,7 @@ class CalendarPage extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   );
                 } else if (state is EventsLoaded) {
-                  var maxHeightWanted =
-                      MediaQuery.of(context).size.height + 800;
-                  var maxPossibleWidth = MediaQuery.of(context).size.width;
-                  var leftTimeColumnWidth = 50.0;
+
                   return Scaffold(
                       floatingActionButton: Container(
                         child: FloatingActionButton(
@@ -178,39 +208,22 @@ class CalendarPage extends StatelessWidget {
                             ),
 
                             Container(
-                              width: maxPossibleWidth - leftTimeColumnWidth,
-                              child: PageView(
-                                scrollDirection: Axis.horizontal,
-                                children: <Widget>[
-                                  Container(
-                                    width: maxPossibleWidth -leftTimeColumnWidth,
-                                    child: ListView(
-                                      children: <Widget>[
-                                        Calendar(),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    width: maxPossibleWidth -leftTimeColumnWidth,
-                                    child: ListView(
-                                      children: <Widget>[
-                                        Calendar(),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    width: maxPossibleWidth -leftTimeColumnWidth,
-                                    child: ListView(
-                                      children: <Widget>[
-                                        Calendar(),
-                                      ],
-                                    ),
-                                  )
-                                ],
+                              width: maxPossibleWidth -50,
+                              height: maxHeightWanted,
+                              child: Scrollable(
+                                  axisDirection: AxisDirection.right,
+                                  viewportBuilder: (context, ViewportOffset offset){
+                                    return Viewport(
+                                      axisDirection: AxisDirection.right,
+                                        offset: offset,
+                                        center: forwardListKey,
+                                        slivers: [
+                                          reverseList,
+                                          forwardList,
+                                        ]);
+                                  }
                               ),
                             )
-
-                            /// This is the Grid plus the calendar events.
                           ],
                         ),
                       );
