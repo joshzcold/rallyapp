@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
-import 'package:rallyapp/blocs/date_week/date_week.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
 var currentHour = new DateTime.now().hour;
@@ -38,7 +37,6 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
 
  calendar(BuildContext context, currentWeek){
 
-    final dateWeekBloc = BlocProvider.of<DateWeekBloc>(context);
     return LayoutBuilder(builder:
               (BuildContext context, BoxConstraints viewportConstraints) {
             // You can change up this value later to increase or decrease the height

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
-import 'package:rallyapp/blocs/date_week/date_week.dart';
 import 'package:rallyapp/calendar/week/weekView.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
@@ -42,8 +41,6 @@ class CalendarPage extends StatelessWidget {
     var leftTimeColumnWidth = 50.0;
     Key forwardListKey = UniqueKey();
     final EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
-    final DateWeekBloc _dateWeekBloc = BlocProvider.of<DateWeekBloc>(context);
-
 
     var currentDay = DateTime.now();
     var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
