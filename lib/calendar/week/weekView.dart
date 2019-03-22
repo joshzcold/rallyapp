@@ -36,7 +36,7 @@ List<int> timeHour = [
 List<int> columns = [1, 2, 3, 4, 5, 6, 7];
 
 
- calendar(BuildContext context, day){
+ calendar(BuildContext context, week){
 
     return LayoutBuilder(builder:
               (BuildContext context, BoxConstraints viewportConstraints) {
@@ -49,108 +49,59 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
                 .size
                 .height + 800;
             double maxPossibleWidth = viewportConstraints.maxWidth;
-            return StickyHeader(
-              header: new Container(
-                decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                  new BoxShadow(
-                    color: Colors.grey[500],
-                    blurRadius: 5.0,
-                  )
-                ]),
-                height: 50,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child:Center(child:calculateDayStyle(day, maxPossibleWidth)),
-
-                      ),
-                  ],
-                ),
-              ),
-              content: Container(
+            return Container(
                 height: maxHeightWanted,
+                width: maxPossibleWidth,
                 child: Stack(
                   children: <Widget>[
-                    Column(
-                        children: timeHour
-                            .map((hour) =>
+                    Row(
+                        children: columns
+                            .map((columns) =>
                             Expanded(
                                 child: Container(
                                     decoration: BoxDecoration(
                                         border: Border(
-                                        right: BorderSide(
-                                        color: Color(
-                  0xFFdadce0),
-                width: 1),
-                                            bottom: BorderSide(
-                                                color: Color(
-                                                    0xFFdadce0),
+                                            right: BorderSide(
+                                                color: Color(0xFFdadce0),
                                                 width: 1))),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Container()
-                                      ],
-                                    ))))
+                                    child: Column(
+                                        children: timeHour
+                                            .map((hour) =>
+                                            Expanded(
+                                                child: Container(
+                                                    decoration: BoxDecoration(
+                                                        border: Border(
+                                                            bottom: BorderSide(
+                                                                color: Color(
+                                                                    0xFFdadce0),
+                                                                width: 1))),
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Container()
+                                                      ],
+                                                    ))))
+                                            .toList()))))
                             .toList()),
-                    eventCards(context, maxHeightWanted, maxPossibleWidth, day),
-                    currentTimeIndicator(context, maxHeightWanted, day)
+                    eventCards(context, maxHeightWanted, maxPossibleWidth,
+                        week),
                   ],
                 ),
-              ),
-            );
+              );
           });
 }
-
-currentTimeIndicator(BuildContext context, double maxHeightWanted,day) {
-  DateTime cday = DateTime.now();
-  String value = day.year.toString() + day.month.toString() + day.day.toString();
-  String today = cday.year.toString() + cday.month.toString() + cday.day.toString();
-    if (today == value) {
-      return Stack(
-        children: <Widget>[
-          Positioned(
-            top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted) -
-                10,
-            left: 0,
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                ),
-                Container(
-                  color: Colors.green,
-                  width: 50,
-                  height: 3,
-                ),
-              ],
-            ),
-          )
-        ],
-      );
-    } else{
-      return Container();
-    }
-}
-
-double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
-  double height = constraints;
-  double hour = height / 24;
-  var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
-  double distanceDown = hoursFromMidnight * hour;
-  return distanceDown;
-}
-
   calculateDayStyle(DateTime day, width) {
     DateTime cday = DateTime.now();
-    String value = day.year.toString() + day.month.toString() + day.day.toString();
-    String today = cday.year.toString() + cday.month.toString() + cday.day.toString();
+    String value =
+        day.year.toString() + day.month.toString() + day.day.toString();
+    String today =
+        cday.year.toString() + cday.month.toString() + cday.day.toString();
     if (value == today) {
       return Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Color.fromARGB(255, 150, 150, 150),
         ),
+        width: width / 7,
         child: new Text(
           "${day.day}",
           style: TextStyle(color: Colors.white, fontSize: 20.0),
@@ -163,6 +114,7 @@ double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
           shape: BoxShape.circle,
           color: Color.fromARGB(255, 255, 255, 255),
         ),
+        width: width / 7,
         child: new Text(
           "${day.day}",
           style: TextStyle(color: Colors.grey, fontSize: 20.0),
@@ -237,7 +189,7 @@ double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
     }
   }
 
-  eventCards(context, maxHeight, maxWidth, day) {
+  eventCards(context, maxHeight, maxWidth, week) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(
         bloc: _eventsBloc,
@@ -247,8 +199,8 @@ double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
                 item.value.forEach((key, value) {
                   int sTime = value['start'];
                   DateTime startWeek =
-                      day.subtract(Duration(hours: 6));
-                  DateTime endWeek = day
+                      week.first.subtract(Duration(hours: 6));
+                  DateTime endWeek = week.last
                       .add(Duration(hours: 18))
                       .subtract(Duration(minutes: 1));
                   if (sTime >= startWeek.millisecondsSinceEpoch &&
@@ -266,6 +218,8 @@ double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
                             width: getWidthByScreenSize(context),
                             top:
                                 moveBoxDownBasedOfConstraints(event, maxHeight),
+                            left:
+                                moveBoxRightBasedOfConstraints(event, maxWidth),
                             child: Card(
                               clipBehavior: Clip.hardEdge,
                               color:

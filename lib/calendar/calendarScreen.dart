@@ -34,7 +34,22 @@ List<String> displayHour = [
 
 double columnWidths = 50;
 
-class CalendarPage extends StatelessWidget {
+PageController pageController;
+
+class CalendarPage extends StatefulWidget{
+  @override
+  CalendarPageState createState() => CalendarPageState();
+
+}
+
+class CalendarPageState extends State<CalendarPage> {
+  @override
+  void initState() {
+    pageController = PageController(initialPage: 4242);
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     var maxHeightWanted =
@@ -48,19 +63,16 @@ class CalendarPage extends StatelessWidget {
     var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
     var endOfWeek = Utils.lastDayOfWeek(currentDay).toLocal();
     var currentWeek = Utils.daysInRange(startOfWeek, endOfWeek).toList();
+    var startOfLastWeek = startOfWeek.subtract(Duration(days: 7));
 
-    Widget forwardList = SliverList(
-      delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+    Widget forwardList = PageView.builder(
+      itemBuilder: (BuildContext context, int index) {
         var day = currentDay.add(Duration(days: index));
         return Container(
           width: columnWidths,
-          child: ListView(
-            children: <Widget>[
-              calendar(context, day),
-            ],
-          ),
+          child: calendar(context, day),
         );
-      }),
+      },
       key: forwardListKey,
     );
 
@@ -74,11 +86,7 @@ class CalendarPage extends StatelessWidget {
         }
         return Container(
           width: columnWidths,
-          child: ListView(
-            children: <Widget>[
-              calendar(context, day),
-            ],
-          ),
+          child:calendar(context, day),
         );
       }),
     );
@@ -103,13 +111,13 @@ class CalendarPage extends StatelessWidget {
                             backgroundColor: Colors.blue,
                             child: Icon(Icons.add)),
                       ),
-                      body: Row(
-                          children: <Widget>[
-                            Container(
-                              width: 50,
-                              child: ListView(
-                                children: <Widget>[
-                                  StickyHeader(
+                      body: ListView(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                  width: 50,
+                                  child:StickyHeader(
                                       header: new Container(
                                         decoration: BoxDecoration(
                                             color: Colors.white,
@@ -208,32 +216,68 @@ class CalendarPage extends StatelessWidget {
                                                           .toList())),
                                             ],
                                           )))
-                                ],
-                              ),
-                            ),
 
-                            /// Horizontally scrolling set of calendar widgets
-                            /// that get defined at the top of the class.
-                            Container(
-                              width: maxPossibleWidth -50,
-                              height: maxHeightWanted,
-                              child: Scrollable(
-                                  axisDirection: AxisDirection.right,
-                                  viewportBuilder: (context, ViewportOffset offset){
-                                    return Viewport(
-                                      axisDirection: AxisDirection.right,
-                                        offset: offset,
-                                        center: forwardListKey,
-                                        slivers: [
-                                          reverseList,
-                                          forwardList,
-                                        ]);
-                                  }
                               ),
+
+                              /// Horizontally scrolling set of calendar widgets
+                              /// that get defined at the top of the class.
+                    StickyHeader(
+                      header: new Container(
+                        decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                          new BoxShadow(
+                            color: Colors.grey[500],
+                            blurRadius: 5.0,
+                          )
+                        ]),
+                        height: 50.0,
+                        width: 200,
+                        child: Row(
+                          children: <Widget>[
+                            Container(
+                              width: 40,
+                              child:Text('TODO'),
                             )
                           ],
                         ),
-                      );
+                      ),
+                      content:
+
+                      Container(
+                                width: maxPossibleWidth -50,
+                                height: maxHeightWanted,
+                                child: PageView.builder(
+                                  controller: pageController,
+                                  itemBuilder: (context, _index) {
+                                    final index =  _index - 4242;
+                                    var week = [];
+                                    if(index == 0){
+                                      week = currentWeek;
+                                      // if statement accounts for daylight savings messing with daysInRage
+                                      if(week.length == 8){
+                                        week.removeLast();
+                                      }
+                                    } else{
+                                      var startofWeek = startOfWeek.add(Duration(days: index*7));
+                                      var endofWeek = Utils.lastDayOfWeek(startofWeek);
+                                      week = Utils.daysInRange(startofWeek, endofWeek).toList();
+                                      // if statement accounts for daylight savings messing with daysInRage
+                                      if(week.length == 8){
+                                        week.removeLast();
+                                      }
+                                    }
+                                    return Container(
+                                      width: columnWidths,
+                                      child: calendar(context, week),
+                                    );
+                                  },
+                                )
+                              )
+                    )
+                            ],
+                          ),
+                        ],
+                      )
+                  );
                 }
               });
 
