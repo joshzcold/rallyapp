@@ -33,7 +33,10 @@ List<String> displayHour = [
 ];
 
 double columnWidths = 50;
-int pages = 192;
+
+/// This is rendering how many pages back we want to allow the user to scroll
+/// for the top header this number needs to be divisible by 7.
+int pages = 53;
 
 PageController pageController;
 ScrollController horizontalHeaderScrollController;
@@ -49,7 +52,7 @@ class CalendarPageState extends State<CalendarPage> {
   void initState() {
     pageController = PageController(initialPage: pages);
     horizontalHeaderScrollController = ScrollController(
-      initialScrollOffset: 50*7*192.0
+      initialScrollOffset: 50*7*pages.toDouble()
     );
     super.initState();
   }
@@ -212,20 +215,21 @@ class CalendarPageState extends State<CalendarPage> {
                                       color: Colors.white,
                                       width: maxPossibleWidth -50,
                                       height: 50,
-                                      child: ListView.builder(
+                                      child: CustomScrollView(
+                                        physics: const NeverScrollableScrollPhysics(),
                                         scrollDirection: Axis.horizontal,
                                         controller: horizontalHeaderScrollController,
-                                          itemBuilder: (context, index){
-                                            DateTime day;
-                                            day = currentDay.add(Duration(days: index));
-                                            return Container(
-                                              width: columnWidths,
-                                              child: Center(
-                                                child: Text('$day'),
-                                              ),
-                                            );
-//                                              calculateDayStyle(day, columnWidths);
-                                      })
+                                        slivers: <Widget>[
+                                          SliverList(
+                                            delegate: SliverChildBuilderDelegate((context, index){
+                                              var yearsBack = startOfWeek.subtract(Duration(days: pages * 7));
+                                              DateTime day;
+                                              day = yearsBack.add(Duration(days: index));
+                                              return calculateDayStyle(day, columnWidths);
+                                            }),
+                                          )
+                                        ],
+                                      )
                                     ),
                                     content: Container(
                                         width: maxPossibleWidth -50,
@@ -282,7 +286,7 @@ class CalendarPageState extends State<CalendarPage> {
           shape: BoxShape.circle,
           color: Color.fromARGB(255, 150, 150, 150),
         ),
-        width: width,
+        width: (MediaQuery.of(context).size.width - columnWidths)/7,
         child: new Text(
           "${day.day}",
           style: TextStyle(color: Colors.white, fontSize: 20.0),
@@ -295,7 +299,7 @@ class CalendarPageState extends State<CalendarPage> {
           shape: BoxShape.circle,
           color: Color.fromARGB(255, 255, 255, 255),
         ),
-        width: width,
+        width: (MediaQuery.of(context).size.width - columnWidths)/7,
         child: new Text(
           "${day.day}",
           style: TextStyle(color: Colors.grey, fontSize: 20.0),
