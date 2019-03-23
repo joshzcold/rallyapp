@@ -32,7 +32,7 @@ List<String> displayHour = [
   "11PM"
 ];
 
-double columnWidths = 50;
+double leftColumnWidth = 50;
 
 /// This is rendering how many pages back we want to allow the user to scroll
 /// for the top header this number needs to be divisible by 7.
@@ -51,15 +51,16 @@ class CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
     pageController = PageController(initialPage: pages);
-    horizontalHeaderScrollController = ScrollController(
-      initialScrollOffset: 50*7*pages.toDouble()
-    );
+
     super.initState();
   }
 
 
   @override
   Widget build(BuildContext context) {
+    horizontalHeaderScrollController = ScrollController(
+        initialScrollOffset: ((MediaQuery.of(context).size.width - leftColumnWidth)/7)*7*pages.toDouble()
+    );
     var maxHeightWanted =
         MediaQuery.of(context).size.height + 800;
     var maxPossibleWidth = MediaQuery.of(context).size.width;
@@ -104,8 +105,10 @@ class CalendarPageState extends State<CalendarPage> {
                                             color: Colors.white,
                                             boxShadow: [
                                               new BoxShadow(
+                                                spreadRadius: MediaQuery.of(context).size.width,
                                                 color: Colors.grey[500],
                                                 blurRadius: 5.0,
+                                                offset: Offset(0.0, -MediaQuery.of(context).size.width),
                                               )
                                             ]),
                                         height: 50.0,
@@ -208,11 +211,20 @@ class CalendarPageState extends State<CalendarPage> {
                                   print('${horizontalHeaderScrollController.offset}');
                                   print('${pageController.offset}');
                                   horizontalHeaderScrollController.jumpTo(pageController.offset);
-//                                  print('check -- offset Left: '+horizontalHeaderScrollController.offset.toInt().toString()+ ' -- offset Right: '+pageController.offset.toInt().toString());
+//                                  print('check -- offset Left: '+horizontalHeaderScrollController.offset.toInt().toString()+ '
+//                                  -- offset Right: '+pageController.offset.toInt().toString());
                                 },
                                 child: StickyHeader(
                                     header: Container(
-                                      color: Colors.white,
+                                      decoration: BoxDecoration(
+//                                          boxShadow:[
+//                                            new BoxShadow(
+//                                              color: Colors.grey[500],
+//                                              blurRadius: 5.0,
+//                                              offset: Offset(6, 1.0)
+//                                            )],
+                                        color: Colors.white,
+                                      ),
                                       width: maxPossibleWidth -50,
                                       height: 50,
                                       child: CustomScrollView(
@@ -225,7 +237,7 @@ class CalendarPageState extends State<CalendarPage> {
                                               var yearsBack = startOfWeek.subtract(Duration(days: pages * 7));
                                               DateTime day;
                                               day = yearsBack.add(Duration(days: index));
-                                              return calculateDayStyle(day, columnWidths);
+                                              return calculateDayStyle(day, leftColumnWidth);
                                             }),
                                           )
                                         ],
@@ -255,7 +267,7 @@ class CalendarPageState extends State<CalendarPage> {
                                               }
                                             }
                                             return Container(
-                                              width: columnWidths,
+                                              width: leftColumnWidth,
                                               child: calendar(context, week),
                                             );
                                           },
@@ -286,7 +298,7 @@ class CalendarPageState extends State<CalendarPage> {
           shape: BoxShape.circle,
           color: Color.fromARGB(255, 150, 150, 150),
         ),
-        width: (MediaQuery.of(context).size.width - columnWidths)/7,
+        width: (MediaQuery.of(context).size.width - leftColumnWidth)/7,
         child: new Text(
           "${day.day}",
           style: TextStyle(color: Colors.white, fontSize: 20.0),
@@ -299,7 +311,7 @@ class CalendarPageState extends State<CalendarPage> {
           shape: BoxShape.circle,
           color: Color.fromARGB(255, 255, 255, 255),
         ),
-        width: (MediaQuery.of(context).size.width - columnWidths)/7,
+        width: (MediaQuery.of(context).size.width - leftColumnWidth)/7,
         child: new Text(
           "${day.day}",
           style: TextStyle(color: Colors.grey, fontSize: 20.0),
