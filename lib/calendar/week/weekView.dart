@@ -89,40 +89,6 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
               );
           });
 }
-  calculateDayStyle(DateTime day, width) {
-    DateTime cday = DateTime.now();
-    String value =
-        day.year.toString() + day.month.toString() + day.day.toString();
-    String today =
-        cday.year.toString() + cday.month.toString() + cday.day.toString();
-    if (value == today) {
-      return Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color.fromARGB(255, 150, 150, 150),
-        ),
-        width: width / 7,
-        child: new Text(
-          "${day.day}",
-          style: TextStyle(color: Colors.white, fontSize: 20.0),
-        ),
-        alignment: FractionalOffset(0.5, 0.5),
-      );
-    } else {
-      return Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color.fromARGB(255, 255, 255, 255),
-        ),
-        width: width / 7,
-        child: new Text(
-          "${day.day}",
-          style: TextStyle(color: Colors.grey, fontSize: 20.0),
-        ),
-        alignment: FractionalOffset(0.5, 0.5),
-      );
-    }
-  }
 
   double getHeightByTime(event, constraints) {
     double height = constraints;
