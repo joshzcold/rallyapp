@@ -248,34 +248,3 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
                   .toList());
         });
   }
-
-
-class ClipLeftMostColumn extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-    var columnIncrement = (size.width / 8) / 1.3;
-
-    // Draw a straight line from current point to the bottom left corner.
-    path.lineTo(columnIncrement, size.height);
-
-    // Draw a straight line from current point to the top right corner.
-    path.lineTo(size.width, size.height);
-
-    path.lineTo(size.width, 0.0);
-
-    path.lineTo(columnIncrement, 0.0);
-
-    path.lineTo(columnIncrement, size.height);
-
-//  path.lineTo(0.0, 0.0);
-
-    // Draws a straight line from current point to the first point of the path.
-    // In this case (0, 0), since that's where the paths start by default.
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}

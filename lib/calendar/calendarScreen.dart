@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/calendar/week/weekView.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:rect_getter/rect_getter.dart';
 
 List<String> displayHour = [
   "1AM",
@@ -48,10 +49,15 @@ class CalendarPage extends StatefulWidget{
 }
 
 class CalendarPageState extends State<CalendarPage> {
+  var listViewKey = RectGetter.createGlobalKey();
+  var _keys = {};
+  int currentMonth;
+
+
   @override
   void initState() {
     pageController = PageController(initialPage: pages);
-
+    currentMonth = Utils.firstDayOfWeek(DateTime.now()).toLocal().month;
     super.initState();
   }
 
@@ -73,6 +79,7 @@ class CalendarPageState extends State<CalendarPage> {
     var endOfWeek = Utils.lastDayOfWeek(currentDay).toLocal();
     var currentWeek = Utils.daysInRange(startOfWeek, endOfWeek).toList();
     var startOfLastWeek = startOfWeek.subtract(Duration(days: 7));
+    var yearsBack = startOfWeek.subtract(Duration(days: pages * 7));
 
     return BlocBuilder(
               bloc: _eventsBloc,
@@ -118,7 +125,7 @@ class CalendarPageState extends State<CalendarPage> {
                                               alignment: Alignment.center,
                                               width: leftTimeColumnWidth,
                                               child: new Text(
-                                                "${calculateMonthToAbbrv(startOfWeek.month)}",
+                                                "${calculateMonthToAbbrv(currentMonth)}",
                                                 style: TextStyle(
                                                     color: Colors.grey,
                                                     fontSize: 20.0),
@@ -215,19 +222,36 @@ class CalendarPageState extends State<CalendarPage> {
                                       height: 50,
                                       child: NotificationListener<ScrollNotification>(
                                           onNotification: (scrollInfo){
-                                            print('$scrollInfo');
+                                            var visible = getVisible();
+                                            /// calculatedDay is a bit hard coded. visible comes from the "rect"
+                                            /// of the "visible" elements in the ListView
+                                            /// at the time of this comment the 5th item happened to be
+                                            /// the first day of the current page. its possible this
+                                            /// could get messed up later. who knows....
+                                            var calculatedDay = yearsBack.add(Duration(days: visible[5].toInt()));
+                                            setState(() {
+                                              currentMonth = calculatedDay.month;
+                                            });
                                           },
                                           child:
-                                      ListView.builder(
-                                        physics: NeverScrollableScrollPhysics(),
-                                        scrollDirection: Axis.horizontal,
-                                          controller: horizontalHeaderScrollController,
-                                          itemBuilder: (context, index){
-                                        var yearsBack = startOfWeek.subtract(Duration(days: pages * 7));
-                                        DateTime day;
-                                        day = yearsBack.add(Duration(days: index));
-                                        return calculateDayStyle(day, leftColumnWidth);
-                                      }))
+                                              RectGetter(key: listViewKey, child: ListView.builder(
+                                                  physics: NeverScrollableScrollPhysics(),
+                                                  scrollDirection: Axis.horizontal,
+                                                  controller: horizontalHeaderScrollController,
+                                                  itemBuilder: (context, index){
+                                                    _keys[index] = RectGetter.createGlobalKey();
+
+                                                    DateTime day;
+                                                    day = yearsBack.add(Duration(days: index));
+                                                    var rectGetter = RectGetter(
+                                                      key: _keys[index],
+                                                      child: calculateDayStyle(day, leftColumnWidth),
+                                                    );
+                                                    return rectGetter;
+
+                                                  }))
+
+                                      )
                                     ),
                                     content: Container(
                                         width: maxPossibleWidth -50,
@@ -274,6 +298,21 @@ class CalendarPageState extends State<CalendarPage> {
 
   }
 
+
+  List<int> getVisible() {
+    /// First, get the rect of ListView, and then traver the _keys
+    /// get rect of each item by keys in _keys, and if this rect in the range of ListView's rect,
+    /// add the index into result list.
+    var rect = RectGetter.getRectFromKey(listViewKey);
+    var _items = <int>[];
+    _keys.forEach((index, key) {
+      var itemRect = RectGetter.getRectFromKey(key);
+      if (itemRect != null && !(itemRect.top > rect.bottom || itemRect.bottom < rect.top)) _items.add(index);
+    });
+
+    /// so all visible item's index are in this _items.
+    return _items;
+  }
 
   calculateDayStyle(DateTime day, width) {
     DateTime cday = DateTime.now();
