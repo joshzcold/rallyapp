@@ -44,10 +44,7 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
             // of the week grid.
             // If you change the +800 after maxHeightWanted, change that value in
             // the parent widget as well.
-            double maxHeightWanted = MediaQuery
-                .of(context)
-                .size
-                .height + 800;
+            double maxHeightWanted = viewportConstraints.maxHeight;
             double maxPossibleWidth = viewportConstraints.maxWidth;
             return Container(
                 height: maxHeightWanted,
