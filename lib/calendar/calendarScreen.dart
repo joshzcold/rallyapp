@@ -39,8 +39,11 @@ double leftColumnWidth = 50;
 /// for the top header this number needs to be divisible by 7.
 int pages = 53;
 
+/// These two controllers are meant to work together by sync scrolling
 PageController pageController;
 ScrollController horizontalHeaderScrollController;
+
+ScrollController verticalPageGridScrollController;
 
 class CalendarPage extends StatefulWidget{
   @override
@@ -69,16 +72,17 @@ class CalendarPageState extends State<CalendarPage> {
     );
     var maxHeightWanted =
         MediaQuery.of(context).size.height + 800;
+    verticalPageGridScrollController = ScrollController(
+        initialScrollOffset: calculateInitialScrollDownByCurrentTime(maxHeightWanted)
+    );
     var maxPossibleWidth = MediaQuery.of(context).size.width;
     var leftTimeColumnWidth = 50.0;
-    Key forwardListKey = UniqueKey();
     final EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
 
     var currentDay = DateTime.now();
     var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
     var endOfWeek = Utils.lastDayOfWeek(currentDay).toLocal();
     var currentWeek = Utils.daysInRange(startOfWeek, endOfWeek).toList();
-    var startOfLastWeek = startOfWeek.subtract(Duration(days: 7));
     var yearsBack = startOfWeek.subtract(Duration(days: pages * 7));
 
     return BlocBuilder(
@@ -101,6 +105,7 @@ class CalendarPageState extends State<CalendarPage> {
                             child: Icon(Icons.add)),
                       ),
                       body: ListView(
+                        controller: verticalPageGridScrollController,
                         children: <Widget>[
                           Row(
                             children: <Widget>[
@@ -324,13 +329,22 @@ class CalendarPageState extends State<CalendarPage> {
       return Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Color.fromARGB(255, 150, 150, 150),
+          color: Color.fromARGB(255, 255, 255, 255),
         ),
         width: (MediaQuery.of(context).size.width - leftColumnWidth)/7,
-        child: new Text(
-          "${day.day}",
-          style: TextStyle(color: Colors.white, fontSize: 20.0),
-        ),
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "${day.day}",
+              style: TextStyle(color: Colors.blue, fontSize: 20.0),
+            ),
+            Text(
+              "${calculateWeekDayAbbrv(day.weekday)}",
+              style: TextStyle(color: Colors.blue, fontSize: 10.0),
+            ),
+          ],),
         alignment: FractionalOffset(0.5, 0.5),
       );
     } else {
@@ -340,10 +354,19 @@ class CalendarPageState extends State<CalendarPage> {
           color: Color.fromARGB(255, 255, 255, 255),
         ),
         width: (MediaQuery.of(context).size.width - leftColumnWidth)/7,
-        child: new Text(
-          "${day.day}",
-          style: TextStyle(color: Colors.grey, fontSize: 20.0),
-        ),
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+          Text(
+            "${day.day}",
+            style: TextStyle(color: Colors.grey, fontSize: 20.0),
+          ),
+          Text(
+            "${calculateWeekDayAbbrv(day.weekday)}",
+            style: TextStyle(color: Colors.grey, fontSize: 10.0),
+          ),
+        ],),
         alignment: FractionalOffset(0.5, 0.5),
       );
     }
@@ -391,5 +414,43 @@ class CalendarPageState extends State<CalendarPage> {
     }
     return result;
   }
+}
+
+calculateWeekDayAbbrv(int weekday) {
+  var result = "";
+  switch (weekday) {
+    case 1:
+      result = "M";
+      break;
+    case 2:
+      result = "T";
+      break;
+    case 3:
+      result = "W";
+      break;
+    case 4:
+      result = "T";
+      break;
+    case 5:
+      result = "F";
+      break;
+    case 6:
+      result = "S";
+      break;
+    case 7:
+      result = "S";
+      break;
+  }
+  return result;
+}
+
+
+double calculateInitialScrollDownByCurrentTime(constraints) {
+  var sTime = DateTime.now();
+  double height = constraints;
+  double hour = height / 24;
+  var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
+  double distanceDown = hoursFromMidnight * hour;
+  return distanceDown/1.5;
 }
 
