@@ -218,25 +218,16 @@ class CalendarPageState extends State<CalendarPage> {
                                             print('$scrollInfo');
                                           },
                                           child:
-                                      CustomScrollView(
-                                        semanticChildCount: 14,
-                                        physics: const NeverScrollableScrollPhysics(),
+                                      ListView.builder(
+                                        physics: NeverScrollableScrollPhysics(),
                                         scrollDirection: Axis.horizontal,
-                                        controller: horizontalHeaderScrollController,
-                                        slivers: <Widget>[
-                                          SliverList(
-                                            delegate: SliverChildBuilderDelegate((context, index){
-                                              var yearsBack = startOfWeek.subtract(Duration(days: pages * 7));
-                                              DateTime day;
-                                              day = yearsBack.add(Duration(days: index));
-                                              return IndexedSemantics(
-                                                index: index,
-                                                child: calculateDayStyle(day, leftColumnWidth),
-                                              );
-                                            }),
-                                          )
-                                        ],
-                                      ))
+                                          controller: horizontalHeaderScrollController,
+                                          itemBuilder: (context, index){
+                                        var yearsBack = startOfWeek.subtract(Duration(days: pages * 7));
+                                        DateTime day;
+                                        day = yearsBack.add(Duration(days: index));
+                                        return calculateDayStyle(day, leftColumnWidth);
+                                      }))
                                     ),
                                     content: Container(
                                         width: maxPossibleWidth -50,
