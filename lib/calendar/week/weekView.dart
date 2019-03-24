@@ -185,6 +185,18 @@ currentTimeIndicator(BuildContext context, double maxHeightWanted,
     return (dayInWeek * column);
   }
 
+double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
+   var adjustment = -10;
+  double column = constraints / 7;
+  var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
+  var dayInWeek = sTime.weekday;
+  if (dayInWeek == 7) {
+    dayInWeek = 0;
+    adjustment = 40;
+  }
+  return (dayInWeek * column) + adjustment;
+}
+
   // Didn't want to do this function, but all our color values are in hex format
   int _getColorFromHex(String hexColor) {
     hexColor = hexColor.toUpperCase().replaceAll("#", "");
@@ -287,11 +299,8 @@ currentTimeIndicator(BuildContext context, double maxHeightWanted,
                           Positioned(
                             height: getHeightByTime(event, maxHeight) + 100,
                             width: 20,
-                            top:
-                                moveBoxDownBasedOfConstraints(event, maxHeight),
-                            left: moveBoxRightBasedOfConstraints(
-                                    event, maxWidth) -
-                                10,
+                            top: moveBoxDownBasedOfConstraints(event, maxHeight),
+                            left: moveJoinedFriendsRightBasedOfConstraints(event, maxWidth),
                             child: GridView.count(
                                 primary: false,
                                 padding: const EdgeInsets.all(0),
