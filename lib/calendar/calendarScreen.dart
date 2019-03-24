@@ -206,28 +206,20 @@ class CalendarPageState extends State<CalendarPage> {
                               /// Horizontally scrolling set of calendar widgets
                               /// that get defined at the top of the class.
 
-                              NotificationListener<ScrollNotification>(
-                                onNotification: (ScrollNotification scrollInfo){
-                                  print('${horizontalHeaderScrollController.offset}');
-                                  print('${pageController.offset}');
-                                  horizontalHeaderScrollController.jumpTo(pageController.offset);
-//                                  print('check -- offset Left: '+horizontalHeaderScrollController.offset.toInt().toString()+ '
-//                                  -- offset Right: '+pageController.offset.toInt().toString());
-                                },
-                                child: StickyHeader(
+                              StickyHeader(
                                     header: Container(
                                       decoration: BoxDecoration(
-//                                          boxShadow:[
-//                                            new BoxShadow(
-//                                              color: Colors.grey[500],
-//                                              blurRadius: 5.0,
-//                                              offset: Offset(6, 1.0)
-//                                            )],
                                         color: Colors.white,
                                       ),
                                       width: maxPossibleWidth -50,
                                       height: 50,
-                                      child: CustomScrollView(
+                                      child: NotificationListener<ScrollNotification>(
+                                          onNotification: (scrollInfo){
+                                            print('$scrollInfo');
+                                          },
+                                          child:
+                                      CustomScrollView(
+                                        semanticChildCount: 14,
                                         physics: const NeverScrollableScrollPhysics(),
                                         scrollDirection: Axis.horizontal,
                                         controller: horizontalHeaderScrollController,
@@ -237,16 +229,23 @@ class CalendarPageState extends State<CalendarPage> {
                                               var yearsBack = startOfWeek.subtract(Duration(days: pages * 7));
                                               DateTime day;
                                               day = yearsBack.add(Duration(days: index));
-                                              return calculateDayStyle(day, leftColumnWidth);
+                                              return IndexedSemantics(
+                                                index: index,
+                                                child: calculateDayStyle(day, leftColumnWidth),
+                                              );
                                             }),
                                           )
                                         ],
-                                      )
+                                      ))
                                     ),
                                     content: Container(
                                         width: maxPossibleWidth -50,
                                         height: maxHeightWanted,
-                                        child: PageView.builder(
+                                        child: NotificationListener<ScrollNotification>(
+                                            onNotification: (ScrollNotification scrollInfo){
+                                              horizontalHeaderScrollController.jumpTo(pageController.offset);
+                                            },
+                                            child: PageView.builder(
                                           controller: pageController,
                                           itemBuilder: (context, _index) {
                                             final index =  _index - pages;
@@ -271,10 +270,9 @@ class CalendarPageState extends State<CalendarPage> {
                                               child: calendar(context, week),
                                             );
                                           },
-                                        )
+                                        ))
                                     )
                                 ),
-                              )
                             ],
                           ),
                         ],
