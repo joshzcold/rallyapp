@@ -130,7 +130,7 @@ currentTimeIndicator(BuildContext context, double maxHeightWanted,
               children: <Widget>[
                 Container(
                   color: Colors.green,
-                  width: maxPossibleWidth / 8 - 35,
+                  width: maxPossibleWidth / 7 - 25,
                   height: 3,
                 ),
                 Icon(
