@@ -84,10 +84,69 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
                             .toList()),
                     eventCards(context, maxHeightWanted, maxPossibleWidth,
                         week),
+                    currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, week)
                   ],
                 ),
               );
           });
+}
+
+
+double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
+  double height = constraints;
+  double hour = height / 24;
+  var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
+  double distanceDown = hoursFromMidnight * hour;
+  return distanceDown;
+}
+
+  double moveIndicatorRightBasedOfConstraints(sTime, constraints) {
+    double column = constraints / 7;
+    var dayInWeek = sTime.weekday;
+    if (dayInWeek == 7) {
+      dayInWeek = 0;
+    }
+    return (dayInWeek * column);
+  }
+
+
+currentTimeIndicator(BuildContext context, double maxHeightWanted,
+    double maxPossibleWidth, currentWeek) {
+  DateTime cday = DateTime.now();
+  bool check = false;
+  for (DateTime day in currentWeek) {
+    String value =
+        day.year.toString() + day.month.toString() + day.day.toString();
+    String today =
+        cday.year.toString() + cday.month.toString() + cday.day.toString();
+    if (today == value) {
+      check = true;
+      return Stack(
+        children: <Widget>[
+          Positioned(
+            top: moveIndicatorDownBasedOfConstraints(cday, maxHeightWanted) - 10,
+            left: moveIndicatorRightBasedOfConstraints(cday, maxPossibleWidth),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  color: Colors.green,
+                  width: maxPossibleWidth / 8 - 35,
+                  height: 3,
+                ),
+                Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+              ],
+            ),
+          )
+        ],
+      );
+    }
+  }
+  if (check == false) {
+    return Container();
+  }
 }
 
   double getHeightByTime(event, constraints) {
