@@ -10,12 +10,13 @@ class AuthLoading extends AuthState{
 }
 
 class AuthLoaded extends AuthState{
-  final Map user;
+  final Map value;
+  final String key;
 
-  AuthLoaded(this.user);
+  AuthLoaded(this.key, this.value);
 
   @override
-  String toString() => 'AuthLoaded { user: $user}';
+  String toString() => 'AuthLoaded{key: $key, value: $value}';
 }
 
 class AuthNotLoaded extends AuthState{
