@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:rallyapp/screens/loginScreen.dart';
 import 'package:rallyapp/screens/mainScreen.dart';
+import 'package:rallyapp/screens/newEventScreen.dart';
 import 'package:rallyapp/screens/settingsScreen.dart';
 import 'package:rallyapp/screens/registerScreen.dart';
-import 'package:rallyapp/calendar/calendarScreen.dart';
 
 import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:rallyapp/blocs/events/event_bloc.dart';
@@ -35,6 +35,7 @@ class Rally extends StatelessWidget {
             '/register': (context) => RegisterPage(),
             '/main': (context) => MainScreen(),
             '/settings': (context) => Settings(),
+            '/newEvent': (context) => NewEvent()
           },
         )
     );

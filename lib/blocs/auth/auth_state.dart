@@ -10,9 +10,9 @@ class AuthLoading extends AuthState{
 }
 
 class AuthLoaded extends AuthState{
-  final user;
+  final Map user;
 
-  AuthLoaded([this.user = const[]]) : super ([user]);
+  AuthLoaded(this.user);
 
   @override
   String toString() => 'AuthLoaded { user: $user}';

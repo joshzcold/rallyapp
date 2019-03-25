@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
+import 'package:rallyapp/blocs/auth/auth.dart';
+import 'package:rallyapp/screens/friendEventScreen.dart';
+import 'package:rallyapp/screens/userEventScreen.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
 var currentHour = new DateTime.now().hour;
@@ -225,6 +228,7 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
 
   eventCards(context, maxHeight, maxWidth, week) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
+    final _authBloc = BlocProvider.of<AuthBloc>(context);
     return BlocBuilder(
         bloc: _eventsBloc,
         builder: (BuildContext context, state) {
@@ -258,11 +262,16 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
                               clipBehavior: Clip.hardEdge,
                               color:
                                   Color(_getColorFromHex(event.value['color'])),
-                              child: FlatButton(
+                              child: BlocBuilder(bloc: _authBloc, builder:(context, auth){
+                                return FlatButton(
                                 clipBehavior: Clip.hardEdge,
                                 padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
                                 onPressed: () {
-                                  print('clicked on $event');
+                                  if(auth.user.containsKey(event.value['user'])){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
+                                  } else{
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                                  }
                                 },
                                 child: ListView(
                                   padding: EdgeInsets.all(0),
@@ -293,7 +302,8 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
                                     ),
                                   ],
                                 ),
-                              ),
+                              );
+                              })
                             ),
                           ),
                           Positioned(
