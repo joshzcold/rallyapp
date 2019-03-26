@@ -4,7 +4,17 @@ import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 
-class FriendsScreen extends StatelessWidget {
+class FriendsScreen extends StatefulWidget{
+
+  @override
+  FriendsScreenState createState() => FriendsScreenState();
+}
+
+class FriendsScreenState extends State<FriendsScreen> {
+  var expanded = false;
+  var friendCardHeight = 140.0;
+  Widget eventsSection = Container();
+
   @override
   Widget build(BuildContext context) {
     final _friendsBloc = BlocProvider.of<FriendsBloc>(context);
@@ -49,7 +59,6 @@ class FriendsScreen extends StatelessWidget {
                 builder: (context, constraints){
                   var userCardWidth = constraints.maxWidth * .80;
                   var userCardHeight = constraints.maxHeight /4;
-                  var friendCardHeight = constraints.maxHeight/8;
                   var friendCardWidth = constraints.maxWidth *.95;
                   return Container(
                     height: constraints.maxHeight,
@@ -77,14 +86,10 @@ class FriendsScreen extends StatelessWidget {
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                                             children: <Widget>[
                                               /// User Photo
-                                              Container(
-                                                  width: 100.0,
-                                                  height: 100.0,
-                                                  decoration: new BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      image: new DecorationImage(
-                                                          fit: BoxFit.fill,
-                                                          image: new NetworkImage(auth.value['userPhoto'])))),
+                                              CircleAvatar(
+                                                radius: 50,
+                                                backgroundImage: NetworkImage(auth.value['userPhoto']),
+                                              ),
                                               /// User Name
                                               Text('${auth.value['userName']}', style: TextStyle(
                                                 fontWeight: FontWeight.bold,
@@ -129,14 +134,174 @@ class FriendsScreen extends StatelessWidget {
                                 height: 400,
                                 width: friendCardWidth,
                                 alignment: Alignment(0.5, 0.5),
-                                child: ListView(
+                                child: LayoutBuilder(builder: (context, friendViewConstraints){
+                                  return ListView(
                                       children: state.friends.entries
                                           .map<Widget>((friend) => BlocBuilder(
                                         bloc: _eventsBloc,
                                         builder: (context, state){
-                                          return _calculatePresentFriendEvents(friend, state.events[friend.key], friendCardHeight);
+                                          var events = state.events[friend.key];
+                                          var eventsPassedToday = {};
+                                          DateTime currentTime = DateTime.now();
+                                          if(events != null){
+                                            events.forEach((k, event){
+                                              if(event['start'] > currentTime.millisecondsSinceEpoch){
+                                                print('${friend.key}: ${DateTime.fromMillisecondsSinceEpoch(event['start'])}');
+                                                eventsPassedToday.addAll({k: event});
+                                              }
+                                            });
+                                          }
+                                          if(eventsPassedToday.length > 0){
+                                            /// This return is if there are events passed DateTime now
+                                            /// for this friend.
+                                            return Card(
+                                                child: AnimatedContainer(
+                                                  duration: Duration(milliseconds: 300),
+                                                  height: friendCardHeight,
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: <Widget>[
+                                                      FlatButton(
+                                                          padding: EdgeInsets.all(0),
+                                                          onPressed: (){
+                                                            print('touched: $friend');
+                                                          },
+                                                          child: Container(
+                                                            padding: EdgeInsets.all(10),
+                                                            height: 80,
+                                                            child: Row(
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                              children: <Widget>[
+                                                                /// This Container is the Friend Images
+                                                                Container(
+                                                                    width: 60.0,
+                                                                    height: 60.0,
+                                                                    decoration: new BoxDecoration(
+                                                                        shape: BoxShape.circle,
+                                                                        image: new DecorationImage(
+                                                                            fit: BoxFit.fill,
+                                                                            image: new NetworkImage(
+                                                                                friend.value['userPhoto'])))),
+                                                                /// Friend User Name
+                                                                Text(friend.value['userName'], style: TextStyle(
+                                                                    fontSize: 20
+                                                                ),),
+                                                                /// Friend RallyID
+                                                                Text(friend.value['rallyID'], style: TextStyle(
+                                                                    fontSize: 20
+                                                                ),)
+                                                              ],
+                                                            ),
+                                                          )),
+                                                      AnimatedSwitcher(
+                                                        duration: Duration(seconds: 2),
+                                                        transitionBuilder: (Widget child, Animation<double> animation){
+                                                          return ScaleTransition(child: child, scale: animation);
+                                                        },
+                                                        child: eventsSection,
+                                                      ),
+                                                      IconButton(
+                                                          padding: EdgeInsets.all(0),
+                                                          icon: Icon(Icons.keyboard_arrow_down), onPressed: (){
+                                                        if(expanded){
+                                                          setState(() {
+                                                            friendCardHeight = 140;
+                                                            eventsSection = Container();
+                                                            expanded = false;
+                                                          });
+                                                        } else{
+                                                          ///SetState for events processed on each friend card
+                                                          setState((){
+                                                            friendCardHeight = friendViewConstraints.maxHeight;
+
+                                                            eventsSection = Container(
+                                                              alignment: Alignment(0.5, 0.5),
+                                                              width: friendCardWidth,
+                                                              color: Colors.grey,
+                                                              height: eventsPassedToday.length * 120.0,
+                                                              child: Container(
+                                                                width: friendCardWidth * .95,
+                                                                child: ListView(
+                                                                    children: eventsPassedToday.entries.map<Widget>((event) =>
+                                                                        Container(
+                                                                          height: 100,
+                                                                          decoration: BoxDecoration(
+                                                                              color: Colors.white,
+                                                                              border: Border.all(color: Colors.red, width: 5.0)
+                                                                          ),
+                                                                          child: FlatButton(
+                                                                              padding: EdgeInsets.all(0),
+                                                                              onPressed: (){
+                                                                                print('touched: $friend');
+                                                                              },
+                                                                              child: Container(
+                                                                                padding: EdgeInsets.all(10),
+                                                                                child: Row(
+                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                  children: <Widget>[
+
+                                                                                    /// Friend User Name
+                                                                                    Text(friend.value['userName'], style: TextStyle(
+                                                                                        fontSize: 20
+                                                                                    ),),
+                                                                                    /// Friend RallyID
+                                                                                    Text(friend.value['rallyID'], style: TextStyle(
+                                                                                        fontSize: 20
+                                                                                    ),)
+                                                                                  ],
+                                                                                ),
+                                                                              )),
+                                                                        )
+                                                                    ).toList()),),
+                                                            );
+                                                            expanded = true;
+                                                          });
+                                                        }
+                                                      }),
+                                                    ],
+                                                  ),
+                                                )
+                                            );
+                                          } else{
+                                            /// No Events passed DateTime Now
+                                            return Card(
+                                              child: FlatButton(
+                                                  padding: EdgeInsets.all(0),
+                                                  onPressed: (){
+                                                    print('touched: $friend');
+                                                  },
+                                                  child: Container(
+                                                    padding: EdgeInsets.all(10),
+                                                    height: 80,
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: <Widget>[
+                                                        /// This Container is the Friend Images
+                                                        Container(
+                                                            width: 60.0,
+                                                            height: 60.0,
+                                                            decoration: new BoxDecoration(
+                                                                shape: BoxShape.circle,
+                                                                image: new DecorationImage(
+                                                                    fit: BoxFit.fill,
+                                                                    image: new NetworkImage(
+                                                                        friend.value['userPhoto'])))),
+                                                        /// Friend User Name
+                                                        Text(friend.value['userName'], style: TextStyle(
+                                                            fontSize: 20
+                                                        ),),
+                                                        /// Friend RallyID
+                                                        Text(friend.value['rallyID'], style: TextStyle(
+                                                            fontSize: 20
+                                                        ),)
+                                                      ],
+                                                    ),
+                                                  )),
+                                            );
+                                          }
                                         },
-                                      )).toList())
+                                      )).toList());
+                                }),
                               )
                             ],
                           )
@@ -156,88 +321,155 @@ class FriendsScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-Widget _calculatePresentFriendEvents(friend, events, friendCardHeight) {
-  var eventsPassedToday = {};
-  DateTime currentTime = DateTime.now();
-  events.forEach((k, event){
-    if(event['start'] > currentTime.millisecondsSinceEpoch){
-      print('${friend.key}: ${DateTime.fromMillisecondsSinceEpoch(event['start'])}');
-      eventsPassedToday.addAll({k: event});
+  Widget _calculatePresentFriendEvents(friend, events, friendCardHeight) {
+    var eventsPassedToday = {};
+    DateTime currentTime = DateTime.now();
+    if(events != null){
+      events.forEach((k, event){
+        if(event['start'] > currentTime.millisecondsSinceEpoch){
+          print('${friend.key}: ${DateTime.fromMillisecondsSinceEpoch(event['start'])}');
+          eventsPassedToday.addAll({k: event});
+        }
+      });
     }
-  });
-  if(eventsPassedToday.length > 0){
-    return Card(
-      child: FlatButton(
-          padding: EdgeInsets.all(0),
-          onPressed: (){
-            print('touched: $friend');
-          },
-          child: Container(
-            padding: EdgeInsets.all(10),
-            height: friendCardHeight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                /// This Container is the Friend Images
-                Container(
-                    width: 60.0,
-                    height: 60.0,
-                    decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: new DecorationImage(
-                            fit: BoxFit.fill,
-                            image: new NetworkImage(
-                                friend.value['userPhoto'])))),
-                /// Friend User Name
-                Text(friend.value['userName'], style: TextStyle(
-                    fontSize: 20
-                ),),
-                /// Friend RallyID
-                Text(friend.value['rallyID'], style: TextStyle(
-                    fontSize: 20
-                ),)
-              ],
-            ),
-          )),
-    );
-  } else{
-    return Card(
-      child: FlatButton(
-          padding: EdgeInsets.all(0),
-          onPressed: (){
-            print('touched: $friend');
-          },
-          child: Container(
-            padding: EdgeInsets.all(10),
-            height: friendCardHeight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                /// This Container is the Friend Images
-                Container(
-                    width: 60.0,
-                    height: 60.0,
-                    decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: new DecorationImage(
-                            fit: BoxFit.fill,
-                            image: new NetworkImage(
-                                friend.value['userPhoto'])))),
-                /// Friend User Name
-                Text(friend.value['userName'], style: TextStyle(
-                    fontSize: 20
-                ),),
-                /// Friend RallyID
-                Text(friend.value['rallyID'], style: TextStyle(
-                    fontSize: 20
-                ),)
-              ],
-            ),
-          )),
-    );
+    if(eventsPassedToday.length > 0){
+      Widget eventsSection = Container();
+
+      var eventSectionHeight = eventsPassedToday.length * 20;
+      /// This return is if there are events passed DateTime now
+      /// for this friend.
+      return Card(
+          child: Column(
+            children: <Widget>[
+              FlatButton(
+                  padding: EdgeInsets.all(0),
+                  onPressed: (){
+                    print('touched: $friend');
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    height: friendCardHeight,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        /// This Container is the Friend Images
+                        Container(
+                            width: 60.0,
+                            height: 60.0,
+                            decoration: new BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: new DecorationImage(
+                                    fit: BoxFit.fill,
+                                    image: new NetworkImage(
+                                        friend.value['userPhoto'])))),
+                        /// Friend User Name
+                        Text(friend.value['userName'], style: TextStyle(
+                            fontSize: 20
+                        ),),
+                        /// Friend RallyID
+                        Text(friend.value['rallyID'], style: TextStyle(
+                            fontSize: 20
+                        ),)
+                      ],
+                    ),
+                  )),
+              AnimatedSwitcher(
+                duration: Duration(seconds: 1),
+                transitionBuilder: (Widget child, Animation<double> animation){
+                  return ScaleTransition(child: child, scale: animation);
+                },
+                child: eventsSection,
+              ),
+              IconButton(
+                padding: EdgeInsets.all(0),
+                  icon: Icon(Icons.keyboard_arrow_down), onPressed: (){
+                ///SetState for events processed on each friend card
+                setState((){
+                  friendCardHeight = eventsPassedToday.length * 20.0;
+
+                  eventsSection = ListView(
+                      children: eventsPassedToday.entries.map<Widget>((event) =>
+                          Card(
+                            child: FlatButton(
+                                padding: EdgeInsets.all(0),
+                                onPressed: (){
+                                  print('touched: $friend');
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  height: friendCardHeight,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      /// This Container is the Friend Images
+                                      Container(
+                                          width: 60.0,
+                                          height: 60.0,
+                                          decoration: new BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: new DecorationImage(
+                                                  fit: BoxFit.fill,
+                                                  image: new NetworkImage(
+                                                      friend.value['userPhoto'])))),
+                                      /// Friend User Name
+                                      Text(friend.value['userName'], style: TextStyle(
+                                          fontSize: 20
+                                      ),),
+                                      /// Friend RallyID
+                                      Text(friend.value['rallyID'], style: TextStyle(
+                                          fontSize: 20
+                                      ),)
+                                    ],
+                                  ),
+                                )),
+                          )
+                      ).toList());
+                });
+              }),
+            ],
+          )
+      );
+    } else{
+      /// No Events passed DateTime Now
+      return Card(
+        child: FlatButton(
+            padding: EdgeInsets.all(0),
+            onPressed: (){
+              print('touched: $friend');
+            },
+            child: Container(
+              padding: EdgeInsets.all(10),
+              height: friendCardHeight,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  /// This Container is the Friend Images
+                  Container(
+                      width: 60.0,
+                      height: 60.0,
+                      decoration: new BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: new DecorationImage(
+                              fit: BoxFit.fill,
+                              image: new NetworkImage(
+                                  friend.value['userPhoto'])))),
+                  /// Friend User Name
+                  Text(friend.value['userName'], style: TextStyle(
+                      fontSize: 20
+                  ),),
+                  /// Friend RallyID
+                  Text(friend.value['rallyID'], style: TextStyle(
+                      fontSize: 20
+                  ),)
+                ],
+              ),
+            )),
+      );
+    }
   }
 }
+
+
 
 

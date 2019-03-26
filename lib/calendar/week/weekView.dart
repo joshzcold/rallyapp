@@ -212,14 +212,12 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
   List<Widget> _joinedFriends(event) {
     if (event.value['party']['friends'] != null) {
       return event.value['party']['friends'].entries
-          .map<Widget>((friend) => Container(
-              width: 15.0,
-              height: 15.0,
-              decoration: new BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: new DecorationImage(
-                      fit: BoxFit.fill,
-                      image: new NetworkImage(friend.value['userPhoto'])))))
+          .map<Widget>((friend) => CircleAvatar(
+        radius: 15,
+        backgroundColor: Color(_getColorFromHex(event.value['color'])),
+        backgroundImage: NetworkImage(friend
+            .value['userPhoto']),
+      ),)
           .toList();
     } else {
       return <Widget>[Container()];
@@ -277,15 +275,12 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
                                   padding: EdgeInsets.all(0),
                                   children: <Widget>[
                                     // User Image
-                                    Container(
-                                        width: 30.0,
-                                        height: 33.0,
-                                        decoration: new BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            image: new DecorationImage(
-                                                fit: BoxFit.fill,
-                                                image: new NetworkImage(event
-                                                    .value['userPhoto'])))),
+                                    CircleAvatar(
+                                      backgroundColor: Color(_getColorFromHex(event.value['color'])),
+                                      radius: 15,
+                                      backgroundImage: NetworkImage(event
+                                          .value['userPhoto']),
+                                    ),
                                     // User Name & Description
                                     RichText(
                                       text: TextSpan(
