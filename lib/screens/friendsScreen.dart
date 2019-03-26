@@ -70,10 +70,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                             return userCard(userCardHeight, userCardWidth, auth);
                           }),
                           /// Friends Label and the friends list
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
+                          Container(
                                 height: 30,
                                 width: friendCardWidth,
                                 child:
@@ -82,11 +79,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                     fontSize: 20,
                                     fontStyle: FontStyle.italic),)
                                 ),
-                              Container(
-                                height: 400,
-                                width: friendCardWidth,
-                                alignment: Alignment(0.5, 0.5),
-                                child: LayoutBuilder(builder: (context, friendViewConstraints){
+                              LayoutBuilder(builder: (context, friendViewConstraints){
                                   return Column(
                                       children: state.friends.entries
                                           .map<Widget>((friend) => BlocBuilder(
@@ -107,11 +100,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                                             /// This return is if there are events passed DateTime now
                                             /// for this friend.
                                             return Card(
-                                                child: AnimatedContainer(
-                                                  duration: Duration(milliseconds: 300),
-                                                  height: friendCardHeight,
+                                                child: Container(
                                                   child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: <Widget>[
                                                       FlatButton(
                                                           padding: EdgeInsets.all(0),
@@ -142,7 +132,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                             ),
                                                           )),
                                                       AnimatedSwitcher(
-                                                        duration: Duration(seconds: 10),
+                                                        duration: Duration(seconds: 1),
                                                         transitionBuilder: (Widget child, Animation<double> animation){
                                                           return SizeTransition(sizeFactor: animation, child: eventsSection,);
                                                         },
@@ -203,9 +193,6 @@ class FriendsScreenState extends State<FriendsScreen> {
                                         },
                                       )).toList());
                                 }),
-                              )
-                            ],
-                          )
                         ],
                       )
                   );
@@ -235,13 +222,8 @@ class FriendsScreenState extends State<FriendsScreen> {
       setState((){
         friendCardHeight = friendViewConstraints.maxHeight;
 
-        eventsSection = Container(
-          width: friendCardWidth,
-          color: Colors.grey,
-          height: eventsPassedToday.length * 120.0,
-          child: Container(
-            width: friendCardWidth * .95,
-            child: Column(
+        eventsSection = Column(
+          mainAxisSize: MainAxisSize.min,
                 children: eventsPassedToday.entries.map<Widget>((event) =>
                     Container(
                       height: 100,
@@ -277,8 +259,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                             )
                           )),
                     )
-                ).toList()),),
-        );
+                ).toList());
         expanded = true;
       });
     }
