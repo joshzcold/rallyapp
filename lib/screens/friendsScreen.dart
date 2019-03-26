@@ -68,54 +68,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                         children: <Widget>[
                           BlocBuilder(bloc: _authBloc, builder: (context, auth){
                             /// User Card
-                            return Card(
-                                child: Container(
-                                    height: userCardHeight,
-                                    width: userCardWidth,
-                                    child: Stack(
-                                      children: <Widget>[
-                                        Positioned(
-                                          child: IconButton(icon: Icon(Icons.settings), onPressed: (){
-                                            print('SETTINGS');
-                                          }),
-                                          top: 0,
-                                          right: 0,
-                                        ),
-                                        Positioned(
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                            children: <Widget>[
-                                              /// User Photo
-                                              CircleAvatar(
-                                                backgroundColor: Colors.white,
-                                                radius: userCardHeight /4,
-                                                backgroundImage: NetworkImage(auth.value['userPhoto']),
-                                              ),
-                                              /// User Name
-                                              Text('${auth.value['userName']}', style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 30,
-                                              ),),
-                                            ],
-                                          ),
-                                        ),
-                                        /// User RallyID
-                                        Positioned(
-                                          child: Center(
-                                              child: Text('Rally ID: ${auth.value['rallyID']}', style: TextStyle(
-                                                color: Colors.grey[700],
-                                                fontSize: 20,
-                                              ),)
-                                          ),
-                                          bottom: 10,
-                                          width: userCardWidth,
-                                        )
-                                      ],
-                                    )
-                                )
-                            );
+                            return userCard(userCardHeight, userCardWidth, auth);
                           }),
-
                           /// Friends Label and the friends list
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,7 +99,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                           if(events != null){
                                             events.forEach((k, event){
                                               if(event['start'] > currentTime.millisecondsSinceEpoch){
-                                                print('${friend.key}: ${DateTime.fromMillisecondsSinceEpoch(event['start'])}');
+                                                print('${friend.key}: ${DateTime.fromMillisecondsSinceEpoch(event['end'])}');
                                                 eventsPassedToday.addAll({k: event});
                                               }
                                             });
@@ -189,9 +143,9 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                             ),
                                                           )),
                                                       AnimatedSwitcher(
-                                                        duration: Duration(seconds: 2),
+                                                        duration: Duration(seconds: 10),
                                                         transitionBuilder: (Widget child, Animation<double> animation){
-                                                          return ScaleTransition(child: child, scale: animation);
+                                                          return SizeTransition(sizeFactor: animation, child: child,);
                                                         },
                                                         child: eventsSection,
                                                       ),
@@ -270,153 +224,6 @@ class FriendsScreenState extends State<FriendsScreen> {
     );
   }
 
-  Widget _calculatePresentFriendEvents(friend, events, friendCardHeight) {
-    var eventsPassedToday = {};
-    DateTime currentTime = DateTime.now();
-    if(events != null){
-      events.forEach((k, event){
-        if(event['start'] > currentTime.millisecondsSinceEpoch){
-          print('${friend.key}: ${DateTime.fromMillisecondsSinceEpoch(event['start'])}');
-          eventsPassedToday.addAll({k: event});
-        }
-      });
-    }
-    if(eventsPassedToday.length > 0){
-      Widget eventsSection = Container();
-
-      var eventSectionHeight = eventsPassedToday.length * 20;
-      /// This return is if there are events passed DateTime now
-      /// for this friend.
-      return Card(
-          child: Column(
-            children: <Widget>[
-              FlatButton(
-                  padding: EdgeInsets.all(0),
-                  onPressed: (){
-                    print('touched: $friend');
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    height: friendCardHeight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        /// This Container is the Friend Images
-                        Container(
-                            width: 60.0,
-                            height: 60.0,
-                            decoration: new BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: new DecorationImage(
-                                    fit: BoxFit.fill,
-                                    image: new NetworkImage(
-                                        friend.value['userPhoto'])))),
-                        /// Friend User Name
-                        Text(friend.value['userName'], style: TextStyle(
-                            fontSize: 20
-                        ),),
-                        /// Friend RallyID
-                        Text(friend.value['rallyID'], style: TextStyle(
-                            fontSize: 20
-                        ),)
-                      ],
-                    ),
-                  )),
-              AnimatedSwitcher(
-                duration: Duration(seconds: 1),
-                transitionBuilder: (Widget child, Animation<double> animation){
-                  return ScaleTransition(child: child, scale: animation);
-                },
-                child: eventsSection,
-              ),
-              IconButton(
-                padding: EdgeInsets.all(0),
-                  icon: Icon(Icons.keyboard_arrow_down), onPressed: (){
-                ///SetState for events processed on each friend card
-                setState((){
-                  friendCardHeight = eventsPassedToday.length * 20.0;
-
-                  eventsSection = ListView(
-                      children: eventsPassedToday.entries.map<Widget>((event) =>
-                          Card(
-                            child: FlatButton(
-                                padding: EdgeInsets.all(0),
-                                onPressed: (){
-                                  print('touched: $friend');
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.all(10),
-                                  height: friendCardHeight,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      /// This Container is the Friend Images
-                                      Container(
-                                          width: 60.0,
-                                          height: 60.0,
-                                          decoration: new BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              image: new DecorationImage(
-                                                  fit: BoxFit.fill,
-                                                  image: new NetworkImage(
-                                                      friend.value['userPhoto'])))),
-                                      /// Friend User Name
-                                      Text(friend.value['userName'], style: TextStyle(
-                                          fontSize: 20
-                                      ),),
-                                      /// Friend RallyID
-                                      Text(friend.value['rallyID'], style: TextStyle(
-                                          fontSize: 20
-                                      ),)
-                                    ],
-                                  ),
-                                )),
-                          )
-                      ).toList());
-                });
-              }),
-            ],
-          )
-      );
-    } else{
-      /// No Events passed DateTime Now
-      return Card(
-        child: FlatButton(
-            padding: EdgeInsets.all(0),
-            onPressed: (){
-              print('touched: $friend');
-            },
-            child: Container(
-              padding: EdgeInsets.all(10),
-              height: friendCardHeight,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  /// This Container is the Friend Images
-                  Container(
-                      width: 60.0,
-                      height: 60.0,
-                      decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: new DecorationImage(
-                              fit: BoxFit.fill,
-                              image: new NetworkImage(
-                                  friend.value['userPhoto'])))),
-                  /// Friend User Name
-                  Text(friend.value['userName'], style: TextStyle(
-                      fontSize: 20
-                  ),),
-                  /// Friend RallyID
-                  Text(friend.value['rallyID'], style: TextStyle(
-                      fontSize: 20
-                  ),)
-                ],
-              ),
-            )),
-      );
-    }
-  }
-
   void toggleFriendEventsExpand(friend, friendCardWidth, eventsPassedToday, friendViewConstraints) {
     if(expanded){
       setState(() {
@@ -430,7 +237,6 @@ class FriendsScreenState extends State<FriendsScreen> {
         friendCardHeight = friendViewConstraints.maxHeight;
 
         eventsSection = Container(
-          alignment: Alignment(0.5, 0.5),
           width: friendCardWidth,
           color: Colors.grey,
           height: eventsPassedToday.length * 120.0,
@@ -442,7 +248,10 @@ class FriendsScreenState extends State<FriendsScreen> {
                       height: 100,
                       decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(color: Colors.red, width: 5.0)
+                          border: BorderDirectional(
+                              top: BorderSide(
+                                  color: Color(_getColorFromHex(event.value['color'])),
+                                  width: 20))
                       ),
                       child: FlatButton(
                           padding: EdgeInsets.all(0),
@@ -451,20 +260,22 @@ class FriendsScreenState extends State<FriendsScreen> {
                           },
                           child: Container(
                             padding: EdgeInsets.all(10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child:
+                            Column(
                               children: <Widget>[
+                                Row(children: returnTimeInPrettyFormat(event)),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
 
-                                /// Friend User Name
-                                Text(friend.value['userName'], style: TextStyle(
-                                    fontSize: 20
-                                ),),
-                                /// Friend RallyID
-                                Text(friend.value['rallyID'], style: TextStyle(
-                                    fontSize: 20
-                                ),)
+                                    /// Friend User Name
+                                    Text('Title: ${friend.value['title']}', style: TextStyle(
+                                        fontSize: 15
+                                    ),),
+                                  ],
+                                ),
                               ],
-                            ),
+                            )
                           )),
                     )
                 ).toList()),),
@@ -472,6 +283,201 @@ class FriendsScreenState extends State<FriendsScreen> {
         expanded = true;
       });
     }
+  }
+
+  // Didn't want to do this function, but all our color values are in hex format
+  int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  Widget userCard(userCardHeight, userCardWidth, auth) {
+    return Card(
+        child: Container(
+            height: userCardHeight,
+            width: userCardWidth,
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  child: IconButton(icon: Icon(Icons.settings), onPressed: (){
+                    print('SETTINGS');
+                  }),
+                  top: 0,
+                  right: 0,
+                ),
+                Positioned(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      /// User Photo
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: userCardHeight /4,
+                        backgroundImage: NetworkImage(auth.value['userPhoto']),
+                      ),
+                      /// User Name
+                      Text('${auth.value['userName']}', style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                      ),),
+                    ],
+                  ),
+                ),
+                /// User RallyID
+                Positioned(
+                  child: Center(
+                      child: Text('Rally ID: ${auth.value['rallyID']}', style: TextStyle(
+                        color: Colors.grey[700],
+                        fontSize: 20,
+                      ),)
+                  ),
+                  bottom: 10,
+                  width: userCardWidth,
+                )
+              ],
+            )
+        )
+    );
+  }
+
+  returnTimeInPrettyFormat(event) {
+    var startTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
+    var startDay = startTime.day.toString();
+    var startMonth = startTime.month.toString();
+    var startHour = startTime.hour.toString();
+    var startMinute = ':'+startTime.minute.toString();
+
+    var endTime = DateTime.fromMillisecondsSinceEpoch(event.value['end']);
+//    var endMonth = endTime.month.toString();
+    var endHour = endTime.hour.toString();
+    var endMinute = ':'+endTime.minute.toString();
+    var indicator = "AM";
+    if(startTime.hour*60 + startTime.minute > 720){
+     indicator = "PM";
+    }
+
+
+    switch(startHour){
+      case "0":
+        startHour = "12";
+        indicator = "AM";
+        break;
+      case "13":
+        startHour = "1";
+        indicator = "PM";
+        break;
+      case "14":
+        startHour = "2";
+        indicator = "PM";
+        break;
+      case "15":
+        startHour = "3";
+        indicator = "PM";
+        break;
+      case "16":
+        startHour = "4";
+        indicator = "PM";
+        break;
+      case "17":
+        startHour = "5";
+        indicator = "PM";
+        break;
+      case "18":
+        startHour = "6";
+        indicator = "PM";
+        break;
+      case "19":
+        startHour = "7";
+        indicator = "PM";
+        break;
+      case "20":
+        startHour = "8";
+        indicator = "PM";
+        break;
+      case "21":
+        startHour = "9";
+        indicator = "PM";
+        break;
+      case "22":
+        startHour = "10";
+        indicator = "PM";
+        break;
+      case "23":
+        startHour = "11";
+        indicator = "PM";
+        break;
+      case "24":
+        startHour = "12";
+        indicator = "PM";
+        break;
+    }
+
+    switch(endHour){
+      case "13":
+        endHour = "1";
+        indicator = "PM";
+        break;
+      case "14":
+        endHour = "2";
+        indicator = "PM";
+        break;
+      case "15":
+        endHour = "3";
+        indicator = "PM";
+        break;
+      case "16":
+        endHour = "4";
+        indicator = "PM";
+        break;
+      case "17":
+        endHour = "5";
+        indicator = "PM";
+        break;
+      case "18":
+        endHour = "6";
+        indicator = "PM";
+        break;
+      case "19":
+        endHour = "7";
+        indicator = "PM";
+        break;
+      case "20":
+        endHour = "8";
+        indicator = "PM";
+        break;
+      case "21":
+        endHour = "9";
+        indicator = "PM";
+        break;
+      case "22":
+        endHour = "10";
+        indicator = "PM";
+        break;
+      case "23":
+        endHour = "11";
+        indicator = "PM";
+        break;
+      case "24":
+        endHour = "12";
+        indicator = "PM";
+        break;
+    }
+
+    if(startMinute == ":0"){
+      startMinute = "";
+    }
+    if(endMinute == ":0"){
+      endMinute = "";
+    }
+
+
+    return  [
+      Text('$startMonth/$startDay', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,),),
+      Text('From: $startHour$startMinute$indicator To: $endHour$endMinute$indicator')
+    ];
   }
 }
 
