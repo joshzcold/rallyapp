@@ -411,7 +411,7 @@ class FriendsScreenState extends State<FriendsScreen> {
         break;
       case "24":
         startHour = "12";
-        indicator = "PM";
+        indicator = "AM";
         break;
     }
 
