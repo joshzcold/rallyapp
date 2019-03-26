@@ -12,7 +12,7 @@ class FriendsScreen extends StatefulWidget{
 
 class FriendsScreenState extends State<FriendsScreen> {
   var expanded = false;
-  var friendCardHeight = 140.0;
+  var friendCardHeight = 110.0;
   Widget eventsSection = Container();
 
   @override
@@ -87,7 +87,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                                             children: <Widget>[
                                               /// User Photo
                                               CircleAvatar(
-                                                radius: 50,
+                                                backgroundColor: Colors.white,
+                                                radius: userCardHeight /4,
                                                 backgroundImage: NetworkImage(auth.value['userPhoto']),
                                               ),
                                               /// User Name
@@ -97,8 +98,6 @@ class FriendsScreenState extends State<FriendsScreen> {
                                               ),),
                                             ],
                                           ),
-                                          height: userCardHeight -10,
-                                          width: userCardWidth,
                                         ),
                                         /// User RallyID
                                         Positioned(
@@ -196,64 +195,17 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                         },
                                                         child: eventsSection,
                                                       ),
-                                                      IconButton(
-                                                          padding: EdgeInsets.all(0),
-                                                          icon: Icon(Icons.keyboard_arrow_down), onPressed: (){
-                                                        if(expanded){
-                                                          setState(() {
-                                                            friendCardHeight = 140;
-                                                            eventsSection = Container();
-                                                            expanded = false;
-                                                          });
-                                                        } else{
-                                                          ///SetState for events processed on each friend card
-                                                          setState((){
-                                                            friendCardHeight = friendViewConstraints.maxHeight;
-
-                                                            eventsSection = Container(
-                                                              alignment: Alignment(0.5, 0.5),
-                                                              width: friendCardWidth,
-                                                              color: Colors.grey,
-                                                              height: eventsPassedToday.length * 120.0,
-                                                              child: Container(
-                                                                width: friendCardWidth * .95,
-                                                                child: ListView(
-                                                                    children: eventsPassedToday.entries.map<Widget>((event) =>
-                                                                        Container(
-                                                                          height: 100,
-                                                                          decoration: BoxDecoration(
-                                                                              color: Colors.white,
-                                                                              border: Border.all(color: Colors.red, width: 5.0)
-                                                                          ),
-                                                                          child: FlatButton(
-                                                                              padding: EdgeInsets.all(0),
-                                                                              onPressed: (){
-                                                                                print('touched: $friend');
-                                                                              },
-                                                                              child: Container(
-                                                                                padding: EdgeInsets.all(10),
-                                                                                child: Row(
-                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                  children: <Widget>[
-
-                                                                                    /// Friend User Name
-                                                                                    Text(friend.value['userName'], style: TextStyle(
-                                                                                        fontSize: 20
-                                                                                    ),),
-                                                                                    /// Friend RallyID
-                                                                                    Text(friend.value['rallyID'], style: TextStyle(
-                                                                                        fontSize: 20
-                                                                                    ),)
-                                                                                  ],
-                                                                                ),
-                                                                              )),
-                                                                        )
-                                                                    ).toList()),),
-                                                            );
-                                                            expanded = true;
-                                                          });
-                                                        }
-                                                      }),
+                                                      Container(
+                                                        height: 30,
+                                                        width: friendCardWidth,
+                                                        child: FlatButton(
+                                                          child: Center(
+                                                            child: Icon(Icons.keyboard_arrow_down),
+                                                          ),
+                                                            onPressed: (){
+                                                            toggleFriendEventsExpand(friend, friendCardWidth, eventsPassedToday, friendViewConstraints);
+                                                        }),
+                                                      ),
                                                     ],
                                                   ),
                                                 )
@@ -462,6 +414,63 @@ class FriendsScreenState extends State<FriendsScreen> {
               ),
             )),
       );
+    }
+  }
+
+  void toggleFriendEventsExpand(friend, friendCardWidth, eventsPassedToday, friendViewConstraints) {
+    if(expanded){
+      setState(() {
+        friendCardHeight = 140;
+        eventsSection = Container();
+        expanded = false;
+      });
+    } else{
+      ///SetState for events processed on each friend card
+      setState((){
+        friendCardHeight = friendViewConstraints.maxHeight;
+
+        eventsSection = Container(
+          alignment: Alignment(0.5, 0.5),
+          width: friendCardWidth,
+          color: Colors.grey,
+          height: eventsPassedToday.length * 120.0,
+          child: Container(
+            width: friendCardWidth * .95,
+            child: ListView(
+                children: eventsPassedToday.entries.map<Widget>((event) =>
+                    Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.red, width: 5.0)
+                      ),
+                      child: FlatButton(
+                          padding: EdgeInsets.all(0),
+                          onPressed: (){
+                            print('touched: $friend');
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+
+                                /// Friend User Name
+                                Text(friend.value['userName'], style: TextStyle(
+                                    fontSize: 20
+                                ),),
+                                /// Friend RallyID
+                                Text(friend.value['rallyID'], style: TextStyle(
+                                    fontSize: 20
+                                ),)
+                              ],
+                            ),
+                          )),
+                    )
+                ).toList()),),
+        );
+        expanded = true;
+      });
     }
   }
 }
