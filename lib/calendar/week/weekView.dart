@@ -267,7 +267,7 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
                                 clipBehavior: Clip.hardEdge,
                                 padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
                                 onPressed: () {
-                                  if(auth.user.containsKey(event.value['user'])){
+                                  if(auth.key == event.value['user']){
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
                                   } else{
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
