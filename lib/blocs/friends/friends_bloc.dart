@@ -25,11 +25,13 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState>{
   Stream<FriendsState>_mapAddFriendsToState(currentState ,event) async*{
     if(currentState is FriendsLoading){
       currentState = {};
+      currentState[event.key] = {};
     } else if(currentState is FriendsLoaded){
       currentState = currentState.friends;
+      currentState[event.key] ={};
     }
     final updatedFriends = Map.of(currentState);
-    updatedFriends.addAll({event.key: event.value});
+    updatedFriends[event.key] = event.value;
     yield FriendsLoaded(updatedFriends);
   }
 
