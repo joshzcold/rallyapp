@@ -63,8 +63,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                   return Container(
                     height: constraints.maxHeight,
                       width: constraints.maxWidth,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      child: ListView(
                         children: <Widget>[
                           BlocBuilder(bloc: _authBloc, builder: (context, auth){
                             /// User Card
@@ -88,7 +87,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                 width: friendCardWidth,
                                 alignment: Alignment(0.5, 0.5),
                                 child: LayoutBuilder(builder: (context, friendViewConstraints){
-                                  return ListView(
+                                  return Column(
                                       children: state.friends.entries
                                           .map<Widget>((friend) => BlocBuilder(
                                         bloc: _eventsBloc,
@@ -145,7 +144,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                       AnimatedSwitcher(
                                                         duration: Duration(seconds: 10),
                                                         transitionBuilder: (Widget child, Animation<double> animation){
-                                                          return SizeTransition(sizeFactor: animation, child: child,);
+                                                          return SizeTransition(sizeFactor: animation, child: eventsSection,);
                                                         },
                                                         child: eventsSection,
                                                       ),
@@ -242,7 +241,7 @@ class FriendsScreenState extends State<FriendsScreen> {
           height: eventsPassedToday.length * 120.0,
           child: Container(
             width: friendCardWidth * .95,
-            child: ListView(
+            child: Column(
                 children: eventsPassedToday.entries.map<Widget>((event) =>
                     Container(
                       height: 100,
