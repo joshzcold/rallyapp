@@ -109,8 +109,6 @@ class FriendsScreenState extends State<FriendsScreen> {
                                           builder: (context, state) {
                                             var events = state.events[friend.key];
                                             var eventsPassedToday = {};
-                                            var sortedEvents = {};
-                                            var listOfTimes = [];
 
                                             DateTime currentTime = DateTime.now();
                                             if (events != null) {
@@ -119,21 +117,11 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                 if (event['end'] >
                                                     currentTime.millisecondsSinceEpoch) {
                                                   eventsPassedToday.addAll({k: event});
-                                                  listOfTimes.add(event['start']);
                                                 }
                                               });
-                                              listOfTimes..sort();
                                               // after sorting, add events in order
-                                              for(var time in listOfTimes){
-                                                eventsPassedToday.forEach((k,value){
-                                                  if(time == value['start']){
-                                                    sortedEvents.addAll({k:value});
-                                                  }
-                                                });
-                                              }
                                             }
                                             // set those events to the sorted events.
-                                            eventsPassedToday = sortedEvents;
                                             if (eventsPassedToday.length > 0) {
                                               /// EVENTS IN FUTURE
                                               return Stack(
@@ -209,8 +197,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                               child: child,
                                                             );
                                                           },
-                                                          child: eventsSection[
-                                                              friend.key],
+                                                          child: eventsSection[friend.key],
                                                         ),
                                                         Container(
                                                           height: 30,
@@ -226,7 +213,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                                     friend,
                                                                     friendCardWidth,
                                                                     eventsPassedToday,
-                                                                    friendViewConstraints);
+                                                                    friendViewConstraints,
+                                                                    _eventsBloc);
                                                               }),
                                                         ),
                                                       ],
@@ -280,7 +268,7 @@ class FriendsScreenState extends State<FriendsScreen> {
   }
 
   void toggleFriendEventsExpand(
-      friend, friendCardWidth, eventsPassedToday, friendViewConstraints) {
+      friend, friendCardWidth, eventsPassedToday, friendViewConstraints, _eventsBloc) {
     if (expanded[friend.key]) {
       setState(() {
         friendCardHeight = 140;
@@ -292,60 +280,90 @@ class FriendsScreenState extends State<FriendsScreen> {
       setState(() {
         friendCardHeight = friendViewConstraints.maxHeight;
 
-        eventsSection[friend.key] = Column(
-          children: <Widget>[
-            Container(
-              height: 30,
-              width: friendCardWidth,
-              child: FlatButton(
-                  child: Center(
-                    child: Icon(Icons.keyboard_arrow_up),
-                  ),
-                  onPressed: () {
-                    toggleFriendEventsExpand(friend, friendCardWidth,
-                        eventsPassedToday, friendViewConstraints);
-                  }),
-            ),
-            Column(
-                mainAxisSize: MainAxisSize.min,
-                children: eventsPassedToday.entries
-                    .map<Widget>((event) => Container(
-                          height: 100,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: BorderDirectional(
-                                  top: BorderSide(
-                                      color: Color(_getColorFromHex(
-                                          event.value['color'])),
-                                      width: 20))),
-                          child: FlatButton(
-                              padding: EdgeInsets.all(0),
-                              onPressed: () {
-                                print('touched: $event');
-                              },
-                              child: Container(
-                                  padding: EdgeInsets.all(10),
-                                  child: Column(
+        eventsSection[friend.key] = BlocBuilder(
+          bloc: _eventsBloc, builder: (context, state){
+          var events = state.events[friend.key];
+          var eventsPassedToday = {};
+          var sortedEvents = {};
+          var listOfTimes = [];
+
+          DateTime currentTime = DateTime.now();
+          if (events != null) {
+            // forEach to find events passed today
+            events.forEach((k, event) {
+              if (event['end'] >
+                  currentTime.millisecondsSinceEpoch) {
+                eventsPassedToday.addAll({k: event});
+                listOfTimes.add(event['start']);
+              }
+            });
+            listOfTimes..sort();
+            // after sorting, add events in order
+            for(var time in listOfTimes){
+              eventsPassedToday.forEach((k,value){
+                if(time == value['start']){
+                  sortedEvents.addAll({k:value});
+                }
+              });
+            }
+          }
+            eventsPassedToday = sortedEvents;
+            return Column(
+              children: <Widget>[
+                Container(
+                  height: 30,
+                  width: friendCardWidth,
+                  child: FlatButton(
+                      child: Center(
+                        child: Icon(Icons.keyboard_arrow_up),
+                      ),
+                      onPressed: () {
+                        toggleFriendEventsExpand(friend, friendCardWidth,
+                            eventsPassedToday, friendViewConstraints, _eventsBloc);
+                      }),
+                ),
+                Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: eventsPassedToday.entries
+                        .map<Widget>((event) => Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: BorderDirectional(
+                              top: BorderSide(
+                                  color: Color(_getColorFromHex(
+                                      event.value['color'])),
+                                  width: 20))),
+                      child: FlatButton(
+                          padding: EdgeInsets.all(0),
+                          onPressed: () {
+                            print('touched: $event');
+                          },
+                          child: Container(
+                              padding: EdgeInsets.all(10),
+                              child: Column(
+                                children: <Widget>[
+                                  Row(
+                                      children:
+                                      returnTimeInPrettyFormat(event)),
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      Row(
-                                          children:
-                                              returnTimeInPrettyFormat(event)),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          /// Friend User Name
-                                          Text(
-                                            'Title: ${event.value['title']}',
-                                            style: TextStyle(fontSize: 15),
-                                          ),
-                                        ],
+                                      /// Friend User Name
+                                      Text(
+                                        'Title: ${event.value['title']}',
+                                        style: TextStyle(fontSize: 15),
                                       ),
                                     ],
-                                  ))),
-                        ))
-                    .toList())
-          ],
+                                  ),
+                                ],
+                              ))),
+                    ))
+                        .toList())
+              ],
+            );
+        },
         );
         expanded[friend.key] = true;
       });
