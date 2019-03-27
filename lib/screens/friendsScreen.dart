@@ -77,7 +77,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                 builder: (context, constraints) {
                   var userCardWidth = constraints.maxWidth * .80;
                   var userCardHeight = constraints.maxHeight / 4;
-                  var friendCardWidth = constraints.maxWidth * .95;
+                  var friendCardWidth = constraints.maxWidth * .90;
                   return Container(
                       height: constraints.maxHeight,
                       width: constraints.maxWidth,
@@ -101,7 +101,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                               height: 30,
                               width: friendCardWidth,
                               child: Text(
-                                'Friends',
+                                '    Friends',
                                 style: TextStyle(
                                     fontSize: 20, fontStyle: FontStyle.italic),
                               )),
@@ -134,6 +134,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                 children: <Widget>[
                                                   Card(
                                                       child: Container(
+                                                        width: friendCardWidth,
                                                     child: Column(
                                                       children: <Widget>[
                                                         FlatButton(
@@ -251,7 +252,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                             } else {
                                               /// NO EVENTS IN FUTURE
                                               return noFutureEventsFriendItem(
-                                                  friend);
+                                                  friend, friendCardWidth);
                                             }
                                           },
                                         ))
@@ -329,45 +330,65 @@ class FriendsScreenState extends State<FriendsScreen> {
                             eventsPassedToday, friendViewConstraints, _eventsBloc);
                       }),
                 ),
-                Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: eventsPassedToday.entries
-                        .map<Widget>((event) => Container(
-                      height: 100,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: BorderDirectional(
-                              top: BorderSide(
-                                  color: Color(_getColorFromHex(
-                                      event.value['color'])),
-                                  width: 20))),
-                      child: FlatButton(
-                          padding: EdgeInsets.all(0),
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
-                          },
-                          child: Container(
-                              padding: EdgeInsets.all(10),
-                              child: Column(
-                                children: <Widget>[
-                                  Row(
-                                      children:
-                                      returnTimeInPrettyFormat(event)),
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      /// Friend User Name
-                                      Text(
-                                        'Title: ${event.value['title']}',
-                                        style: TextStyle(fontSize: 15),
-                                      ),
+                Container(
+                  color:Colors.grey[100],
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: eventsPassedToday.entries
+                          .map<Widget>((event) =>
+                          Column(
+                            children: <Widget>[
+                              // SPACER
+                              Container(
+                                height: 10,
+                              ),
+                              /// Each Event Card
+                              Container(
+                                width: friendCardWidth * .95,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                    boxShadow: [
+                                      new BoxShadow(
+                                        color: Colors.grey[500],
+                                        blurRadius: 5.0,
+                                        offset: Offset(0.0, 0.0),
+                                      )
                                     ],
-                                  ),
-                                ],
-                              ))),
-                    ))
-                        .toList())
+                                    color: Colors.white,
+                                ),
+                                child: FlatButton(
+                                    padding: EdgeInsets.all(0),
+                                    onPressed: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                                    },
+                                    child: Container(
+                                        padding: EdgeInsets.all(10),
+                                        child: Column(
+                                          children: <Widget>[
+                                            Row(
+                                                children:
+                                                returnTimeInPrettyFormat(event)),
+                                            Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              children: <Widget>[
+                                                /// Friend User Name
+                                                Text(
+                                                  'Title: ${event.value['title']}',
+                                                  style: TextStyle(fontSize: 15),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ))),
+                              ),
+                              // SPACER
+                              Container(
+                                height: 10,
+                              ),
+                            ],
+                          )).toList()),
+                )
               ],
             );
         },
@@ -588,7 +609,7 @@ class FriendsScreenState extends State<FriendsScreen> {
     ];
   }
 
-  Widget noFutureEventsFriendItem(friend) {
+  Widget noFutureEventsFriendItem(friend, friendCardWidth) {
     return Card(
       child: FlatButton(
           padding: EdgeInsets.all(0),
@@ -598,6 +619,7 @@ class FriendsScreenState extends State<FriendsScreen> {
           child: Container(
             padding: EdgeInsets.all(10),
             height: 80,
+            width: friendCardWidth,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
