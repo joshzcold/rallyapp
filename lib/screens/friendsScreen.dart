@@ -51,7 +51,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                             FlatButton(
                               child: const Text('ADD FRIEND'),
                               onPressed: () {
-                                /* ... */
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => NewFriend()));
                               },
                             ),
                           ],
@@ -593,7 +593,7 @@ class FriendsScreenState extends State<FriendsScreen> {
       child: FlatButton(
           padding: EdgeInsets.all(0),
           onPressed: () {
-            print('touched: $friend');
+            Navigator.push(context, MaterialPageRoute(builder: (context) => FriendDetails(friend: friend,)));
           },
           child: Container(
             padding: EdgeInsets.all(10),
