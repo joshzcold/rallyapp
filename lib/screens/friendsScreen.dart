@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
@@ -105,21 +107,33 @@ class FriendsScreenState extends State<FriendsScreen> {
                                     .map<Widget>((friend) => BlocBuilder(
                                           bloc: _eventsBloc,
                                           builder: (context, state) {
-                                            var events =
-                                                state.events[friend.key];
+                                            var events = state.events[friend.key];
                                             var eventsPassedToday = {};
-                                            DateTime currentTime =
-                                                DateTime.now();
+                                            var sortedEvents = {};
+                                            var listOfTimes = [];
+
+                                            DateTime currentTime = DateTime.now();
                                             if (events != null) {
+                                              // forEach to find events passed today
                                               events.forEach((k, event) {
                                                 if (event['end'] >
-                                                    currentTime
-                                                        .millisecondsSinceEpoch) {
-                                                  eventsPassedToday
-                                                      .addAll({k: event});
+                                                    currentTime.millisecondsSinceEpoch) {
+                                                  eventsPassedToday.addAll({k: event});
+                                                  listOfTimes.add(event['start']);
                                                 }
                                               });
+                                              listOfTimes..sort();
+                                              // after sorting, add events in order
+                                              for(var time in listOfTimes){
+                                                eventsPassedToday.forEach((k,value){
+                                                  if(time == value['start']){
+                                                    sortedEvents.addAll({k:value});
+                                                  }
+                                                });
+                                              }
                                             }
+                                            // set those events to the sorted events.
+                                            eventsPassedToday = sortedEvents;
                                             if (eventsPassedToday.length > 0) {
                                               /// EVENTS IN FUTURE
                                               return Stack(
@@ -219,18 +233,24 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                     ),
                                                   )),
                                                   Positioned(
-                                                    top:4,
-                                                    right:0,
+                                                    top: 4,
+                                                    right: 0,
                                                     child: Container(
                                                       decoration: BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          color: Colors.green[700]
-                                                      ),
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          color: Colors
+                                                              .green[700]),
                                                       width: 29,
-                                                      child: Text("${eventsPassedToday.length}",
-                                                        style: TextStyle(color: Colors.white, fontSize: 18.0),
+                                                      child: Text(
+                                                        "${eventsPassedToday.length}",
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 18.0),
                                                       ),
-                                                      alignment: FractionalOffset(0.5, 0.5),
+                                                      alignment:
+                                                          FractionalOffset(
+                                                              0.5, 0.5),
                                                     ),
                                                   ),
                                                 ],
@@ -301,7 +321,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                           child: FlatButton(
                               padding: EdgeInsets.all(0),
                               onPressed: () {
-                                print('touched: $friend');
+                                print('touched: $event');
                               },
                               child: Container(
                                   padding: EdgeInsets.all(10),
@@ -316,7 +336,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                         children: <Widget>[
                                           /// Friend User Name
                                           Text(
-                                            'Title: ${friend.value['title']}',
+                                            'Title: ${event.value['title']}',
                                             style: TextStyle(fontSize: 15),
                                           ),
                                         ],
