@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/calendar/week/weekView.dart';
+import 'package:rallyapp/screens/newEventScreen.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:rect_getter/rect_getter.dart';
 
@@ -100,7 +101,9 @@ class CalendarPageState extends State<CalendarPage> {
                   return Scaffold(
                       floatingActionButton: Container(
                         child: FloatingActionButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => NewEvent()));
+                            },
                             backgroundColor: Colors.blue,
                             child: Icon(Icons.add)),
                       ),

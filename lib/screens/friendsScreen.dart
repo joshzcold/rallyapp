@@ -5,6 +5,10 @@ import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
+import 'package:rallyapp/screens/friendEventScreen.dart';
+import 'package:rallyapp/screens/friendDetailsScreen.dart';
+import 'package:rallyapp/screens/newFriendScreen.dart';
+import 'package:rallyapp/screens/settingsScreen.dart';
 
 class FriendsScreen extends StatefulWidget {
   @override
@@ -88,7 +92,10 @@ class FriendsScreenState extends State<FriendsScreen> {
                                 return userCard(
                                     userCardHeight, userCardWidth, auth);
                               }),
-
+                          /// Spacer
+                          Container(
+                            height: 50,
+                          ),
                           /// Friends Label and the friends list
                           Container(
                               height: 30,
@@ -101,7 +108,6 @@ class FriendsScreenState extends State<FriendsScreen> {
                           LayoutBuilder(
                               builder: (context, friendViewConstraints) {
                             return Column(
-
                                 /// FRIENDS LIST BUILDER
                                 children: state.friends.entries
                                     .map<Widget>((friend) => BlocBuilder(
@@ -135,8 +141,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                                 EdgeInsets.all(
                                                                     0),
                                                             onPressed: () {
-                                                              print(
-                                                                  'touched: $friend');
+                                                              Navigator.push(context, MaterialPageRoute(builder: (context) => FriendDetails(friend: friend,)));
                                                             },
                                                             child: Container(
                                                               padding:
@@ -260,7 +265,9 @@ class FriendsScreenState extends State<FriendsScreen> {
           }),
       floatingActionButton: Container(
         child: FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => NewFriend()));
+            },
             backgroundColor: Colors.blue,
             child: Icon(Icons.group_add)),
       ),
@@ -337,7 +344,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                       child: FlatButton(
                           padding: EdgeInsets.all(0),
                           onPressed: () {
-                            print('touched: $event');
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
                           },
                           child: Container(
                               padding: EdgeInsets.all(10),
@@ -388,16 +395,20 @@ class FriendsScreenState extends State<FriendsScreen> {
               children: <Widget>[
                 Positioned(
                   child: IconButton(
+                    color: Colors.grey,
                       icon: Icon(Icons.settings),
                       onPressed: () {
-                        print('SETTINGS');
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
                       }),
                   top: 0,
                   right: 0,
                 ),
                 Positioned(
+                  top: userCardHeight/5,
+                  left: userCardWidth/8,
+                  width: userCardWidth,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       /// User Photo
                       CircleAvatar(

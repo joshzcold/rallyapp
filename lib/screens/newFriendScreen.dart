@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class Settings extends StatelessWidget{
-
+class NewFriend extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text("Settings"),
+        title: Text("New Friend"),
       ),
     );
   }
+
 }
