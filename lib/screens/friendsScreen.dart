@@ -378,17 +378,13 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                   /// RETURN TIME OF EVENT
                                                     children:
                                                     returnTimeInPrettyFormat(event)),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
-                                                  children: <Widget>[
-                                                    /// EVENT TITLE
-                                                    Text(
-                                                      'Title: ${event.value['title']}',
-                                                      style: TextStyle(fontSize: 15),
-                                                    ),
-                                                  ],
+                                                Text(
+                                                  '${event.value['title']}',
+                                                  style: TextStyle(fontSize: 15),
                                                 ),
+
+                                                _joinedFriends(event)
+
                                               ],
                                             ))),
                                   ),
@@ -407,6 +403,28 @@ class FriendsScreenState extends State<FriendsScreen> {
         );
         expanded[friend.key] = true;
       });
+    }
+  }
+
+
+  Widget _joinedFriends(event) {
+    if (event.value['party']['friends'] != null) {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Text('Joined Friends: '),
+          Row(
+            children: event.value['party']['friends'].entries
+                .map<Widget>((friend) => CircleAvatar(
+              radius: 10,
+              backgroundImage: NetworkImage(friend
+                  .value['userPhoto']),
+            ),).toList()
+          )
+        ],
+      );
+    } else {
+      return Container();
     }
   }
 
@@ -690,8 +708,5 @@ class CardCornerClipper extends CustomClipper<Path>{
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    // TODO: implement shouldReclip
-    return null;
-  }
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
