@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:rallyapp/fireActions.dart';
 
 class NewEvent extends StatefulWidget {
   @override
   NewEventState createState() => NewEventState();
 }
+FireActions fireActions = new FireActions();
 
 var colorFire = '#a21a1c';
 var colorGrass = '#0d865a';
