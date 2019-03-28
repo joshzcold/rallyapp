@@ -16,6 +16,8 @@ var colorAutumn = '#964500';
 
 class NewEventState extends State<NewEvent> {
 
+  var colorSelection = colorAqua;
+
   final TextEditingController _gameTitleController = TextEditingController();
   final TextEditingController _partyLimitController = TextEditingController();
   static DateTime currentTime = DateTime.now();
@@ -29,7 +31,6 @@ class NewEventState extends State<NewEvent> {
       '${twoHours.hour}:${twoHours.minute}';
   var endTime = DateTime.now().add(Duration(hours: 2));
   Widget colorWheel = Container();
-  var colorSelection;
   @override
   Widget build(BuildContext context) {
     var maxWidth = MediaQuery.of(context).size.width;
@@ -228,8 +229,9 @@ class NewEventState extends State<NewEvent> {
                         padding: EdgeInsets.all(0),
                         child: Container(
                           height: 50,
+                          width: 50,
                           decoration: BoxDecoration(
-                            color: Colors.red,
+                            color: Color(_getColorFromHex(colorSelection)),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -240,14 +242,15 @@ class NewEventState extends State<NewEvent> {
                 ],
               ),
               Positioned(
+                top: 0,
                 child: AnimatedSwitcher(
                   // the duration can be adjusted to expand the friend events
                   // faster or slower.
-                  duration: Duration(milliseconds: 300),
+                  duration: Duration(milliseconds: 100),
                   transitionBuilder:
                       (Widget child, Animation<double> animation) {
-                    return SizeTransition(
-                      sizeFactor: animation,
+                    return FadeTransition(
+                      opacity: animation,
                       child: child,
                     );
                   },
@@ -307,12 +310,15 @@ class NewEventState extends State<NewEvent> {
                   left: leftCenterOfCircle,
                   child: FlatButton(
                     onPressed: (){
-                      _changeColorButton(maxHeight, maxWidth);
+                      setState(() {
+                        colorSelection = colorAqua;
+                        colorWheel = Container();
+                      });
                     },
                     padding: EdgeInsets.all(0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.red,
+                        color: Color(_getColorFromHex(colorAqua)),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -325,12 +331,14 @@ class NewEventState extends State<NewEvent> {
                   left: leftCenterOfCircle,
                   child: FlatButton(
                     onPressed: (){
-                      _changeColorButton(maxHeight, maxWidth);
-                    },
+                      setState(() {
+                        colorSelection = colorAutumn;
+                        colorWheel = Container();
+                      });                    },
                     padding: EdgeInsets.all(0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: Color(_getColorFromHex(colorAutumn)),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -343,12 +351,14 @@ class NewEventState extends State<NewEvent> {
                   left: circleMargins + padding,
                   child: FlatButton(
                     onPressed: (){
-                      _changeColorButton(maxHeight, maxWidth);
-                    },
+                      setState(() {
+                        colorSelection = colorGrass;
+                        colorWheel = Container();
+                      });                    },
                     padding: EdgeInsets.all(0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: Color(_getColorFromHex(colorGrass)),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -361,12 +371,14 @@ class NewEventState extends State<NewEvent> {
                   right: circleMargins + padding,
                   child: FlatButton(
                     onPressed: (){
-                      _changeColorButton(maxHeight, maxWidth);
-                    },
+                      setState(() {
+                        colorSelection = colorGround;
+                        colorWheel = Container();
+                      });                    },
                     padding: EdgeInsets.all(0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.green,
+                        color: Color(_getColorFromHex(colorGround)),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -379,12 +391,14 @@ class NewEventState extends State<NewEvent> {
                   left: (((circleMargins + circleSize/6) - colorSize/2) + colorSize/4) + cornerPadding,
                   child: FlatButton(
                     onPressed: (){
-                      _changeColorButton(maxHeight, maxWidth);
-                    },
+                      setState(() {
+                        colorSelection = colorMetal;
+                        colorWheel = Container();
+                      });                    },
                     padding: EdgeInsets.all(0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.yellowAccent,
+                        color: Color(_getColorFromHex(colorMetal)),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -397,12 +411,14 @@ class NewEventState extends State<NewEvent> {
                   left: (((circleMargins + circleSize/6) - colorSize/2) + colorSize/4) + cornerPadding,
                   child: FlatButton(
                     onPressed: (){
-                      _changeColorButton(maxHeight, maxWidth);
-                    },
+                      setState(() {
+                        colorSelection = colorLemon;
+                        colorWheel = Container();
+                      });                    },
                     padding: EdgeInsets.all(0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.purple,
+                        color: Color(_getColorFromHex(colorLemon)),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -415,12 +431,14 @@ class NewEventState extends State<NewEvent> {
                   right: (((circleMargins + circleSize/6) - colorSize/2) + colorSize/4) + cornerPadding,
                   child: FlatButton(
                     onPressed: (){
-                      _changeColorButton(maxHeight, maxWidth);
-                    },
+                      setState(() {
+                        colorSelection = colorRegal;
+                        colorWheel = Container();
+                      });                    },
                     padding: EdgeInsets.all(0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.brown,
+                        color: Color(_getColorFromHex(colorRegal)),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -433,12 +451,14 @@ class NewEventState extends State<NewEvent> {
                   right: (((circleMargins + circleSize/6) - colorSize/2) + colorSize/4) + cornerPadding,
                   child: FlatButton(
                     onPressed: (){
-                      _changeColorButton(maxHeight, maxWidth);
-                    },
+                      setState(() {
+                        colorSelection = colorFire;
+                        colorWheel = Container();
+                      });                    },
                     padding: EdgeInsets.all(0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.deepOrange,
+                        color: Color(_getColorFromHex(colorFire)),
                         shape: BoxShape.circle,
                       ),
                     ),
