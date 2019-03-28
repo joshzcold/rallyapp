@@ -40,14 +40,6 @@ class NewEventState extends State<NewEvent> {
           title: Text("New Event"),
           backgroundColor: Color(_getColorFromHex(colorSelection)),
         ),
-        floatingActionButton: Container(
-          child: FloatingActionButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              backgroundColor: Colors.green,
-              child: Icon(Icons.save)),
-        ),
         body: ListView(
           children: <Widget>[
             Container(
@@ -60,10 +52,12 @@ class NewEventState extends State<NewEvent> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
+                            Container(
+                              height: 40,
+                            ),
                             Text(
-                              'Start Time:',
+                              'Start Time',
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35),
                             ),
                             FlatButton(
@@ -128,7 +122,7 @@ class NewEventState extends State<NewEvent> {
                             Container(
                               height: 20,
                             ),
-                            Text('End Time:',
+                            Text('End Time',
                                 style:
                                 TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
                             FlatButton(
@@ -193,52 +187,48 @@ class NewEventState extends State<NewEvent> {
                             Container(
                               height: 40,
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text('Game Title & Description',
-                                    style:
-                                    TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
-                                Container(
-                                  width: maxWidth * .70,
-                                  child: TextField(
-                                    controller: _gameTitleController,
-                                    decoration: InputDecoration(
-                                      icon: Icon(Icons.videogame_asset),
-                                      hintText: 'Playing Halo with some Bros, chilling.',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              height: 20,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text('Party Limit',
-                                    style:
-                                    TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
-                                Container(
-                                  width: maxWidth * .20,
-                                  child: TextField(
-                                    textAlign: TextAlign.center,
-                                    controller: _partyLimitController,
-                                    decoration: new InputDecoration(
-                                      icon: Icon(Icons.group),
-                                      hintText: '0',
-                                    ),
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                )
-                              ],
-                            ),
-                            Container(
-                              height: 20,
-                            ),
                           ],
                         ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('Event Title',
+                                style:
+                                TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
+                            Container(
+                              width: maxWidth * .70,
+                              child: TextField(
+                                controller: _gameTitleController,
+                                decoration: InputDecoration(
+                                  icon: Icon(Icons.videogame_asset),
+                                  hintText: 'Playing Halo with some Bros, chilling.',
+                                ),
+                              ),
+                            ),
+
+                            Container(
+                              height: 40,
+                              width: 1,
+                            ),
+
+                            Text('Party Limit',
+                                style:
+                                TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
+                            Container(
+                              width: maxWidth * .20,
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                controller: _partyLimitController,
+                                decoration: new InputDecoration(
+                                  icon: Icon(Icons.group),
+                                  hintText: '0',
+                                ),
+                                keyboardType: TextInputType.number,
+                              ),
+                            )
+                          ],
+                        ),
+
                         Row(
                           children: <Widget>[
                             Container(
@@ -263,6 +253,66 @@ class NewEventState extends State<NewEvent> {
                                   ),
                                 ],
                               )
+                            ),
+                          ],
+                        ),
+                        Container(
+                          height: 40,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            FlatButton(
+                                onPressed: (){
+                                  Navigator.pop(context);
+                                },
+                                padding: EdgeInsets.all(0),
+                                child: Row(
+                                  children: <Widget>[
+                                    Container(width: 10,),
+                                    Container(
+                                        padding: EdgeInsets.all(10.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                        ),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Icon(Icons.cancel, color: Colors.white,),
+                                            Container(width: 5,),
+                                            Text('Cancel', style: TextStyle(color: Colors.white, fontSize: 20),),
+                                          ],
+                                        )
+
+                                    ),
+                                  ],
+                                )
+                            ),
+                            FlatButton(
+                                onPressed: (){
+                                  Navigator.pop(context);
+                                },
+                                padding: EdgeInsets.all(0),
+                                child: Row(
+                                  children: <Widget>[
+                                    Container(width: 10,),
+                                    Container(
+                                      padding: EdgeInsets.all(10.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green,
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                      ),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(Icons.save, color: Colors.white,),
+                                          Container(width: 5,),
+                                          Text('Save', style: TextStyle(color: Colors.white, fontSize: 20),),
+                                        ],
+                                      )
+
+                                    ),
+                                  ],
+                                )
                             ),
                           ],
                         )
