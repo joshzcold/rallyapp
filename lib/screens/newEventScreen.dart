@@ -38,6 +38,15 @@ class NewEventState extends State<NewEvent> {
     return Scaffold(
         appBar: AppBar(
           title: Text("New Event"),
+          backgroundColor: Color(_getColorFromHex(colorSelection)),
+        ),
+        floatingActionButton: Container(
+          child: FloatingActionButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              backgroundColor: Colors.green,
+              child: Icon(Icons.save)),
         ),
         body: ListView(
           children: <Widget>[
@@ -181,64 +190,80 @@ class NewEventState extends State<NewEvent> {
                                     textAlign: TextAlign.center,
                                   ),
                                 )),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Game Title & Description',
-                                style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
                             Container(
-                              width: maxWidth * .70,
-                              child: TextField(
-                                controller: _gameTitleController,
-                                decoration: InputDecoration(
-                                  icon: Icon(Icons.videogame_asset),
-                                  hintText: 'Playing Halo with some Bros, chilling.',
+                              height: 40,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text('Game Title & Description',
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
+                                Container(
+                                  width: maxWidth * .70,
+                                  child: TextField(
+                                    controller: _gameTitleController,
+                                    decoration: InputDecoration(
+                                      icon: Icon(Icons.videogame_asset),
+                                      hintText: 'Playing Halo with some Bros, chilling.',
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
+                            ),
+                            Container(
+                              height: 20,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text('Party Limit',
+                                    style:
+                                    TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
+                                Container(
+                                  width: maxWidth * .20,
+                                  child: TextField(
+                                    textAlign: TextAlign.center,
+                                    controller: _partyLimitController,
+                                    decoration: new InputDecoration(
+                                      icon: Icon(Icons.group),
+                                      hintText: '0',
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Container(
+                              height: 20,
                             ),
                           ],
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: <Widget>[
-                            Text('Party Limit',
-                                style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
                             Container(
-                              width: maxWidth * .20,
-                              child: TextField(
-                                textAlign: TextAlign.center,
-                                controller: _partyLimitController,
-                                decoration: new InputDecoration(
-                                  icon: Icon(Icons.group),
-                                  hintText: '0',
-                                ),
-                                keyboardType: TextInputType.number,
-                              ),
-                            )
-                          ],
-                        ),
-                        Column(
-                          children: <Widget>[
-                            Text('Color', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
+                              width: maxWidth/1.5,
+                            ),
                             FlatButton(
                               onPressed: (){
                                 _changeColorButton(maxHeight, maxWidth);
                               },
                               padding: EdgeInsets.all(0),
-                              child: Container(
-                                height: 50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                  color: Color(_getColorFromHex(colorSelection)),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
+                              child: Row(
+                                children: <Widget>[
+                                  Icon(Icons.brush, size: 30, color: Colors.grey,),
+                                  Container(width: 10,),
+                                  Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      color: Color(_getColorFromHex(colorSelection)),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ],
+                              )
                             ),
-
                           ],
                         )
                       ],
