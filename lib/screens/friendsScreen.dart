@@ -343,44 +343,55 @@ class FriendsScreenState extends State<FriendsScreen> {
                                 height: 10,
                               ),
                               /// Each Event Card
+                              ///
+
                               Container(
-                                width: friendCardWidth * .95,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                    boxShadow: [
-                                      new BoxShadow(
-                                        color: Colors.grey[500],
-                                        blurRadius: 5.0,
-                                        offset: Offset(0.0, 0.0),
-                                      )
-                                    ],
-                                    color: Colors.white,
+                                  boxShadow: [
+                                    new BoxShadow(
+                                      color: Colors.grey[500],
+                                      blurRadius: 5.0,
+                                      offset: Offset(0.0, 0.0),
+                                    )
+                                  ],
+                                  color: Color(_getColorFromHex(event.value['color'])),
                                 ),
-                                child: FlatButton(
-                                    padding: EdgeInsets.all(0),
-                                    onPressed: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
-                                    },
-                                    child: Container(
-                                        padding: EdgeInsets.all(10),
-                                        child: Column(
-                                          children: <Widget>[
-                                            Row(
-                                                children:
-                                                returnTimeInPrettyFormat(event)),
-                                            Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                child: ClipPath(
+                                clipper: CardCornerClipper(),
+                                  child: Container(
+                                    width: friendCardWidth * .95,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                      color: Colors.white,
+                                    ),
+                                    child: FlatButton(
+                                        padding: EdgeInsets.all(0),
+                                        onPressed: () {
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                                        },
+                                        child: Container(
+                                            padding: EdgeInsets.all(10),
+                                            child: Column(
                                               children: <Widget>[
-                                                /// Friend User Name
-                                                Text(
-                                                  'Title: ${event.value['title']}',
-                                                  style: TextStyle(fontSize: 15),
+                                                Row(
+                                                    children:
+                                                    returnTimeInPrettyFormat(event)),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                                  children: <Widget>[
+                                                    /// Friend User Name
+                                                    Text(
+                                                      'Title: ${event.value['title']}',
+                                                      style: TextStyle(fontSize: 15),
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
-                                            ),
-                                          ],
-                                        ))),
+                                            ))),
+                                  ),
+                                  )
                               ),
                               // SPACER
                               Container(
@@ -649,5 +660,35 @@ class FriendsScreenState extends State<FriendsScreen> {
             ),
           )),
     );
+  }
+}
+
+class CardCornerClipper extends CustomClipper<Path>{
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+
+    // Draw a straight line from current point to the bottom left corner.
+    path.lineTo(0.0, size.height);
+
+    path.lineTo(size.width, size.height);
+
+    path.lineTo(size.width, size.height * .40);
+
+    path.lineTo(size.width *.90, 0.0);
+
+    // Draw a straight line from current point to the top right corner.
+    path.lineTo(0.0, 0.0);
+
+    // Draws a straight line from current point to the first point of the path.
+    // In this case (0, 0), since that's where the paths start by default.
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) {
+    // TODO: implement shouldReclip
+    return null;
   }
 }
