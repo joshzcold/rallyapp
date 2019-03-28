@@ -43,12 +43,12 @@ class NewEventState extends State<NewEvent> {
           children: <Widget>[
             Container(
                 width: maxWidth,
-                height: maxHeight,
+                height: maxHeight + 300,
                 child: Stack(
                   children: <Widget>[
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
