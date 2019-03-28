@@ -375,13 +375,14 @@ class FriendsScreenState extends State<FriendsScreen> {
                                             child: Column(
                                               children: <Widget>[
                                                 Row(
+                                                  /// RETURN TIME OF EVENT
                                                     children:
                                                     returnTimeInPrettyFormat(event)),
                                                 Row(
                                                   mainAxisAlignment:
                                                   MainAxisAlignment.spaceBetween,
                                                   children: <Widget>[
-                                                    /// Friend User Name
+                                                    /// EVENT TITLE
                                                     Text(
                                                       'Title: ${event.value['title']}',
                                                       style: TextStyle(fontSize: 15),
@@ -611,12 +612,14 @@ class FriendsScreenState extends State<FriendsScreen> {
       Text(
         '$startMonth/$startDay',
         style: TextStyle(
-          fontSize: 30,
+          fontSize: 25,
           fontWeight: FontWeight.bold,
         ),
       ),
-      Text(
-          'From: $startHour$startMinute$indicator To: $endHour$endMinute$indicator')
+      Container(
+        width: 20,
+      ),
+      Text('$startHour$startMinute$indicator - $endHour$endMinute$indicator'),
     ];
   }
 
