@@ -46,27 +46,25 @@ int daysBeforeStart = pages * 7;
 
 
 class CalendarPage extends StatelessWidget{
-  int calculatedDayNumber = daysBeforeStart;
-  PageController pageController = PageController(initialPage: pages);
-  PageController horizontalHeaderScrollController;
-  ScrollController verticalPageGridScrollController;
+  final PageController pageController = PageController(initialPage: pages);
+  final PageController horizontalHeaderScrollController = PageController(
+      initialPage: pages
+  );
+
 
   @override
   Widget build(BuildContext context) {
-    horizontalHeaderScrollController = PageController(
-        initialPage: pages
-    );
     var maxHeightWanted =
         MediaQuery.of(context).size.height + 800;
-    verticalPageGridScrollController = ScrollController(
-        initialScrollOffset: calculateInitialScrollDownByCurrentTime(maxHeightWanted)
-    );
     var maxPossibleWidth = MediaQuery.of(context).size.width;
     var leftTimeColumnWidth = 50.0;
     var calendarColumnWidths = (MediaQuery.of(context).size.width - leftColumnWidth)/7;
-    final EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
-    final monthBloc = BlocProvider.of<MonthBloc>(context);
+    EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
+    var monthBloc = BlocProvider.of<MonthBloc>(context);
 
+    final ScrollController verticalPageGridScrollController = ScrollController(
+        initialScrollOffset: calculateInitialScrollDownByCurrentTime(maxHeightWanted)
+    );
 
     var currentDay = DateTime.now();
     var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
@@ -247,7 +245,7 @@ class CalendarPage extends StatelessWidget{
                                       child: PageView.builder(
                                         controller: pageController,
                                         itemBuilder: (context, _index) {
-                                          final index =  _index - pages;
+                                          var index =  _index - pages;
                                           var week = [];
                                           if(index == 0){
                                             week = currentWeek;
@@ -283,54 +281,6 @@ class CalendarPage extends StatelessWidget{
                                         },
                                       ))
                               ),
-
-//                              Container(
-//                                  decoration: BoxDecoration(
-//                                    color: Colors.white,
-//                                  ),
-//                                  width: maxPossibleWidth -50,
-//                                  height: 50,
-//                                  child: NotificationListener<ScrollNotification>(
-//                                      onNotification: (scrollInfo){
-//                                        var value = (horizontalHeaderScrollController.offset - calendarColumnWidths/2)/calendarColumnWidths;
-//                                        var roundedValue = value.round();
-//                                        if(roundedValue > calculatedDayNumber || roundedValue < calculatedDayNumber){
-//                                          var date = startOfWeek.add(Duration(days: (roundedValue - daysBeforeStart)));
-//                                          setState(() {
-//                                            currentMonth = date.month;
-//                                            calculatedDayNumber = roundedValue;
-//                                          });
-//                                        }
-//                                      },
-//                                      child:ListView.builder(
-//                                          physics: NeverScrollableScrollPhysics(),
-//                                          scrollDirection: Axis.horizontal,
-//                                          controller: horizontalHeaderScrollController,
-//                                          itemBuilder: (context, _index){
-//                                            final index =  _index - pages;
-//                                            var week = [];
-//                                            if(index == 0){
-//                                              week = currentWeek;
-//                                              // if statement accounts for daylight savings messing with daysInRage
-//                                              if(week.length == 8){
-//                                                week.removeLast();
-//                                              }
-//                                            } else{
-//                                              var startofWeek = startOfWeek.add(Duration(days: index*7));
-//                                              var endofWeek = Utils.lastDayOfWeek(startofWeek);
-//                                              week = Utils.daysInRange(startofWeek, endofWeek).toList();
-//                                              // if statement accounts for daylight savings messing with daysInRage
-//                                              if(week.length == 8){
-//                                                week.removeLast();
-//                                              }
-//                                            }
-//                                            return Row(
-//                                              children: week.map<Widget>((day) => calculateDayStyle(day, leftColumnWidth)).toList(),
-//                                            );
-//                                          })
-//
-//                                  )
-//                              ),
 
                             ],
                           ),
