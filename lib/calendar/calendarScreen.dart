@@ -40,10 +40,11 @@ double leftColumnWidth = 50;
 /// This is rendering how many pages back we want to allow the user to scroll
 /// for the top header this number needs to be divisible by 7.
 int pages = 53;
+int daysBeforeStart = pages * 7;
 
 /// These two controllers are meant to work together by sync scrolling
 PageController pageController;
-ScrollController horizontalHeaderScrollController;
+PageController horizontalHeaderScrollController;
 
 ScrollController verticalPageGridScrollController;
 
@@ -57,6 +58,8 @@ class CalendarPageState extends State<CalendarPage> {
   var listViewKey = RectGetter.createGlobalKey();
   var _keys = {};
   int currentMonth;
+  int calculatedDayNumber = daysBeforeStart;
+
 
 
   @override
@@ -69,8 +72,8 @@ class CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    horizontalHeaderScrollController = ScrollController(
-        initialScrollOffset: ((MediaQuery.of(context).size.width - leftColumnWidth)/7)*7*pages.toDouble()
+    horizontalHeaderScrollController = PageController(
+        initialPage: pages
     );
     var maxHeightWanted =
         MediaQuery.of(context).size.height + 800;
@@ -79,6 +82,7 @@ class CalendarPageState extends State<CalendarPage> {
     );
     var maxPossibleWidth = MediaQuery.of(context).size.width;
     var leftTimeColumnWidth = 50.0;
+    var calendarColumnWidths = (MediaQuery.of(context).size.width - leftColumnWidth)/7;
     final EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
 
     var currentDay = DateTime.now();
@@ -115,7 +119,7 @@ class CalendarPageState extends State<CalendarPage> {
                                 fixedColor: Colors.blue,
                                 onTap: (index) {
                                   if (index == 0) {
-                                    /// Jump to Today ///
+                                    pageController.animateToPage(pages, duration: Duration(seconds: 1), curve: Curves.easeOut);
                                   } else if (index == 1) {
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => FriendsScreen()));
                                   }
@@ -251,34 +255,42 @@ class CalendarPageState extends State<CalendarPage> {
                                       height: 50,
                                       child: NotificationListener<ScrollNotification>(
                                           onNotification: (scrollInfo){
-                                            var visible = getVisible();
-                                            /// calculatedDay is a bit hard coded. visible comes from the "rect"
-                                            /// of the "visible" elements in the ListView
-                                            /// at the time of this comment the 5th item happened to be
-                                            /// the first day of the current page. its possible this
-                                            /// could get messed up later. who knows....
-                                            var calculatedDay = yearsBack.add(Duration(days: visible[5].toInt()));
-                                            setState(() {
-                                              currentMonth = calculatedDay.month;
-                                            });
+                                            var value = (horizontalHeaderScrollController.offset - calendarColumnWidths/2)/calendarColumnWidths;
+                                            var roundedValue = value.round();
+                                            if(roundedValue > calculatedDayNumber || roundedValue < calculatedDayNumber){
+                                              var date = startOfWeek.add(Duration(days: (roundedValue - daysBeforeStart)));
+                                              setState(() {
+                                                currentMonth = date.month;
+                                                calculatedDayNumber = roundedValue;
+                                              });
+                                            }
                                           },
-                                          child:
-                                              RectGetter(key: listViewKey, child: ListView.builder(
+                                          child:ListView.builder(
                                                   physics: NeverScrollableScrollPhysics(),
                                                   scrollDirection: Axis.horizontal,
                                                   controller: horizontalHeaderScrollController,
-                                                  itemBuilder: (context, index){
-                                                    _keys[index] = RectGetter.createGlobalKey();
-
-                                                    DateTime day;
-                                                    day = yearsBack.add(Duration(days: index));
-                                                    var rectGetter = RectGetter(
-                                                      key: _keys[index],
-                                                      child: calculateDayStyle(day, leftColumnWidth),
+                                                  itemBuilder: (context, _index){
+                                                    final index =  _index - pages;
+                                                    var week = [];
+                                                    if(index == 0){
+                                                      week = currentWeek;
+                                                      // if statement accounts for daylight savings messing with daysInRage
+                                                      if(week.length == 8){
+                                                        week.removeLast();
+                                                      }
+                                                    } else{
+                                                      var startofWeek = startOfWeek.add(Duration(days: index*7));
+                                                      var endofWeek = Utils.lastDayOfWeek(startofWeek);
+                                                      week = Utils.daysInRange(startofWeek, endofWeek).toList();
+                                                      // if statement accounts for daylight savings messing with daysInRage
+                                                      if(week.length == 8){
+                                                        week.removeLast();
+                                                      }
+                                                    }
+                                                    return Row(
+                                                      children: week.map<Widget>((day) => calculateDayStyle(day, leftColumnWidth)).toList(),
                                                     );
-                                                    return rectGetter;
-
-                                                  }))
+                                                  })
 
                                       )
                                     ),
@@ -309,10 +321,7 @@ class CalendarPageState extends State<CalendarPage> {
                                                 week.removeLast();
                                               }
                                             }
-                                            return Container(
-                                              width: leftColumnWidth,
-                                              child: calendar(context, week),
-                                            );
+                                            return calendar(context, week);
                                           },
                                         ))
                                     )
