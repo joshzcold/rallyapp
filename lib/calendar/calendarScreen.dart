@@ -7,7 +7,6 @@ import 'package:rallyapp/calendar/week/weekView.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
 import 'package:rallyapp/screens/newEventScreen.dart';
 import 'package:sticky_headers/sticky_headers.dart';
-import 'package:rect_getter/rect_getter.dart';
 
 List<String> displayHour = [
   "1AM",
