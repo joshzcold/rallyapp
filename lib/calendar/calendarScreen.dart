@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/calendar/week/weekView.dart';
+import 'package:rallyapp/screens/friendsScreen.dart';
 import 'package:rallyapp/screens/newEventScreen.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:rect_getter/rect_getter.dart';
@@ -96,9 +97,29 @@ class CalendarPageState extends State<CalendarPage> {
                     child: CircularProgressIndicator(),
                   );
                 } else if (state is EventsLoaded) {
-                                DateTime startOfWeek = currentWeek.first;
-
                   return Scaffold(
+                      appBar: PreferredSize(
+                          child: AppBar(
+                            elevation: 0.0,
+                            backgroundColor: Colors.white,
+                          ),
+                          preferredSize: Size.fromHeight(1)),
+                      bottomNavigationBar: BottomNavigationBar(
+                                items: <BottomNavigationBarItem>[
+                                  BottomNavigationBarItem(
+                                      icon: Icon(Icons.today), title: Text('Today')),
+                                  BottomNavigationBarItem(
+                                      icon: Icon(Icons.group), title: Text('Friends')),
+                                ],
+                                currentIndex: 0,
+                                fixedColor: Colors.blue,
+                                onTap: (index) {
+                                  if (index == 0) {
+                                    /// Jump to Today ///
+                                  } else if (index == 1) {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => FriendsScreen()));
+                                  }
+                                }),
                       floatingActionButton: Container(
                         child: FloatingActionButton(
                             onPressed: () {

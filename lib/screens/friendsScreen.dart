@@ -27,6 +27,22 @@ class FriendsScreenState extends State<FriendsScreen> {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
 
     return Scaffold(
+      bottomNavigationBar: BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.calendar_today), title: Text('Events')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.group), title: Text('Friends')),
+          ],
+          currentIndex: 1,
+          fixedColor: Colors.blue,
+          onTap: (index) {
+            if (index == 0) {
+              Navigator.pop(context);
+            } else if (index == 1) {
+              /// Probably do nothing here ///
+            }
+          }),
       body: BlocBuilder(
           bloc: _friendsBloc,
           builder: (BuildContext context, state) {
