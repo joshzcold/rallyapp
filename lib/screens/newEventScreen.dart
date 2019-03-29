@@ -292,6 +292,11 @@ class NewEventState extends State<NewEvent> {
                             ),
                             FlatButton(
                                 onPressed: (){
+                                  fireActions.newEventToDatabase(
+                                      startTime.millisecondsSinceEpoch, endTime.millisecondsSinceEpoch,
+                                      colorSelection,
+                                      _partyLimitController.text,
+                                      _gameTitleController.text);
                                   Navigator.pop(context);
                                 },
                                 padding: EdgeInsets.all(0),

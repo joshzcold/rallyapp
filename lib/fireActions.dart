@@ -6,14 +6,30 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:uuid/uuid.dart';
+import 'package:rallyapp/blocs/auth/auth.dart';
 
 class FireActions {
-  FirebaseDatabase database = getFireBaseInstance();
-  FirebaseUser user = getFireBaseUser();
+  var uuid = Uuid();
+  var authBloc = AuthBloc();
 
-  newEventToDatabase(sTime, eTime, color, partyLimit, title){
-  database.reference().child('$path').set(<String, dynamic>{
+  newEventToDatabase(sTime, eTime, color, partyLimit, title)async{
+    var database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+    var authUser = authBloc.getAuthUser();
+    var eventID = uuid.v4();
+  database.reference().child('/user/${user.uid}/events/').set(<String, dynamic>{
+    eventID:{
+      'color': color,
+      'end': eTime,
+      'start': sTime,
+      'party': {
+        'partyLimit': partyLimit
+      },
+      'title': title,
+      'user': user.uid,
 
+    }
   });
   }
 
@@ -42,6 +58,6 @@ getFireBaseInstance() async{
     ),
   );
 
-  final FirebaseDatabase database = FirebaseDatabase(app:app);
+  var database = FirebaseDatabase(app:app);
   return database;
 }
