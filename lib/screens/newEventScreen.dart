@@ -296,7 +296,9 @@ class NewEventState extends State<NewEvent> {
                                       startTime.millisecondsSinceEpoch, endTime.millisecondsSinceEpoch,
                                       colorSelection,
                                       _partyLimitController.text,
-                                      _gameTitleController.text);
+                                      _gameTitleController.text,
+                                      context
+                                  );
                                   Navigator.pop(context);
                                 },
                                 padding: EdgeInsets.all(0),

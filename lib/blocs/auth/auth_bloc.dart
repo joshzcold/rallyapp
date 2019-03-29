@@ -7,10 +7,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
   @override
   AuthState get initialState => AuthLoading();
 
-  AuthState getAuthUser(){
-    return currentState;
-  }
-
   @override
   Stream<AuthState> mapEventToState(AuthState currentState, AuthEvent event) async*{
     if(event is AddAuth){
