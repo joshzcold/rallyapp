@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/month/monthBloc.dart';
 
 import 'package:rallyapp/screens/loginScreen.dart';
 import 'package:rallyapp/calendar/calendarScreen.dart';
@@ -26,6 +27,7 @@ class Rally extends StatelessWidget {
         BlocProvider<EventsBloc>(bloc: EventsBloc()),
         BlocProvider<AuthBloc>(bloc: AuthBloc()),
         BlocProvider<CalendarIndexBloc>(bloc: CalendarIndexBloc()),
+        BlocProvider<MonthBloc>(bloc: MonthBloc())
       ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

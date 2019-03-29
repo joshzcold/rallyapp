@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
+import 'package:rallyapp/blocs/month/monthBloc.dart';
 import 'package:rallyapp/calendar/week/weekView.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
 import 'package:rallyapp/screens/newEventScreen.dart';
@@ -42,30 +43,13 @@ int pages = 53;
 int daysBeforeStart = pages * 7;
 
 /// These two controllers are meant to work together by sync scrolling
-PageController pageController;
-PageController horizontalHeaderScrollController;
 
-ScrollController verticalPageGridScrollController;
 
-class CalendarPage extends StatefulWidget{
-  @override
-  CalendarPageState createState() => CalendarPageState();
-
-}
-
-class CalendarPageState extends State<CalendarPage> {
-  int currentMonth;
+class CalendarPage extends StatelessWidget{
   int calculatedDayNumber = daysBeforeStart;
-
-
-
-  @override
-  void initState() {
-    pageController = PageController(initialPage: pages);
-    currentMonth = Utils.firstDayOfWeek(DateTime.now()).toLocal().month;
-    super.initState();
-  }
-
+  PageController pageController = PageController(initialPage: pages);
+  PageController horizontalHeaderScrollController;
+  ScrollController verticalPageGridScrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +65,8 @@ class CalendarPageState extends State<CalendarPage> {
     var leftTimeColumnWidth = 50.0;
     var calendarColumnWidths = (MediaQuery.of(context).size.width - leftColumnWidth)/7;
     final EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
+    final monthBloc = BlocProvider.of<MonthBloc>(context);
+
 
     var currentDay = DateTime.now();
     var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
@@ -115,7 +101,7 @@ class CalendarPageState extends State<CalendarPage> {
                                 fixedColor: Colors.blue,
                                 onTap: (index) {
                                   if (index == 0) {
-                                    pageController.animateToPage(pages, duration: Duration(seconds: 1), curve: Curves.easeOut);
+                                    pageController.jumpToPage(pages);
                                   } else if (index == 1) {
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => FriendsScreen()));
                                   }
@@ -136,34 +122,35 @@ class CalendarPageState extends State<CalendarPage> {
                               Container(
                                   width: 50,
                                   child:StickyHeader(
-                                      header: new Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            boxShadow: [
-                                              new BoxShadow(
-                                                spreadRadius: MediaQuery.of(context).size.width,
-                                                color: Colors.grey[500],
-                                                blurRadius: 5.0,
-                                                offset: Offset(0.0, -MediaQuery.of(context).size.width),
-                                              )
-                                            ]),
-                                        height: 50.0,
-                                        child: Row(
-                                          children: <Widget>[
-                                            Container(
-                                              alignment: Alignment.center,
-                                              width: leftTimeColumnWidth,
-                                              child: new Text(
-                                                "${calculateMonthToAbbrv(currentMonth)}",
-                                                style: TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 20.0),
+                                      header: BlocBuilder(bloc: monthBloc, builder: (context, state){
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                new BoxShadow(
+//                                                spreadRadius: MediaQuery.of(context).size.width,
+                                                  color: Colors.grey[500],
+                                                  blurRadius: 5.0,
+//                                                offset: Offset(0.0, -MediaQuery.of(context).size.width),
+                                                )
+                                              ]),
+                                          height: 50.0,
+                                          child: Row(
+                                            children: <Widget>[
+                                              Container(
+                                                alignment: Alignment.center,
+                                                width: leftTimeColumnWidth,
+                                                child: new Text(
+                                                  "${calculateMonthToAbbrv(state.month)}",
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 20.0),
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
+                                            ],
+                                          ),
+                                        );
+                                      }),
                                       /// This is the Column on the left displaying time information
                                       content: Container(
                                           height: maxHeightWanted,
@@ -242,86 +229,109 @@ class CalendarPageState extends State<CalendarPage> {
                               /// Horizontally scrolling set of calendar widgets
                               /// that get defined at the top of the class.
 
-                              StickyHeader(
-                                    header: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                      ),
-                                      width: maxPossibleWidth -50,
-                                      height: 50,
-                                      child: NotificationListener<ScrollNotification>(
-                                          onNotification: (scrollInfo){
-                                            var value = (horizontalHeaderScrollController.offset - calendarColumnWidths/2)/calendarColumnWidths;
-                                            var roundedValue = value.round();
-                                            if(roundedValue > calculatedDayNumber || roundedValue < calculatedDayNumber){
-                                              var date = startOfWeek.add(Duration(days: (roundedValue - daysBeforeStart)));
-                                              setState(() {
-                                                currentMonth = date.month;
-                                                calculatedDayNumber = roundedValue;
-                                              });
-                                            }
-                                          },
-                                          child:ListView.builder(
-                                                  physics: NeverScrollableScrollPhysics(),
-                                                  scrollDirection: Axis.horizontal,
-                                                  controller: horizontalHeaderScrollController,
-                                                  itemBuilder: (context, _index){
-                                                    final index =  _index - pages;
-                                                    var week = [];
-                                                    if(index == 0){
-                                                      week = currentWeek;
-                                                      // if statement accounts for daylight savings messing with daysInRage
-                                                      if(week.length == 8){
-                                                        week.removeLast();
-                                                      }
-                                                    } else{
-                                                      var startofWeek = startOfWeek.add(Duration(days: index*7));
-                                                      var endofWeek = Utils.lastDayOfWeek(startofWeek);
-                                                      week = Utils.daysInRange(startofWeek, endofWeek).toList();
-                                                      // if statement accounts for daylight savings messing with daysInRage
-                                                      if(week.length == 8){
-                                                        week.removeLast();
-                                                      }
-                                                    }
-                                                    return Row(
-                                                      children: week.map<Widget>((day) => calculateDayStyle(day, leftColumnWidth)).toList(),
-                                                    );
-                                                  })
 
-                                      )
-                                    ),
-                                    content: Container(
-                                        width: maxPossibleWidth -50,
-                                        height: maxHeightWanted,
-                                        child: NotificationListener<ScrollNotification>(
-                                            onNotification: (ScrollNotification scrollInfo){
-                                              horizontalHeaderScrollController.jumpTo(pageController.offset);
-                                            },
-                                            child: PageView.builder(
-                                          controller: pageController,
-                                          itemBuilder: (context, _index) {
-                                            final index =  _index - pages;
-                                            var week = [];
-                                            if(index == 0){
-                                              week = currentWeek;
-                                              // if statement accounts for daylight savings messing with daysInRage
-                                              if(week.length == 8){
-                                                week.removeLast();
-                                              }
-                                            } else{
-                                              var startofWeek = startOfWeek.add(Duration(days: index*7));
-                                              var endofWeek = Utils.lastDayOfWeek(startofWeek);
-                                              week = Utils.daysInRange(startofWeek, endofWeek).toList();
-                                              // if statement accounts for daylight savings messing with daysInRage
-                                              if(week.length == 8){
-                                                week.removeLast();
-                                              }
+
+                              Container(
+                                  width: maxPossibleWidth -50,
+                                  height: maxHeightWanted,
+                                  child: NotificationListener<ScrollNotification>(
+                                      onNotification: (ScrollNotification scrollInfo){
+                                        var value = (pageController.offset - calendarColumnWidths/2)/calendarColumnWidths;
+                                        var roundedValue = value.round();
+                                        Month currentMonth = monthBloc.currentState;
+                                          var date = startOfWeek.add(Duration(days: (roundedValue - daysBeforeStart)));
+                                          if(date.month > currentMonth.month || date.month < currentMonth.month){
+                                            monthBloc.dispatch(ChangeMonth(date.month));
+                                          }
+                                      },
+                                      child: PageView.builder(
+                                        controller: pageController,
+                                        itemBuilder: (context, _index) {
+                                          final index =  _index - pages;
+                                          var week = [];
+                                          if(index == 0){
+                                            week = currentWeek;
+                                            // if statement accounts for daylight savings messing with daysInRage
+                                            if(week.length == 8){
+                                              week.removeLast();
                                             }
-                                            return calendar(context, week);
-                                          },
-                                        ))
-                                    )
-                                ),
+                                          } else{
+                                            var startofWeek = startOfWeek.add(Duration(days: index*7));
+                                            var endofWeek = Utils.lastDayOfWeek(startofWeek);
+                                            week = Utils.daysInRange(startofWeek, endofWeek).toList();
+                                            // if statement accounts for daylight savings messing with daysInRage
+                                            if(week.length == 8){
+                                              week.removeLast();
+                                            }
+                                          }
+                                          return Column(
+                                            children: <Widget>[
+                                              Container(
+                                                width: maxPossibleWidth-50,
+                                                height: 50,
+                                                child: Row(
+                                                  children: week.map<Widget>((day) => calculateDayStyle(day, leftColumnWidth, context)).toList(),
+                                                ),
+                                              ),
+                                              Container(
+                                                width: maxPossibleWidth -50,
+                                                height: maxHeightWanted - 50,
+                                                child:  calendar(context, week),
+                                              ),
+                                          ],
+                                          );
+                                        },
+                                      ))
+                              ),
+
+//                              Container(
+//                                  decoration: BoxDecoration(
+//                                    color: Colors.white,
+//                                  ),
+//                                  width: maxPossibleWidth -50,
+//                                  height: 50,
+//                                  child: NotificationListener<ScrollNotification>(
+//                                      onNotification: (scrollInfo){
+//                                        var value = (horizontalHeaderScrollController.offset - calendarColumnWidths/2)/calendarColumnWidths;
+//                                        var roundedValue = value.round();
+//                                        if(roundedValue > calculatedDayNumber || roundedValue < calculatedDayNumber){
+//                                          var date = startOfWeek.add(Duration(days: (roundedValue - daysBeforeStart)));
+//                                          setState(() {
+//                                            currentMonth = date.month;
+//                                            calculatedDayNumber = roundedValue;
+//                                          });
+//                                        }
+//                                      },
+//                                      child:ListView.builder(
+//                                          physics: NeverScrollableScrollPhysics(),
+//                                          scrollDirection: Axis.horizontal,
+//                                          controller: horizontalHeaderScrollController,
+//                                          itemBuilder: (context, _index){
+//                                            final index =  _index - pages;
+//                                            var week = [];
+//                                            if(index == 0){
+//                                              week = currentWeek;
+//                                              // if statement accounts for daylight savings messing with daysInRage
+//                                              if(week.length == 8){
+//                                                week.removeLast();
+//                                              }
+//                                            } else{
+//                                              var startofWeek = startOfWeek.add(Duration(days: index*7));
+//                                              var endofWeek = Utils.lastDayOfWeek(startofWeek);
+//                                              week = Utils.daysInRange(startofWeek, endofWeek).toList();
+//                                              // if statement accounts for daylight savings messing with daysInRage
+//                                              if(week.length == 8){
+//                                                week.removeLast();
+//                                              }
+//                                            }
+//                                            return Row(
+//                                              children: week.map<Widget>((day) => calculateDayStyle(day, leftColumnWidth)).toList(),
+//                                            );
+//                                          })
+//
+//                                  )
+//                              ),
+
                             ],
                           ),
                         ],
@@ -332,7 +342,7 @@ class CalendarPageState extends State<CalendarPage> {
 
   }
 
-  calculateDayStyle(DateTime day, width) {
+  calculateDayStyle(DateTime day, width, context) {
     DateTime cday = DateTime.now();
     String value =
         day.year.toString() + day.month.toString() + day.day.toString();
