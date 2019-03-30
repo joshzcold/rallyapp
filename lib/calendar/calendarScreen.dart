@@ -135,10 +135,10 @@ class CalendarPage extends StatelessWidget {
                                               color: Colors.white,
                                               boxShadow: [
                                                 new BoxShadow(
-//                                                spreadRadius: MediaQuery.of(context).size.width,
+                                                spreadRadius: MediaQuery.of(context).size.width,
                                                   color: Colors.grey[500],
                                                   blurRadius: 5.0,
-//                                                offset: Offset(0.0, -MediaQuery.of(context).size.width),
+                                                offset: Offset(0.0, -MediaQuery.of(context).size.width),
                                                 )
                                               ]),
                                           height: 50.0,
