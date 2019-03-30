@@ -2,12 +2,13 @@ import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/app/month.dart';
 import 'package:rallyapp/blocs/events/event.dart';
-import 'package:rallyapp/blocs/month/monthBloc.dart';
 import 'package:rallyapp/calendar/week/weekView.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
 import 'package:rallyapp/screens/newEventScreen.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:rect_getter/rect_getter.dart';
 
 List<String> displayHour = [
   "1AM",
@@ -43,33 +44,44 @@ int pages = 53;
 int daysBeforeStart = pages * 7;
 
 /// These two controllers are meant to work together by sync scrolling
+PageController pageController;
+PageController horizontalHeaderScrollController;
+
+ScrollController verticalPageGridScrollController;
 
 
-class CalendarPage extends StatelessWidget{
-  final PageController pageController = PageController(initialPage: pages);
-  final PageController horizontalHeaderScrollController = PageController(
-      initialPage: pages
-  );
+class CalendarPage extends StatelessWidget {
+  var listViewKey = RectGetter.createGlobalKey();
+  var _keys = {};
+  int currentMonth;
+  int calculatedDayNumber = daysBeforeStart;
 
 
   @override
   Widget build(BuildContext context) {
+    horizontalHeaderScrollController = PageController(
+        initialPage: pages
+    );
     var maxHeightWanted =
         MediaQuery.of(context).size.height + 800;
+    verticalPageGridScrollController = ScrollController(
+        initialScrollOffset: calculateInitialScrollDownByCurrentTime(maxHeightWanted)
+    );
     var maxPossibleWidth = MediaQuery.of(context).size.width;
     var leftTimeColumnWidth = 50.0;
     var calendarColumnWidths = (MediaQuery.of(context).size.width - leftColumnWidth)/7;
-    EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
-    var monthBloc = BlocProvider.of<MonthBloc>(context);
-
-    final ScrollController verticalPageGridScrollController = ScrollController(
-        initialScrollOffset: calculateInitialScrollDownByCurrentTime(maxHeightWanted)
-    );
+    final EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
 
     var currentDay = DateTime.now();
     var startOfWeek = Utils.firstDayOfWeek(currentDay).toLocal();
     var endOfWeek = Utils.lastDayOfWeek(currentDay).toLocal();
     var currentWeek = Utils.daysInRange(startOfWeek, endOfWeek).toList();
+    var yearsBack = startOfWeek.subtract(Duration(days: pages * 7));
+
+    pageController = PageController(initialPage: pages);
+    currentMonth = Utils.firstDayOfWeek(DateTime.now()).toLocal().month;
+
+    final monthBloc = BlocProvider.of<MonthBloc>(context);
 
     return BlocBuilder(
               bloc: _eventsBloc,
@@ -99,7 +111,7 @@ class CalendarPage extends StatelessWidget{
                                 fixedColor: Colors.blue,
                                 onTap: (index) {
                                   if (index == 0) {
-                                    pageController.jumpToPage(pages);
+                                    pageController.animateToPage(pages, duration: Duration(seconds: 1), curve: Curves.easeOut);
                                   } else if (index == 1) {
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => FriendsScreen()));
                                   }
@@ -149,6 +161,7 @@ class CalendarPage extends StatelessWidget{
                                           ),
                                         );
                                       }),
+
                                       /// This is the Column on the left displaying time information
                                       content: Container(
                                           height: maxHeightWanted,
@@ -227,61 +240,84 @@ class CalendarPage extends StatelessWidget{
                               /// Horizontally scrolling set of calendar widgets
                               /// that get defined at the top of the class.
 
-
-
-                              Container(
-                                  width: maxPossibleWidth -50,
-                                  height: maxHeightWanted,
-                                  child: NotificationListener<ScrollNotification>(
-                                      onNotification: (ScrollNotification scrollInfo){
-                                        var value = (pageController.offset - calendarColumnWidths/2)/calendarColumnWidths;
-                                        var roundedValue = value.round();
-                                        Month currentMonth = monthBloc.currentState;
-                                          var date = startOfWeek.add(Duration(days: (roundedValue - daysBeforeStart)));
-                                          if(date.month > currentMonth.month || date.month < currentMonth.month){
-                                            monthBloc.dispatch(ChangeMonth(date.month));
-                                          }
-                                      },
-                                      child: PageView.builder(
-                                        controller: pageController,
-                                        itemBuilder: (context, _index) {
-                                          var index =  _index - pages;
-                                          var week = [];
-                                          if(index == 0){
-                                            week = currentWeek;
-                                            // if statement accounts for daylight savings messing with daysInRage
-                                            if(week.length == 8){
-                                              week.removeLast();
+                              StickyHeader(
+                                    header: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                      ),
+                                      width: maxPossibleWidth -50,
+                                      height: 50,
+                                      child: NotificationListener<ScrollNotification>(
+                                          onNotification: (scrollInfo){
+                                            var value = (pageController.offset - calendarColumnWidths/2)/calendarColumnWidths;
+                                            var roundedValue = value.round();
+                                            Month currentMonth = monthBloc.currentState;
+                                            var date = startOfWeek.add(Duration(days: (roundedValue - daysBeforeStart)));
+                                            if(date.month > currentMonth.month || date.month < currentMonth.month){
+                                              monthBloc.dispatch(ChangeMonth(date.month));
                                             }
-                                          } else{
-                                            var startofWeek = startOfWeek.add(Duration(days: index*7));
-                                            var endofWeek = Utils.lastDayOfWeek(startofWeek);
-                                            week = Utils.daysInRange(startofWeek, endofWeek).toList();
-                                            // if statement accounts for daylight savings messing with daysInRage
-                                            if(week.length == 8){
-                                              week.removeLast();
-                                            }
-                                          }
-                                          return Column(
-                                            children: <Widget>[
-                                              Container(
-                                                width: maxPossibleWidth-50,
-                                                height: 50,
-                                                child: Row(
-                                                  children: week.map<Widget>((day) => calculateDayStyle(day, leftColumnWidth, context)).toList(),
-                                                ),
-                                              ),
-                                              Container(
-                                                width: maxPossibleWidth -50,
-                                                height: maxHeightWanted - 50,
-                                                child:  calendar(context, week),
-                                              ),
-                                          ],
-                                          );
-                                        },
-                                      ))
-                              ),
+                                          },
+                                          child:ListView.builder(
+                                                  physics: NeverScrollableScrollPhysics(),
+                                                  scrollDirection: Axis.horizontal,
+                                                  controller: horizontalHeaderScrollController,
+                                                  itemBuilder: (context, _index){
+                                                    final index =  _index - pages;
+                                                    var week = [];
+                                                    if(index == 0){
+                                                      week = currentWeek;
+                                                      // if statement accounts for daylight savings messing with daysInRage
+                                                      if(week.length == 8){
+                                                        week.removeLast();
+                                                      }
+                                                    } else{
+                                                      var startofWeek = startOfWeek.add(Duration(days: index*7));
+                                                      var endofWeek = Utils.lastDayOfWeek(startofWeek);
+                                                      week = Utils.daysInRange(startofWeek, endofWeek).toList();
+                                                      // if statement accounts for daylight savings messing with daysInRage
+                                                      if(week.length == 8){
+                                                        week.removeLast();
+                                                      }
+                                                    }
+                                                    return Row(
+                                                      children: week.map<Widget>((day) => calculateDayStyle(day, leftColumnWidth, context)).toList(),
+                                                    );
+                                                  })
 
+                                      )
+                                    ),
+                                    content: Container(
+                                        width: maxPossibleWidth -50,
+                                        height: maxHeightWanted,
+                                        child: NotificationListener<ScrollNotification>(
+                                            onNotification: (ScrollNotification scrollInfo){
+                                              horizontalHeaderScrollController.jumpTo(pageController.offset);
+                                            },
+                                            child: PageView.builder(
+                                          controller: pageController,
+                                          itemBuilder: (context, _index) {
+                                            final index =  _index - pages;
+                                            var week = [];
+                                            if(index == 0){
+                                              week = currentWeek;
+                                              // if statement accounts for daylight savings messing with daysInRage
+                                              if(week.length == 8){
+                                                week.removeLast();
+                                              }
+                                            } else{
+                                              var startofWeek = startOfWeek.add(Duration(days: index*7));
+                                              var endofWeek = Utils.lastDayOfWeek(startofWeek);
+                                              week = Utils.daysInRange(startofWeek, endofWeek).toList();
+                                              // if statement accounts for daylight savings messing with daysInRage
+                                              if(week.length == 8){
+                                                week.removeLast();
+                                              }
+                                            }
+                                            return calendar(context, week);
+                                          },
+                                        ))
+                                    )
+                                ),
                             ],
                           ),
                         ],
@@ -290,6 +326,22 @@ class CalendarPage extends StatelessWidget{
                 }
               });
 
+  }
+
+
+  List<int> getVisible() {
+    /// First, get the rect of ListView, and then traver the _keys
+    /// get rect of each item by keys in _keys, and if this rect in the range of ListView's rect,
+    /// add the index into result list.
+    var rect = RectGetter.getRectFromKey(listViewKey);
+    var _items = <int>[];
+    _keys.forEach((index, key) {
+      var itemRect = RectGetter.getRectFromKey(key);
+      if (itemRect != null && !(itemRect.top > rect.bottom || itemRect.bottom < rect.top)) _items.add(index);
+    });
+
+    /// so all visible item's index are in this _items.
+    return _items;
   }
 
   calculateDayStyle(DateTime day, width, context) {
