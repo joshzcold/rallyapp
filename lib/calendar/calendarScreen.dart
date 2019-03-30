@@ -8,7 +8,6 @@ import 'package:rallyapp/calendar/week/weekView.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
 import 'package:rallyapp/screens/newEventScreen.dart';
 import 'package:sticky_headers/sticky_headers.dart';
-import 'package:rect_getter/rect_getter.dart';
 
 List<String> displayHour = [
   "1AM",
@@ -51,8 +50,6 @@ ScrollController verticalPageGridScrollController;
 
 
 class CalendarPage extends StatelessWidget {
-  var listViewKey = RectGetter.createGlobalKey();
-  var _keys = {};
   int currentMonth;
   int calculatedDayNumber = daysBeforeStart;
 
@@ -326,22 +323,6 @@ class CalendarPage extends StatelessWidget {
                 }
               });
 
-  }
-
-
-  List<int> getVisible() {
-    /// First, get the rect of ListView, and then traver the _keys
-    /// get rect of each item by keys in _keys, and if this rect in the range of ListView's rect,
-    /// add the index into result list.
-    var rect = RectGetter.getRectFromKey(listViewKey);
-    var _items = <int>[];
-    _keys.forEach((index, key) {
-      var itemRect = RectGetter.getRectFromKey(key);
-      if (itemRect != null && !(itemRect.top > rect.bottom || itemRect.bottom < rect.top)) _items.add(index);
-    });
-
-    /// so all visible item's index are in this _items.
-    return _items;
   }
 
   calculateDayStyle(DateTime day, width, context) {
