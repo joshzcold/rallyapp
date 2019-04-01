@@ -25,12 +25,10 @@ class NewEventState extends State<NewEvent> {
   static DateTime currentTime = DateTime.now();
   static DateTime twoHours = DateTime.now().add(Duration(hours: 2));
 
-  var startTimeText = '${currentTime.month}/${currentTime.day} - '
-      '${currentTime.hour}:${currentTime.minute}';
+  var startTimeText = '$currentTime';
   var startTime = currentTime;
 
-  var endTimeText = '${twoHours.month}/${twoHours.day} - '
-      '${twoHours.hour}:${twoHours.minute}';
+  var endTimeText = '$twoHours';
   var endTime = DateTime.now().add(Duration(hours: 2));
   Widget colorWheel = Container();
   @override
@@ -98,9 +96,7 @@ class NewEventState extends State<NewEvent> {
                                       date.add(Duration(minutes: minutes));
                                       print('$selectedDateTimeValues');
                                       setState(() {
-                                        startTimeText =
-                                        '${selectedDateTimeValues.month}/${selectedDateTimeValues.day} - '
-                                            '${selectedDateTimeValues.hour}:${selectedDateTimeValues.minute}';
+                                        startTimeText = '$selectedDateTimeValues';
                                         startTime = selectedDateTimeValues;
                                       });
                                     });
@@ -164,8 +160,7 @@ class NewEventState extends State<NewEvent> {
                                       print('$selectedDateTimeValues');
                                       setState(() {
                                         endTimeText =
-                                        '${selectedDateTimeValues.month}/${selectedDateTimeValues.day} - '
-                                            '${selectedDateTimeValues.hour}:${selectedDateTimeValues.minute}';
+                                        '$selectedDateTimeValues';
                                         endTime = selectedDateTimeValues;
                                       });
                                     });
