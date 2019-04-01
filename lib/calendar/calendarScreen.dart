@@ -177,31 +177,12 @@ class CalendarPage extends StatelessWidget {
                                                   child: Column(
                                                       children: displayHour
                                                           .map((hour) => Container(
-                                                          width:
-                                                          leftTimeColumnWidth,
-                                                          height:
-                                                          maxHeightWanted /
-                                                              24,
+                                                          width: leftTimeColumnWidth,
+                                                          height: maxHeightWanted / 24,
                                                           child: Row(
-                                                            mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                             children: <Widget>[
-                                                              RichText(
-                                                                text: TextSpan(
-                                                                    style: DefaultTextStyle.of(
-                                                                        context)
-                                                                        .style,
-                                                                    children: <
-                                                                        TextSpan>[
-                                                                      TextSpan(
-                                                                          text:
-                                                                          '$hour',
-                                                                          style: TextStyle(
-                                                                              color: Colors.grey,
-                                                                              fontSize: 12)),
-                                                                    ]),
-                                                              ),
+                                                              Text('$hour', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.grey),)
                                                             ],
                                                           )))
                                                           .toList())),
