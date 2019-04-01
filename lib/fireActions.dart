@@ -66,6 +66,13 @@ class FireActions {
         '/user/${user.uid}/events/$event/party/friends/$friend').remove();
   }
 
+  deleteEvent(event, context)async {
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+    database.reference().child(
+        '/user/${user.uid}/events/$event').remove();
+  }
+
 }
 
 getFireBaseUser() async{

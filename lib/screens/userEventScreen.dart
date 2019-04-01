@@ -33,6 +33,7 @@ var startTime;
 var endTimeText;
 var endTime;
 var colorSelection;
+enum MenuChoices { delete }
 
 
 class UserEventState extends State<UserEvent> {
@@ -62,7 +63,6 @@ class UserEventState extends State<UserEvent> {
     var maxHeight = MediaQuery.of(context).size.height;
     return Scaffold(
           appBar: AppBar(
-            title: Text("User Event"),
             backgroundColor: Color(_getColorFromHex(colorSelection)),
             actions: <Widget>[
               FlatButton(
@@ -104,6 +104,34 @@ class UserEventState extends State<UserEvent> {
                       ),
                     ],
                   )
+              ),
+              PopupMenuButton<MenuChoices>(
+                onSelected: (MenuChoices result) {
+                  if(result == MenuChoices.delete){
+                    fireActions.deleteEvent(event.key, context);
+                    Navigator.pop(context);
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuChoices>>[
+                   PopupMenuItem<MenuChoices>(
+                    value: MenuChoices.delete,
+                    child: Row(
+                      children: <Widget>[
+                        Container(width: 10,),
+                        Container(
+                            padding: EdgeInsets.all(10.0),
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.delete_forever, color: Colors.grey,),
+                                Container(width: 5,),
+                                Text('Delete', style: TextStyle(fontSize: 15),)
+                              ],
+                            )
+                        ),
+                      ],
+                    )
+                  ),
+                ],
               ),
             ],
           ),
@@ -578,49 +606,53 @@ class UserEventState extends State<UserEvent> {
         var event = events['$eventKey'];
         var party = event['party'];
         var friends = party['friends'];
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Joined Friends',
-                style:
-                TextStyle(fontStyle: FontStyle.italic ,fontSize: 15)),
-            Column(
-              children: friends.entries.map<Widget>((friend) => Card(
-                child: Container(
-                    padding: EdgeInsets.all(0),
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      height: 80,
-                      width: 300,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          /// This Container is the Friend Images
-                          Container(
-                              width: 60.0,
-                              height: 60.0,
-                              decoration: new BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: new DecorationImage(
-                                      fit: BoxFit.fill,
-                                      image:
-                                      new NetworkImage(friend.value['userPhoto'])))),
+        if(friends == null){
+          return Container();
+        } else{
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Joined Friends',
+                  style:
+                  TextStyle(fontStyle: FontStyle.italic ,fontSize: 15)),
+              Column(
+                children: friends.entries.map<Widget>((friend) => Card(
+                  child: Container(
+                      padding: EdgeInsets.all(0),
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        height: 80,
+                        width: 300,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            /// This Container is the Friend Images
+                            Container(
+                                width: 60.0,
+                                height: 60.0,
+                                decoration: new BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: new DecorationImage(
+                                        fit: BoxFit.fill,
+                                        image:
+                                        new NetworkImage(friend.value['userPhoto'])))),
 
-                          /// Friend User Name
-                          Text(
-                            friend.value['userName'],
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          IconButton(icon: Icon(Icons.cancel), onPressed: (){
-                            fireActions.removeJoinedFriend(eventKey, friend.key, context);
-                          })
-                        ],
-                      ),
-                    )),
-              )).toList(),
-            ),
-          ],
-        );
+                            /// Friend User Name
+                            Text(
+                              friend.value['userName'],
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            IconButton(icon: Icon(Icons.cancel), onPressed: (){
+                              fireActions.removeJoinedFriend(eventKey, friend.key, context);
+                            })
+                          ],
+                        ),
+                      )),
+                )).toList(),
+              ),
+            ],
+          );
+        }
       },);
     }
   }
