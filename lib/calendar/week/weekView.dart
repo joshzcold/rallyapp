@@ -275,26 +275,21 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
                                   padding: EdgeInsets.all(0),
                                   children: <Widget>[
                                     // User Image
-                                    CircleAvatar(
-                                      backgroundColor: Color(_getColorFromHex(event.value['color'])),
-                                      radius: 15,
-                                      backgroundImage: NetworkImage(event
-                                          .value['userPhoto']),
-                                    ),
+                                    LayoutBuilder(builder: (context, constraints){
+                                      return CircleAvatar(
+                                        backgroundColor: Color(_getColorFromHex(event.value['color'])),
+                                        radius: constraints.maxWidth/2,
+                                        backgroundImage: NetworkImage(event
+                                            .value['userPhoto']),
+                                      );
+                                    },),
                                     // User Name & Description
-                                    RichText(
-                                      text: TextSpan(
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                            text: '${event.value['userName']}',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          TextSpan(
-                                              text: '${event.value['title']}'),
-                                        ],
-                                      ),
-                                    ),
+                                    Column(
+                                      children: <Widget>[
+                                        Text(event.value['userName'], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),),
+                                        Text(event.value['title'], style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w400),)
+                                      ],
+                                    )
                                   ],
                                 ),
                               );
