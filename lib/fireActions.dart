@@ -66,6 +66,27 @@ class FireActions {
         '/user/${user.uid}/events/$event/party/friends/$friend').remove();
   }
 
+  leaveEvent(event, friend, context)async {
+    FirebaseDatabase database = await getFireBaseInstance();
+    final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    AuthLoaded auth =  authBloc.currentState;
+    database.reference().child(
+        '/user/$friend/events/$event/party/friends/${auth.key}').remove();
+  }
+
+  joinEvent(event, friend, context)async {
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+    final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    AuthLoaded auth =  authBloc.currentState;
+    database.reference().child('/user/$friend/events/$event/party/friends/${user.uid}').update({
+      'id': user.uid,
+      'userEmail':auth.value['userEmail'],
+      'userName':auth.value['userName'],
+      'userPhoto':auth.value['userPhoto'],
+    });
+  }
+
   deleteEvent(event, context)async {
     FirebaseDatabase database = await getFireBaseInstance();
     var user = await getFireBaseUser();

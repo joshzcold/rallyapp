@@ -598,10 +598,7 @@ class UserEventState extends State<UserEvent> {
     final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
     AuthLoaded auth =  authBloc.currentState;
     var check = party['friends'];
-    if(check == null){
-      return Container();
-    } else if(check.length > 0){
-      return BlocBuilder(bloc: _eventsBloc, builder: (context, state){
+    return BlocBuilder(bloc: _eventsBloc, builder: (context, state){
         var events = state.events['${auth.key}'];
         var event = events['$eventKey'];
         var party = event['party'];
@@ -654,7 +651,6 @@ class UserEventState extends State<UserEvent> {
           );
         }
       },);
-    }
   }
 }
 
