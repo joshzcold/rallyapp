@@ -99,8 +99,6 @@ class UserEventState extends State<UserEvent> {
         body: ListView(
           children: <Widget>[
             Container(
-                width: maxWidth,
-                height: maxHeight,
                 child: Stack(
                   children: <Widget>[
                     Column(

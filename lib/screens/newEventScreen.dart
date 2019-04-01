@@ -74,8 +74,6 @@ class NewEventState extends State<NewEvent> {
         body: ListView(
           children: <Widget>[
             Container(
-                width: maxWidth,
-                height: maxHeight,
                 child: Stack(
                   children: <Widget>[
                     Column(
