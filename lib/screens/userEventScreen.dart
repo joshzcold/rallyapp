@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/auth/auth.dart';
+import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/fireActions.dart';
 
 
@@ -24,6 +27,7 @@ var colorAutumn = '#964500';
 
 TextEditingController _gameTitleController;
 TextEditingController _partyLimitController;
+Map party;
 var startTimeText;
 var startTime;
 var endTimeText;
@@ -38,7 +42,7 @@ class UserEventState extends State<UserEvent> {
   @override
   void initState() {
     super.initState();
-    var party = event.value['party'];
+    party = event.value['party'];
     _gameTitleController = TextEditingController(text: event.value['title'].toString());
     _partyLimitController = TextEditingController(text: party['partyLimit'].toString());
     startTimeText = '${DateTime.fromMillisecondsSinceEpoch(event.value['start'])}';
@@ -48,11 +52,8 @@ class UserEventState extends State<UserEvent> {
     colorSelection = event.value['color'];
   }
 
-
   static DateTime currentTime = DateTime.now();
   static DateTime twoHours = DateTime.now().add(Duration(hours: 2));
-
-
 
   Widget colorWheel = Container();
   @override
@@ -60,281 +61,291 @@ class UserEventState extends State<UserEvent> {
     var maxWidth = MediaQuery.of(context).size.width;
     var maxHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-        appBar: AppBar(
-          title: Text("User Event"),
-          backgroundColor: Color(_getColorFromHex(colorSelection)),
-          actions: <Widget>[
-            FlatButton(
-                onPressed: (){
-                  fireActions.changeEventToDatabase(
-                      startTime.millisecondsSinceEpoch, endTime.millisecondsSinceEpoch,
-                      colorSelection,
-                      _partyLimitController.text,
-                      _gameTitleController.text,
-                      event.key,
-                      context
-                  );
-                  Navigator.pop(context);
-                },
-                padding: EdgeInsets.all(0),
-                child: Row(
-                  children: <Widget>[
-                    Container(width: 10,),
-                    Container(
-                        padding: EdgeInsets.all(10.0),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(Icons.save, color: Colors.white,),
-                            Container(width: 5,),
-                            Text('Save', style: TextStyle(color: Colors.white, fontSize: 15),),
-                          ],
-                        )
+          appBar: AppBar(
+            title: Text("User Event"),
+            backgroundColor: Color(_getColorFromHex(colorSelection)),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: (){
+                    final _eventsBloc = BlocProvider.of<EventsBloc>(context);
+                    EventsLoaded events = _eventsBloc.currentState;
+                    final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+                    AuthLoaded auth =  authBloc.currentState;
+                    var selectedEvents = events.events['${auth.key}'];
+                    var selectedEvent = selectedEvents['${event.key}'];
+                    var party = selectedEvent['party'];
+                    var friends = party['friends'];
 
-                    ),
-                  ],
-                )
-            ),
-          ],
-        ),
-        body: ListView(
-          children: <Widget>[
-            Container(
-                child: Stack(
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Column(
-                          children: <Widget>[
-                            Container(
-                              height: 30,
-                            ),
-                            Text(
-                              'Start Time',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                            ),
-                            FlatButton(
-                                padding: EdgeInsets.all(0),
-                                onPressed: () {
-                                  DateTime date;
-                                  Future<DateTime> selectedDate = showDatePicker(
-                                    context: context,
-                                    initialDate: startTime,
-                                    firstDate:
-                                    DateTime.now().subtract(Duration(days: 365)),
-                                    lastDate: DateTime.now().add(Duration(days: 365 * 2)),
-                                    builder: (BuildContext context, Widget child) {
-                                      return Theme(
-                                        data: ThemeData.light(),
-                                        child: child,
-                                      );
-                                    },
-                                  ).then((pickedDate) {
-                                    date = new DateTime(pickedDate.year, pickedDate.month,
-                                        pickedDate.day);
-                                    Future<TimeOfDay> selectedTime = showTimePicker(
-                                      initialTime: TimeOfDay(
-                                          hour: startTime.hour, minute: startTime.minute),
-                                      context: context,
-                                      builder: (BuildContext context, Widget child) {
-                                        return Theme(
-                                          data: ThemeData.light(),
-                                          child: child,
-                                        );
-                                      },
-                                    ).then((pickedTime) {
-                                      var minutes =
-                                          pickedTime.minute + pickedTime.hour * 60;
-                                      var selectedDateTimeValues =
-                                      date.add(Duration(minutes: minutes));
-                                      print('$selectedDateTimeValues');
-                                      setState(() {
-                                        startTimeText = '$selectedDateTimeValues';
-                                        startTime = selectedDateTimeValues;
-                                      });
-                                    });
-                                  });
-                                },
-                                child: Container(
-                                  height: 30,
-                                  width: maxWidth * .80,
-                                  decoration: BoxDecoration(
-                                    border:
-                                    Border.all(color: Color(0xFFdadce0), width: 1),
-                                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                  ),
-                                  child: Text(
-                                    '$startTimeText',
-                                    style: TextStyle(
-                                        fontSize: 20, fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                )),
-                            Container(
-                              height: 20,
-                            ),
-                            Text('End Time',
-                                style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                            FlatButton(
-                                padding: EdgeInsets.all(0),
-                                onPressed: () {
-                                  DateTime date;
-                                  Future<DateTime> selectedDate = showDatePicker(
-                                    context: context,
-                                    initialDate: endTime,
-                                    firstDate:
-                                    DateTime.now().subtract(Duration(days: 365)),
-                                    lastDate: DateTime.now().add(Duration(days: 365 * 2)),
-                                    builder: (BuildContext context, Widget child) {
-                                      return Theme(
-                                        data: ThemeData.light(),
-                                        child: child,
-                                      );
-                                    },
-                                  ).then((pickedDate) {
-                                    date = new DateTime(pickedDate.year, pickedDate.month,
-                                        pickedDate.day);
-                                    Future<TimeOfDay> selectedTime = showTimePicker(
-                                      initialTime: TimeOfDay(
-                                          hour: endTime.hour, minute: endTime.minute),
-                                      context: context,
-                                      builder: (BuildContext context, Widget child) {
-                                        return Theme(
-                                          data: ThemeData.light(),
-                                          child: child,
-                                        );
-                                      },
-                                    ).then((pickedTime) {
-                                      var minutes =
-                                          pickedTime.minute + pickedTime.hour * 60;
-                                      var selectedDateTimeValues =
-                                      date.add(Duration(minutes: minutes));
-                                      print('$selectedDateTimeValues');
-                                      setState(() {
-                                        endTimeText =
-                                        '$selectedDateTimeValues';
-                                        endTime = selectedDateTimeValues;
-                                      });
-                                    });
-                                  });
-                                },
-                                child: Container(
-                                  height: 30,
-                                  width: maxWidth * .80,
-                                  decoration: BoxDecoration(
-                                    border:
-                                    Border.all(color: Color(0xFFdadce0), width: 1),
-                                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                  ),
-                                  child: Text(
-                                    '$endTimeText',
-                                    style: TextStyle(
-                                        fontSize: 20, fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                )),
-                            Container(
-                              height: 20,
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Event Title',
-                                style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                            Container(
-                              width: maxWidth * .70,
-                              child: TextField(
-                                controller: _gameTitleController,
-                                decoration: InputDecoration(
-                                  icon: Icon(Icons.videogame_asset),
-                                  hintText: 'Playing Halo with some Bros, chilling.',
-                                ),
-                              ),
-                            ),
+                    fireActions.changeEventToDatabase(
+                        startTime.millisecondsSinceEpoch, endTime.millisecondsSinceEpoch,
+                        colorSelection,
+                        _partyLimitController.text,
+                        friends,
+                        _gameTitleController.text,
+                        event.key,
+                        context
+                    );
+                    Navigator.pop(context);
+                  },
+                  padding: EdgeInsets.all(0),
+                  child: Row(
+                    children: <Widget>[
+                      Container(width: 10,),
+                      Container(
+                          padding: EdgeInsets.all(10.0),
+                          child: Row(
+                            children: <Widget>[
+                              Icon(Icons.save, color: Colors.white,),
+                              Container(width: 5,),
+                              Text('Save', style: TextStyle(color: Colors.white, fontSize: 15),),
+                            ],
+                          )
 
-                            Container(
-                              height: 20,
-                              width: 1,
-                            ),
-
-                            Text('Party Limit',
-                                style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                            Container(
-                              width: maxWidth * .20,
-                              child: TextField(
-                                textAlign: TextAlign.center,
-                                controller: _partyLimitController,
-                                decoration: new InputDecoration(
-                                  icon: Icon(Icons.group),
-                                  hintText: '0',
-                                ),
-                                keyboardType: TextInputType.number,
-                              ),
-                            )
-                          ],
-                        ),
-
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              width: maxWidth/1.5,
-                            ),
-                            FlatButton(
-                                onPressed: (){
-                                  _changeColorButton(maxHeight, maxWidth);
-                                },
-                                padding: EdgeInsets.all(0),
-                                child: Row(
-                                  children: <Widget>[
-                                    Icon(Icons.brush, size: 30, color: Colors.grey,),
-                                    Container(width: 10,),
-                                    Container(
-                                      height: 50,
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                        color: Color(_getColorFromHex(colorSelection)),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                            ),
-                          ],
-                        ),
-                        Container(
-                          height: 30,
-                        ),
-                      ],
-                    ),
-                    Positioned(
-                      top: 0,
-                      child: AnimatedSwitcher(
-                        // the duration can be adjusted to expand the friend events
-                        // faster or slower.
-                        duration: Duration(milliseconds: 100),
-                        transitionBuilder:
-                            (Widget child, Animation<double> animation) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        },
-                        child: colorWheel,
                       ),
-                    )
-                  ],
-                )
-            )
-          ],
-        )
+                    ],
+                  )
+              ),
+            ],
+          ),
+          body: ListView(
+            children: <Widget>[
+              Container(
+                  child: Stack(
+                    children: <Widget>[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Column(
+                            children: <Widget>[
+                              Container(
+                                height: 30,
+                              ),
+                              Text(
+                                'Start Time',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                              FlatButton(
+                                  padding: EdgeInsets.all(0),
+                                  onPressed: () {
+                                    DateTime date;
+                                    Future<DateTime> selectedDate = showDatePicker(
+                                      context: context,
+                                      initialDate: startTime,
+                                      firstDate:
+                                      DateTime.now().subtract(Duration(days: 365)),
+                                      lastDate: DateTime.now().add(Duration(days: 365 * 2)),
+                                      builder: (BuildContext context, Widget child) {
+                                        return Theme(
+                                          data: ThemeData.light(),
+                                          child: child,
+                                        );
+                                      },
+                                    ).then((pickedDate) {
+                                      date = new DateTime(pickedDate.year, pickedDate.month,
+                                          pickedDate.day);
+                                      Future<TimeOfDay> selectedTime = showTimePicker(
+                                        initialTime: TimeOfDay(
+                                            hour: startTime.hour, minute: startTime.minute),
+                                        context: context,
+                                        builder: (BuildContext context, Widget child) {
+                                          return Theme(
+                                            data: ThemeData.light(),
+                                            child: child,
+                                          );
+                                        },
+                                      ).then((pickedTime) {
+                                        var minutes =
+                                            pickedTime.minute + pickedTime.hour * 60;
+                                        var selectedDateTimeValues =
+                                        date.add(Duration(minutes: minutes));
+                                        print('$selectedDateTimeValues');
+                                        setState(() {
+                                          startTimeText = '$selectedDateTimeValues';
+                                          startTime = selectedDateTimeValues;
+                                        });
+                                      });
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 30,
+                                    width: maxWidth * .80,
+                                    decoration: BoxDecoration(
+                                      border:
+                                      Border.all(color: Color(0xFFdadce0), width: 1),
+                                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                    ),
+                                    child: Text(
+                                      '$startTimeText',
+                                      style: TextStyle(
+                                          fontSize: 20, fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  )),
+                              Container(
+                                height: 20,
+                              ),
+                              Text('End Time',
+                                  style:
+                                  TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                              FlatButton(
+                                  padding: EdgeInsets.all(0),
+                                  onPressed: () {
+                                    DateTime date;
+                                    Future<DateTime> selectedDate = showDatePicker(
+                                      context: context,
+                                      initialDate: endTime,
+                                      firstDate:
+                                      DateTime.now().subtract(Duration(days: 365)),
+                                      lastDate: DateTime.now().add(Duration(days: 365 * 2)),
+                                      builder: (BuildContext context, Widget child) {
+                                        return Theme(
+                                          data: ThemeData.light(),
+                                          child: child,
+                                        );
+                                      },
+                                    ).then((pickedDate) {
+                                      date = new DateTime(pickedDate.year, pickedDate.month,
+                                          pickedDate.day);
+                                      Future<TimeOfDay> selectedTime = showTimePicker(
+                                        initialTime: TimeOfDay(
+                                            hour: endTime.hour, minute: endTime.minute),
+                                        context: context,
+                                        builder: (BuildContext context, Widget child) {
+                                          return Theme(
+                                            data: ThemeData.light(),
+                                            child: child,
+                                          );
+                                        },
+                                      ).then((pickedTime) {
+                                        var minutes =
+                                            pickedTime.minute + pickedTime.hour * 60;
+                                        var selectedDateTimeValues =
+                                        date.add(Duration(minutes: minutes));
+                                        print('$selectedDateTimeValues');
+                                        setState(() {
+                                          endTimeText =
+                                          '$selectedDateTimeValues';
+                                          endTime = selectedDateTimeValues;
+                                        });
+                                      });
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 30,
+                                    width: maxWidth * .80,
+                                    decoration: BoxDecoration(
+                                      border:
+                                      Border.all(color: Color(0xFFdadce0), width: 1),
+                                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                    ),
+                                    child: Text(
+                                      '$endTimeText',
+                                      style: TextStyle(
+                                          fontSize: 20, fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  )),
+                              Container(
+                                height: 20,
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('Event Title',
+                                  style:
+                                  TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                              Container(
+                                width: maxWidth * .70,
+                                child: TextField(
+                                  controller: _gameTitleController,
+                                  decoration: InputDecoration(
+                                    icon: Icon(Icons.videogame_asset),
+                                    hintText: 'Playing Halo with some Bros, chilling.',
+                                  ),
+                                ),
+                              ),
 
-    );
+                              Container(
+                                height: 20,
+                                width: 1,
+                              ),
+
+                              Text('Party Limit',
+                                  style:
+                                  TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                              Container(
+                                width: maxWidth * .20,
+                                child: TextField(
+                                  textAlign: TextAlign.center,
+                                  controller: _partyLimitController,
+                                  decoration: new InputDecoration(
+                                    icon: Icon(Icons.group),
+                                    hintText: '0',
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                ),
+                              )
+                            ],
+                          ),
+
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                width: maxWidth/1.5,
+                              ),
+                              FlatButton(
+                                  onPressed: (){
+                                    _changeColorButton(maxHeight, maxWidth);
+                                  },
+                                  padding: EdgeInsets.all(0),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(Icons.brush, size: 30, color: Colors.grey,),
+                                      Container(width: 10,),
+                                      Container(
+                                        height: 50,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                          color: Color(_getColorFromHex(colorSelection)),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                              ),
+                            ],
+                          ),
+                          Container(
+                            height: 30,
+                          ),
+                          calculateJoinedFriendsWidget(context, event.key)
+                        ],
+                      ),
+                      Positioned(
+                        top: 0,
+                        child: AnimatedSwitcher(
+                          // the duration can be adjusted to expand the friend events
+                          // faster or slower.
+                          duration: Duration(milliseconds: 100),
+                          transitionBuilder:
+                              (Widget child, Animation<double> animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          child: colorWheel,
+                        ),
+                      )
+                    ],
+                  )
+              )
+            ],
+          )
+      );
   }
 
   _changeColorButton(maxHeight, maxWidth){
@@ -553,5 +564,67 @@ class UserEventState extends State<UserEvent> {
     }
     return int.parse(hexColor, radix: 16);
   }
+
+  calculateJoinedFriendsWidget(context, eventKey) {
+    final _eventsBloc = BlocProvider.of<EventsBloc>(context);
+    final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    AuthLoaded auth =  authBloc.currentState;
+    var check = party['friends'];
+    if(check == null){
+      return Container();
+    } else if(check.length > 0){
+      return BlocBuilder(bloc: _eventsBloc, builder: (context, state){
+        var events = state.events['${auth.key}'];
+        var event = events['$eventKey'];
+        var party = event['party'];
+        var friends = party['friends'];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('Joined Friends',
+                style:
+                TextStyle(fontStyle: FontStyle.italic ,fontSize: 15)),
+            Column(
+              children: friends.entries.map<Widget>((friend) => Card(
+                child: Container(
+                    padding: EdgeInsets.all(0),
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      height: 80,
+                      width: 300,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          /// This Container is the Friend Images
+                          Container(
+                              width: 60.0,
+                              height: 60.0,
+                              decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: new DecorationImage(
+                                      fit: BoxFit.fill,
+                                      image:
+                                      new NetworkImage(friend.value['userPhoto'])))),
+
+                          /// Friend User Name
+                          Text(
+                            friend.value['userName'],
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          IconButton(icon: Icon(Icons.cancel), onPressed: (){
+                            fireActions.removeJoinedFriend(eventKey, friend.key, context);
+                          })
+                        ],
+                      ),
+                    )),
+              )).toList(),
+            ),
+          ],
+        );
+      },);
+    }
+  }
 }
+
+
 

@@ -38,7 +38,7 @@ class FireActions {
   });
   }
 
-  changeEventToDatabase(sTime, eTime, color, partyLimit, title, key, context)async{
+  changeEventToDatabase(sTime, eTime, color, partyLimit, joinedFriends, title, key, context)async{
     FirebaseDatabase database = await getFireBaseInstance();
     var user = await getFireBaseUser();
     final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
@@ -49,13 +49,21 @@ class FireActions {
         'end': eTime,
         'start': sTime,
         'party': {
-          'partyLimit': partyLimit
+          'partyLimit': partyLimit,
+          'friends': joinedFriends
         },
         'title': title,
         'user': auth.key,
         'userName': auth.value['userName'],
         'userPhoto': auth.value['userPhoto']
     });
+  }
+
+  removeJoinedFriend(event, friend, context)async {
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+    database.reference().child(
+        '/user/${user.uid}/events/$event/party/friends/$friend').remove();
   }
 
 }
