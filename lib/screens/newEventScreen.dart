@@ -39,6 +39,37 @@ class NewEventState extends State<NewEvent> {
         appBar: AppBar(
           title: Text("New Event"),
           backgroundColor: Color(_getColorFromHex(colorSelection)),
+          actions: <Widget>[
+            FlatButton(
+                onPressed: (){
+                  fireActions.newEventToDatabase(
+                      startTime.millisecondsSinceEpoch, endTime.millisecondsSinceEpoch,
+                      colorSelection,
+                      _partyLimitController.text,
+                      _gameTitleController.text,
+                      context
+                  );
+                  Navigator.pop(context);
+                },
+                padding: EdgeInsets.all(0),
+                child: Row(
+                  children: <Widget>[
+                    Container(width: 10,),
+                    Container(
+                        padding: EdgeInsets.all(10.0),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.save, color: Colors.white,),
+                            Container(width: 5,),
+                            Text('Save', style: TextStyle(color: Colors.white, fontSize: 15),),
+                          ],
+                        )
+
+                    ),
+                  ],
+                )
+            ),
+          ],
         ),
         body: ListView(
           children: <Widget>[
@@ -256,70 +287,6 @@ class NewEventState extends State<NewEvent> {
                         Container(
                           height: 30,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            FlatButton(
-                                onPressed: (){
-                                  Navigator.pop(context);
-                                },
-                                padding: EdgeInsets.all(0),
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(width: 10,),
-                                    Container(
-                                        padding: EdgeInsets.all(10.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey,
-                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                        ),
-                                        child: Row(
-                                          children: <Widget>[
-                                            Icon(Icons.cancel, color: Colors.white,),
-                                            Container(width: 5,),
-                                            Text('Cancel', style: TextStyle(color: Colors.white, fontSize: 20),),
-                                          ],
-                                        )
-
-                                    ),
-                                  ],
-                                )
-                            ),
-                            FlatButton(
-                                onPressed: (){
-                                  fireActions.newEventToDatabase(
-                                      startTime.millisecondsSinceEpoch, endTime.millisecondsSinceEpoch,
-                                      colorSelection,
-                                      _partyLimitController.text,
-                                      _gameTitleController.text,
-                                      context
-                                  );
-                                  Navigator.pop(context);
-                                },
-                                padding: EdgeInsets.all(0),
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(width: 10,),
-                                    Container(
-                                      padding: EdgeInsets.all(10.0),
-                                      decoration: BoxDecoration(
-                                        color: Colors.green,
-                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                      ),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Icon(Icons.save, color: Colors.white,),
-                                          Container(width: 5,),
-                                          Text('Save', style: TextStyle(color: Colors.white, fontSize: 20),),
-                                        ],
-                                      )
-
-                                    ),
-                                  ],
-                                )
-                            ),
-                          ],
-                        )
                       ],
                     ),
                     Positioned(

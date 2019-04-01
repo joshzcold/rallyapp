@@ -38,6 +38,26 @@ class FireActions {
   });
   }
 
+  changeEventToDatabase(sTime, eTime, color, partyLimit, title, key, context)async{
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+    final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    AuthLoaded auth =  authBloc.currentState;
+
+    database.reference().child('/user/${user.uid}/events/$key').update(<String, dynamic>{
+        'color': color,
+        'end': eTime,
+        'start': sTime,
+        'party': {
+          'partyLimit': partyLimit
+        },
+        'title': title,
+        'user': auth.key,
+        'userName': auth.value['userName'],
+        'userPhoto': auth.value['userPhoto']
+    });
+  }
+
 }
 
 getFireBaseUser() async{
