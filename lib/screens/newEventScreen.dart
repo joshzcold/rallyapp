@@ -46,7 +46,7 @@ class NewEventState extends State<NewEvent> {
           children: <Widget>[
             Container(
                 width: maxWidth,
-                height: maxHeight + 300,
+                height: maxHeight,
                 child: Stack(
                   children: <Widget>[
                     Column(
@@ -56,11 +56,11 @@ class NewEventState extends State<NewEvent> {
                         Column(
                           children: <Widget>[
                             Container(
-                              height: 40,
+                              height: 30,
                             ),
                             Text(
                               'Start Time',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35),
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                             ),
                             FlatButton(
                                 padding: EdgeInsets.all(0),
@@ -107,7 +107,7 @@ class NewEventState extends State<NewEvent> {
                                   });
                                 },
                                 child: Container(
-                                  height: 50,
+                                  height: 30,
                                   width: maxWidth * .80,
                                   decoration: BoxDecoration(
                                     border:
@@ -117,7 +117,7 @@ class NewEventState extends State<NewEvent> {
                                   child: Text(
                                     '$startTimeText',
                                     style: TextStyle(
-                                        fontSize: 40, fontWeight: FontWeight.bold),
+                                        fontSize: 20, fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
                                   ),
                                 )),
@@ -126,7 +126,7 @@ class NewEventState extends State<NewEvent> {
                             ),
                             Text('End Time',
                                 style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
+                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                             FlatButton(
                                 padding: EdgeInsets.all(0),
                                 onPressed: () {
@@ -172,7 +172,7 @@ class NewEventState extends State<NewEvent> {
                                   });
                                 },
                                 child: Container(
-                                  height: 50,
+                                  height: 30,
                                   width: maxWidth * .80,
                                   decoration: BoxDecoration(
                                     border:
@@ -182,12 +182,12 @@ class NewEventState extends State<NewEvent> {
                                   child: Text(
                                     '$endTimeText',
                                     style: TextStyle(
-                                        fontSize: 40, fontWeight: FontWeight.bold),
+                                        fontSize: 20, fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
                                   ),
                                 )),
                             Container(
-                              height: 40,
+                              height: 20,
                             ),
                           ],
                         ),
@@ -196,7 +196,7 @@ class NewEventState extends State<NewEvent> {
                           children: <Widget>[
                             Text('Event Title',
                                 style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
+                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                             Container(
                               width: maxWidth * .70,
                               child: TextField(
@@ -209,13 +209,13 @@ class NewEventState extends State<NewEvent> {
                             ),
 
                             Container(
-                              height: 40,
+                              height: 20,
                               width: 1,
                             ),
 
                             Text('Party Limit',
                                 style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 35)),
+                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                             Container(
                               width: maxWidth * .20,
                               child: TextField(
@@ -259,7 +259,7 @@ class NewEventState extends State<NewEvent> {
                           ],
                         ),
                         Container(
-                          height: 40,
+                          height: 30,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
