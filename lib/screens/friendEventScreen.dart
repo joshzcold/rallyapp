@@ -13,6 +13,9 @@ class FriendEvent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var party = event.value['party'];
+    var partyLimit = party['partyLimit'];
+
     var maxWidth = MediaQuery.of(context).size.width;
     return Scaffold(
         appBar: AppBar(
@@ -56,7 +59,7 @@ class FriendEvent extends StatelessWidget {
                                     borderRadius: BorderRadius.all(Radius.circular(8.0)),
                                   ),
                                   child: Text(
-                                    '${event.value['start']}',
+                                    '${DateTime.fromMillisecondsSinceEpoch(event.value['start'])}',
                                     style: TextStyle(
                                         fontSize: 20, fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
@@ -77,7 +80,7 @@ class FriendEvent extends StatelessWidget {
                                     borderRadius: BorderRadius.all(Radius.circular(8.0)),
                                   ),
                                   child: Text(
-                                    '${event.value['end']}',
+                                    '${DateTime.fromMillisecondsSinceEpoch(event.value['end'])}',
                                     style: TextStyle(
                                         fontSize: 20, fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
@@ -89,7 +92,7 @@ class FriendEvent extends StatelessWidget {
                           ],
                         ),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -99,22 +102,31 @@ class FriendEvent extends StatelessWidget {
                                     Text('Event Title',
                                         style:
                                         TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                                    Container(
-                                      width: maxWidth * .70,
-                                      child: TextField(
-                                        enabled: false,
-                                        decoration: InputDecoration(
-                                          icon: Icon(Icons.videogame_asset),
-                                        ),
-                                      ),
-                                    ),
+
                                   ],
                                 )
                               ],
                             ),
+                            Container(height: 10,),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                                  border: Border.all(
+                                      color: Color(0xFFdadce0),
+                                      width: 1)
+                              ),
+                              width: maxWidth/1.2,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Text(event.value['title']),
+                                ],
+                              ),
+                            ),
+                            
                             Container(
                               height: 20,
-                              width: 1,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -126,15 +138,14 @@ class FriendEvent extends StatelessWidget {
                                         TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                                     Container(
                                       width: maxWidth * .20,
-                                      child: TextField(
-                                        enabled: false,
-                                        textAlign: TextAlign.center,
-                                        decoration: new InputDecoration(
-                                          icon: Icon(Icons.group),
-                                          hintText: '0',
-                                        ),
-                                        keyboardType: TextInputType.number,
-                                      ),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(Icons.group, color: Colors.grey),
+                                          Container(width: 10,),
+                                          Text(partyLimit)
+                                        ],
+                                      )
+
                                     )
                                   ],
                                 ),
@@ -144,7 +155,7 @@ class FriendEvent extends StatelessWidget {
                           ],
                         ),
                         Container(
-                          height: 30,
+                          height: 20,
                         ),
                         calculateJoinedFriendsWidget(context, event)
                       ],
