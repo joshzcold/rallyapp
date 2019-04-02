@@ -243,8 +243,30 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
                       sTime <= endWeek.millisecondsSinceEpoch) {
                     newDict.addAll({key: value});
                   }
-                })
+                }),
               });
+          Map conflictingEvents = {};
+          newDict.forEach((checkKey, checkValue){
+            var cVStart = checkValue['start'];
+            var cVEnd = checkValue['end'];
+            print('ITEM CHECKING: $checkKey  $checkValue');
+            newDict.forEach((loopKey, loopValue){
+              var lVStart = loopValue['start'];
+              var lVEnd = loopValue['end'];
+              print('Loop Value: $loopKey  $loopValue');
+              if(cVStart < lVStart && lVStart < cVEnd || lVEnd > cVStart && lVEnd < cVEnd){
+                var key = DateTime.fromMillisecondsSinceEpoch(cVStart).day;
+                if(conflictingEvents.containsKey(key)){
+                  conflictingEvents[key].addAll({loopKey: loopValue});
+                  conflictingEvents[key].addAll({checkKey: checkValue});
+                }else{
+                  conflictingEvents[key] = {};
+                  conflictingEvents[key].addAll({loopKey: loopValue});
+                  conflictingEvents[key].addAll({checkKey: checkValue});
+                }
+              }
+            });
+          });
           return Stack(
               children: newDict.entries
                   .map<Widget>((event) => Stack(
