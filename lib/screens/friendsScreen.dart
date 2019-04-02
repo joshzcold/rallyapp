@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
@@ -35,9 +36,10 @@ class FriendsScreenState extends State<FriendsScreen> {
     var maxPossibleWidth = MediaQuery.of(context).size.width;
     FireActions fireActions = new FireActions();
     AuthLoaded auth =  _authBloc.currentState;
-
+    final key = new GlobalKey<ScaffoldState>();
 
     return Scaffold(
+      key: key,
       bottomNavigationBar: BottomAppBar(
           child: Container(
             height: 55,
@@ -518,9 +520,42 @@ class FriendsScreenState extends State<FriendsScreen> {
                                     Text('${auth.value['rallyID']}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),)
                                   ],
                                 ),
+                                Container(height: 20,),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
+                                    FlatButton(
+                                        onPressed: () {
+                                        Clipboard.setData(new ClipboardData(text:auth.value['rallyID']));
+                                        Scaffold.of(context).showSnackBar(new SnackBar(
+                                          content: new Row(
+                                            children: <Widget>[
+                                              Text('Copied RallyID: ${auth.value['rallyID']}'),
+                                              Container(width: 15, height: 10,),
+                                              Icon(Icons.arrow_forward),
+                                              Container(width: 5, height: 10,),
+                                              Icon(Icons.content_paste),
+                                            ],
+                                          )
+                                        ));
+                                        },
+                                        padding: EdgeInsets.all(0),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Container(
+                                                decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(8))),
+                                                padding: EdgeInsets.all(10.0),
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Icon(Icons.content_paste, color: Colors.white,),
+                                                    Container(width: 5,),
+                                                    Text('Copy RallyID', style: TextStyle(color: Colors.white, fontSize: 15),),
+                                                  ],
+                                                )
+                                            ),
+                                          ],
+                                        )
+                                    ),
                                     FlatButton(
                                         onPressed: () async{
                                           var code = await fireActions.checkForRallyID(newFriendTextController.text, context);
@@ -607,9 +642,9 @@ class FriendsScreenState extends State<FriendsScreen> {
                                           ],
                                         )
                                     ),
-                                    Container(width: 10,)
                                   ],
-                                )
+                                ),
+                                Container(height: 10,)
                               ],
                             ),
                           )
