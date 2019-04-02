@@ -103,28 +103,28 @@ class CalendarPage extends StatelessWidget {
                           preferredSize: Size.fromHeight(1)),
                       bottomNavigationBar: BottomAppBar(
                       child: Container(
-                        height: 70,
+                        height: 55,
                         child: Row(
                           children: <Widget>[
                             FlatButton(
                                 padding: EdgeInsets.all(0),
                                 onPressed: (){
-
+                                  pageController.animateToPage(pages, duration: Duration(seconds: 1), curve: Curves.easeOut);
                                 },
                               child:  Container(
                               width: maxPossibleWidth/2,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  Icon(Icons.today),
-                                  Text('Today')
+                                  Icon(Icons.today, color: Colors.grey,),
+                                  Text('Today', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),)
                                 ],
                               ),
                             )),
                             FlatButton(
                               padding: EdgeInsets.all(0),
                               onPressed: (){
-                                
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => FriendsScreen()));
                               },
                               child: Container(
                                 width: maxPossibleWidth/2,
@@ -134,8 +134,8 @@ class CalendarPage extends StatelessWidget {
                                       Center(
                                         child: Column(
                                           children: <Widget>[
-                                            Icon(Icons.group),
-                                            Text('Friends'),
+                                            Icon(Icons.group, color: Colors.grey,),
+                                            Text('Friends', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),),
                                           ],
                                           mainAxisAlignment: MainAxisAlignment.center,
                                         ),

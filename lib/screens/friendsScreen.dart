@@ -27,24 +27,80 @@ class FriendsScreenState extends State<FriendsScreen> {
     final _authBloc = BlocProvider.of<AuthBloc>(context);
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     final _invitesBloc = BlocProvider.of<InviteBloc>(context);
+    var maxPossibleWidth = MediaQuery.of(context).size.width;
+
 
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today), title: Text('Events')),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.group), title: Text('Friends')),
-          ],
-          currentIndex: 1,
-          fixedColor: Colors.blue,
-          onTap: (index) {
-            if (index == 0) {
-              Navigator.pop(context);
-            } else if (index == 1) {
-              /// Probably do nothing here ///
-            }
-          }),
+      bottomNavigationBar: BottomAppBar(
+          child: Container(
+            height: 55,
+            child: Row(
+              children: <Widget>[
+                FlatButton(
+                    padding: EdgeInsets.all(0),
+                    onPressed: (){
+                      Navigator.pop(context);
+                    },
+                    child:  Container(
+                      width: maxPossibleWidth/2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.calendar_today, color: Colors.grey,),
+                          Text('Calendar', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),)
+                        ],
+                      ),
+                    )),
+                FlatButton(
+                  padding: EdgeInsets.all(0),
+                  onPressed: (){
+
+                  },
+                  child: Container(
+                      width: maxPossibleWidth/2,
+                      child: LayoutBuilder(builder: (context, constraints){
+                        return Stack(
+                          children: <Widget>[
+                            Center(
+                              child: Column(
+                                children: <Widget>[
+                                  Icon(Icons.group, color: Colors.blue,),
+                                  Text('Friends', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),),
+                                ],
+                                mainAxisAlignment: MainAxisAlignment.center,
+                              ),
+                            ),
+                            BlocBuilder(bloc: _invitesBloc, builder: (context, state){
+                              if(state is InvitesLoaded && state.invites.length > 0){
+                                return Positioned(
+                                    top: constraints.maxHeight/4 - 5,
+                                    left: constraints.maxWidth/2 + 5,
+                                    child: Container(
+                                        height: 15,
+                                        width: 15,
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.green
+                                        ),
+                                        child: Center(
+                                          child:Text('${state.invites.length}', style:
+                                          TextStyle(color: Colors.white, fontSize: 14),),
+                                        )
+                                    ));
+                              } else{
+                                return Container();
+                              }
+                            },),
+                          ],
+                        );
+                      })
+
+                  ),
+                )
+              ],
+            ),
+          )
+      ),
       body: BlocBuilder(
           bloc: _friendsBloc,
           builder: (BuildContext context, state) {
