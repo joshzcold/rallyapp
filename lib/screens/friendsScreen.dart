@@ -564,7 +564,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                           newFriendModal = Container();
                                           newFriendErrorMessage = AlertDialog(
                                             title: new Text("Friend Invite Sent!"),
-                                            content: new Text("Once your friend has accept your invite you'll be able to see their events"),
+                                            content: new Text("Once your friend has accepted your invite you'll be able to see their events"),
                                             actions: <Widget>[
                                               // usually buttons at the bottom of the dialog
                                               new FlatButton(
