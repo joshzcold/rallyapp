@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:rallyapp/blocs/app/invite.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +26,7 @@ class FriendsScreenState extends State<FriendsScreen> {
     final _friendsBloc = BlocProvider.of<FriendsBloc>(context);
     final _authBloc = BlocProvider.of<AuthBloc>(context);
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
+    final _invitesBloc = BlocProvider.of<InviteBloc>(context);
 
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
@@ -112,6 +114,14 @@ class FriendsScreenState extends State<FriendsScreen> {
                           Container(
                             height: 50,
                           ),
+
+
+                          /// Show Invites if they exist
+                          BlocBuilder(bloc: _invitesBloc, builder: (context, state){
+                            return Text('$state');
+                          }),
+
+
                           /// Friends Label and the friends list
                           Container(
                               height: 30,

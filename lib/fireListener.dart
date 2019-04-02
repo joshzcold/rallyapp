@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/app/invite.dart';
 
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
@@ -19,6 +20,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
   final friendBloc = BlocProvider.of<FriendsBloc>(context);
   final authBloc = BlocProvider.of<AuthBloc>(context);
   final eventBloc = BlocProvider.of<EventsBloc>(context);
+  final inviteBloc = BlocProvider.of<InviteBloc>(context);
 
   final FirebaseUser user = await _auth.currentUser();
   var uid = user.uid;
@@ -92,6 +94,16 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
     database.reference().child('user/$uid/events').onChildRemoved.listen((Event event){
       print(' -- REMOVE -- user events');
       eventBloc.dispatch(RemoveEvents(uid, event.snapshot.key));
+    });
+
+    database.reference().child('user/$uid/invites').onChildAdded.listen((Event event){
+      print(' -- ADD -- user invite');
+      inviteBloc.dispatch(AddInvite(event.snapshot.key, event.snapshot.value));
+    });
+
+    database.reference().child('user/$uid/invites').onChildRemoved.listen((Event event){
+      print(' -- REMOVE -- user invite');
+      inviteBloc.dispatch(RemoveInvite(event.snapshot.key));
     });
     //////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////

@@ -2,6 +2,7 @@ import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/app/invite.dart';
 import 'package:rallyapp/blocs/app/month.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/calendar/week/weekView.dart';
@@ -79,6 +80,9 @@ class CalendarPage extends StatelessWidget {
     currentMonth = Utils.firstDayOfWeek(DateTime.now()).toLocal().month;
 
     final monthBloc = BlocProvider.of<MonthBloc>(context);
+    final inviteBloc = BlocProvider.of<InviteBloc>(context);
+
+
 
     return BlocBuilder(
               bloc: _eventsBloc,
@@ -97,22 +101,76 @@ class CalendarPage extends StatelessWidget {
                             backgroundColor: Colors.white,
                           ),
                           preferredSize: Size.fromHeight(1)),
-                      bottomNavigationBar: BottomNavigationBar(
-                                items: <BottomNavigationBarItem>[
-                                  BottomNavigationBarItem(
-                                      icon: Icon(Icons.today), title: Text('Today')),
-                                  BottomNavigationBarItem(
-                                      icon: Icon(Icons.group), title: Text('Friends')),
+                      bottomNavigationBar: BottomAppBar(
+                      child: Container(
+                        height: 70,
+                        child: Row(
+                          children: <Widget>[
+                            FlatButton(
+                                padding: EdgeInsets.all(0),
+                                onPressed: (){
+
+                                },
+                              child:  Container(
+                              width: maxPossibleWidth/2,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(Icons.today),
+                                  Text('Today')
                                 ],
-                                currentIndex: 0,
-                                fixedColor: Colors.blue,
-                                onTap: (index) {
-                                  if (index == 0) {
-                                    pageController.animateToPage(pages, duration: Duration(seconds: 1), curve: Curves.easeOut);
-                                  } else if (index == 1) {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => FriendsScreen()));
-                                  }
-                                }),
+                              ),
+                            )),
+                            FlatButton(
+                              padding: EdgeInsets.all(0),
+                              onPressed: (){
+                                
+                              },
+                              child: Container(
+                                width: maxPossibleWidth/2,
+                                child: LayoutBuilder(builder: (context, constraints){
+                                  return Stack(
+                                    children: <Widget>[
+                                      Center(
+                                        child: Column(
+                                          children: <Widget>[
+                                            Icon(Icons.group),
+                                            Text('Friends'),
+                                          ],
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                        ),
+                                      ),
+                                      BlocBuilder(bloc: inviteBloc, builder: (context, state){
+                                        if(state is InvitesLoaded && state.invites.length > 0){
+                                          return Positioned(
+                                                top: constraints.maxHeight/4 - 5,
+                                                left: constraints.maxWidth/2 + 5,
+                                                child: Container(
+                                                  height: 15,
+                                                  width: 15,
+                                                  decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: Colors.green
+                                                  ),
+                                                  child: Center(
+                                                    child:Text('${state.invites.length}', style:
+                                                    TextStyle(color: Colors.white, fontSize: 14),),
+                                                  )
+                                                ));
+                                        } else{
+                                          return Container();
+                                        }
+                                      },),
+                                    ],
+                                  );
+                                })
+
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                      ),
                       floatingActionButton: Container(
                         child: FloatingActionButton(
                             onPressed: () {

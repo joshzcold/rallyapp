@@ -13,6 +13,7 @@ import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:rallyapp/blocs/events/event_bloc.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/app/indexBloc.dart';
+import 'package:rallyapp/blocs/app/invite.dart';
 
 void main() {
 runApp(Rally());
@@ -27,7 +28,8 @@ class Rally extends StatelessWidget {
         BlocProvider<EventsBloc>(bloc: EventsBloc()),
         BlocProvider<AuthBloc>(bloc: AuthBloc()),
         BlocProvider<CalendarIndexBloc>(bloc: CalendarIndexBloc()),
-        BlocProvider<MonthBloc>(bloc: MonthBloc())
+        BlocProvider<MonthBloc>(bloc: MonthBloc()),
+        BlocProvider<InviteBloc>(bloc: InviteBloc()),
       ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
