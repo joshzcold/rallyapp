@@ -21,6 +21,10 @@ class FriendsScreenState extends State<FriendsScreen> {
   var expanded = {};
   var friendCardHeight = 110.0;
   var eventsSection = {};
+  Widget newFriendModal = Container();
+  Widget newFriendErrorMessage = Container();
+  TextEditingController newFriendTextController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +34,7 @@ class FriendsScreenState extends State<FriendsScreen> {
     final _invitesBloc = BlocProvider.of<InviteBloc>(context);
     var maxPossibleWidth = MediaQuery.of(context).size.width;
     FireActions fireActions = new FireActions();
+    AuthLoaded auth =  _authBloc.currentState;
 
 
     return Scaffold(
@@ -55,9 +60,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                     )),
                 FlatButton(
                   padding: EdgeInsets.all(0),
-                  onPressed: (){
-
-                  },
+                  onPressed: (){},
                   child: Container(
                       width: maxPossibleWidth/2,
                       child: LayoutBuilder(builder: (context, constraints){
@@ -154,8 +157,11 @@ class FriendsScreenState extends State<FriendsScreen> {
                   var userCardWidth = constraints.maxWidth * .80;
                   var userCardHeight = constraints.maxHeight / 4;
                   var friendCardWidth = constraints.maxWidth * .90;
-                  return Container(
-                      height: constraints.maxHeight,
+                  return Stack(
+                    children: <Widget>[
+                      /// EVERYTHING IN FRIENDS SCREEN
+                  Container(
+                  height: constraints.maxHeight,
                       width: constraints.maxWidth,
 
                       /// THIS MAKES THE WHOLE PAGE SCROLLABLE
@@ -211,7 +217,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                       ),
                                                       InkWell(
                                                         onTap: (){
-                                                        fireActions.acceptInvite(invite, context);
+                                                          fireActions.acceptInvite(invite, context);
                                                         },
                                                         child: Container(
                                                           width: 50,
@@ -225,7 +231,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                       ),
                                                       InkWell(
                                                         onTap: (){
-                                                        fireActions.declineInvite(invite, context);
+                                                          fireActions.declineInvite(invite, context);
                                                         },
                                                         child: Container(
                                                           width: 50,
@@ -263,81 +269,81 @@ class FriendsScreenState extends State<FriendsScreen> {
                           ),
                           LayoutBuilder(
                               builder: (context, friendViewConstraints) {
-                            return Column(
-                                /// FRIENDS LIST BUILDER
-                                children: state.friends.entries
-                                    .map<Widget>((friend) => BlocBuilder(
-                                          bloc: _eventsBloc,
-                                          builder: (context, state) {
-                                            var events = state.events[friend.key];
-                                            var eventsPassedToday = {};
+                                return Column(
+                                  /// FRIENDS LIST BUILDER
+                                    children: state.friends.entries
+                                        .map<Widget>((friend) => BlocBuilder(
+                                      bloc: _eventsBloc,
+                                      builder: (context, state) {
+                                        var events = state.events[friend.key];
+                                        var eventsPassedToday = {};
 
-                                            DateTime currentTime = DateTime.now();
-                                            if (events != null) {
-                                              // forEach to find events passed today
-                                              events.forEach((k, event) {
-                                                if (event['end'] >
-                                                    currentTime.millisecondsSinceEpoch) {
-                                                  eventsPassedToday.addAll({k: event});
-                                                }
-                                              });
-                                              // after sorting, add events in order
+                                        DateTime currentTime = DateTime.now();
+                                        if (events != null) {
+                                          // forEach to find events passed today
+                                          events.forEach((k, event) {
+                                            if (event['end'] >
+                                                currentTime.millisecondsSinceEpoch) {
+                                              eventsPassedToday.addAll({k: event});
                                             }
-                                            // set those events to the sorted events.
-                                            if (eventsPassedToday.length > 0) {
-                                              /// EVENTS IN FUTURE
-                                              return Stack(
-                                                children: <Widget>[
-                                                  Card(
-                                                      child: Container(
-                                                        width: friendCardWidth,
+                                          });
+                                          // after sorting, add events in order
+                                        }
+                                        // set those events to the sorted events.
+                                        if (eventsPassedToday.length > 0) {
+                                          /// EVENTS IN FUTURE
+                                          return Stack(
+                                            children: <Widget>[
+                                              Card(
+                                                  child: Container(
+                                                    width: friendCardWidth,
                                                     child: Column(
                                                       children: <Widget>[
                                                         FlatButton(
                                                             padding:
-                                                                EdgeInsets.all(
-                                                                    0),
+                                                            EdgeInsets.all(
+                                                                0),
                                                             onPressed: () {
                                                               Navigator.push(context, MaterialPageRoute(builder: (context) => FriendDetails(friend: friend,)));
                                                             },
                                                             child: Container(
                                                               padding:
-                                                                  EdgeInsets
-                                                                      .all(10),
+                                                              EdgeInsets
+                                                                  .all(10),
                                                               height: 80,
                                                               child: Row(
                                                                 mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                                 children: <
                                                                     Widget>[
                                                                   /// This Container is the Friend Images
                                                                   CircleAvatar(
                                                                     radius: 30,
                                                                     backgroundImage:
-                                                                        NetworkImage(
-                                                                            friend.value['userPhoto']),
+                                                                    NetworkImage(
+                                                                        friend.value['userPhoto']),
                                                                     backgroundColor:
-                                                                        Colors
-                                                                            .white,
+                                                                    Colors
+                                                                        .white,
                                                                   ),
 
                                                                   /// Friend User Name
                                                                   Text(
                                                                     friend.value[
-                                                                        'userName'],
+                                                                    'userName'],
                                                                     style: TextStyle(
                                                                         fontSize:
-                                                                            20),
+                                                                        20),
                                                                   ),
 
                                                                   /// Friend RallyID
                                                                   Text(
                                                                     friend.value[
-                                                                        'rallyID'],
+                                                                    'rallyID'],
                                                                     style: TextStyle(
                                                                         fontSize:
-                                                                            20),
+                                                                        20),
                                                                   )
                                                                 ],
                                                               ),
@@ -347,15 +353,15 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                           // faster or slower.
                                                           duration: Duration(
                                                               milliseconds:
-                                                                  300),
+                                                              300),
                                                           transitionBuilder:
                                                               (Widget child,
-                                                                  Animation<
-                                                                          double>
-                                                                      animation) {
+                                                              Animation<
+                                                                  double>
+                                                              animation) {
                                                             return SizeTransition(
                                                               sizeFactor:
-                                                                  animation,
+                                                              animation,
                                                               child: child,
                                                             );
                                                           },
@@ -364,7 +370,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                         Container(
                                                           height: 30,
                                                           width:
-                                                              friendCardWidth,
+                                                          friendCardWidth,
                                                           child: FlatButton(
                                                               child: Center(
                                                                 child: Icon(Icons
@@ -382,40 +388,65 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                       ],
                                                     ),
                                                   )),
-                                                  Positioned(
-                                                    top: 4,
-                                                    right: 0,
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          color: Colors
-                                                              .green[700]),
-                                                      width: 29,
-                                                      child: Text(
-                                                        "${eventsPassedToday.length}",
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 18.0),
-                                                      ),
-                                                      alignment:
-                                                          FractionalOffset(
-                                                              0.5, 0.5),
-                                                    ),
+                                              Positioned(
+                                                top: 4,
+                                                right: 0,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      shape:
+                                                      BoxShape.circle,
+                                                      color: Colors
+                                                          .green[700]),
+                                                  width: 29,
+                                                  child: Text(
+                                                    "${eventsPassedToday.length}",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 18.0),
                                                   ),
-                                                ],
-                                              );
-                                            } else {
-                                              /// NO EVENTS IN FUTURE
-                                              return noFutureEventsFriendItem(
-                                                  friend, friendCardWidth);
-                                            }
-                                          },
-                                        ))
-                                    .toList());
-                          }),
+                                                  alignment:
+                                                  FractionalOffset(
+                                                      0.5, 0.5),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        } else {
+                                          /// NO EVENTS IN FUTURE
+                                          return noFutureEventsFriendItem(
+                                              friend, friendCardWidth);
+                                        }
+                                      },
+                                    ))
+                                        .toList());
+                              }),
                         ],
-                      ));
+                      )),
+                  /// Modal that will show on top of friends screen
+                  AnimatedSwitcher(
+                    // the duration can be adjusted to expand the friend events
+                    // faster or slower.
+                      duration: Duration(milliseconds: 300),
+                      transitionBuilder: (Widget child, Animation<double>animation) {
+                        return FadeTransition(opacity: animation,
+                          child: child,
+                        );
+                      },
+                      child: newFriendModal
+                  ),
+                  AnimatedSwitcher(
+                    // the duration can be adjusted to expand the friend events
+                    // faster or slower.
+                      duration: Duration(milliseconds: 100),
+                      transitionBuilder: (Widget child, Animation<double>animation) {
+                        return FadeTransition(opacity: animation,
+                          child: child,
+                        );
+                      },
+                      child: newFriendErrorMessage
+                  ),
+                    ],
+                  );
                 },
               );
             }
@@ -423,7 +454,159 @@ class FriendsScreenState extends State<FriendsScreen> {
       floatingActionButton: Container(
         child: FloatingActionButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => NewFriend()));
+              setState(() {
+                newFriendModal = InkWell(
+                  onTap: (){
+                    setState(() {
+                      newFriendModal = Container();
+                    });
+                  },
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.height,
+                    decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                    alignment: Alignment.center,
+                    child: Container(
+                        height: MediaQuery.of(context).size.height * .35,
+                        width: MediaQuery.of(context).size.width * .95,
+                        child: Card(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Text('New Friend', style: TextStyle(
+                                      fontWeight: FontWeight.bold, fontSize: 20
+                                  ),),
+                                ],
+                              ),
+                              Divider(),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Container(
+                                    width: (MediaQuery.of(context).size.width * .95) * .80,
+                                    child: TextField(
+                                      controller: newFriendTextController,
+                                      textAlign: TextAlign.center,
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                                        ),
+                                        hintText: 'User Name-#####',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text('Your RallyID: ', style: TextStyle(color: Colors.grey),),
+                                  Text('${auth.value['rallyID']}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),)
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  FlatButton(
+                                      onPressed: () async{
+                                      var code = await fireActions.checkForRallyID(newFriendTextController.text, context);
+                                      print(code);
+                                      if(code == "USER_RAL"){
+                                        setState(() {
+                                          setState(() {
+                                            newFriendErrorMessage = AlertDialog(
+                                              title: new Text("RallyID = Users RallyID"),
+                                              content: new Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                Text("You can't send a friend invite to yourself"),
+                                                Icon(Icons.favorite_border)
+                                              ],) ,
+                                              actions: <Widget>[
+                                                // usually buttons at the bottom of the dialog
+                                                new FlatButton(
+                                                  child: new Text("Close"),
+                                                  onPressed: () {
+                                                    setState((){
+                                                      newFriendErrorMessage = Container();
+                                                    });
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          });
+                                        });
+                                      } else if(code == "NOT_FOUND"){
+                                        setState(() {
+                                          newFriendErrorMessage = AlertDialog(
+                                            title: new Text("RallyID Not Found"),
+                                            content: new Text("Rally couldn't find that RallyID, double check and try again"),
+                                            actions: <Widget>[
+                                              // usually buttons at the bottom of the dialog
+                                              new FlatButton(
+                                                child: new Text("Close"),
+                                                onPressed: () {
+                                                  setState((){
+                                                    newFriendErrorMessage = Container();
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                      } else {
+                                        fireActions.sendInvite(code, context);
+                                        setState(() {
+                                          newFriendModal = Container();
+                                          newFriendErrorMessage = AlertDialog(
+                                            title: new Text("Friend Invite Sent!"),
+                                            content: new Text("Once your friend has accept your invite you'll be able to see their events"),
+                                            actions: <Widget>[
+                                              // usually buttons at the bottom of the dialog
+                                              new FlatButton(
+                                                child: new Text("Close"),
+                                                onPressed: () {
+                                                  setState((){
+                                                    newFriendErrorMessage = Container();
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                      }
+                                      },
+                                      padding: EdgeInsets.all(0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Container(
+                                              decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.all(Radius.circular(8))),
+                                              padding: EdgeInsets.all(10.0),
+                                              child: Row(
+                                                children: <Widget>[
+                                                  Icon(Icons.mail, color: Colors.white,),
+                                                  Container(width: 5,),
+                                                  Text('Submit', style: TextStyle(color: Colors.white, fontSize: 15),),
+                                                ],
+                                              )
+                                          ),
+                                        ],
+                                      )
+                                  ),
+                                  Container(width: 10,)
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                      ),
+                  ),
+                );
+              });
             },
             backgroundColor: Colors.blue,
             child: Icon(Icons.group_add)),

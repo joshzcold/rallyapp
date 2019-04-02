@@ -124,26 +124,41 @@ class FireActions {
     database.reference().child('/user/${user.uid}/invites/${invite.key}').remove();
   }
 
-  bool checkForRallyID(rallyID){
-    FirebaseDatabase database = getFireBaseInstance();
-    var items;
-    var check;
-    database.reference().child('rally/').once().then((snapshot) =>{
-    items = snapshot.value
-    }).then((something){
-      // check if the generated RallyID is found within the snapshot of the rally
-      // directory. Not the best way to check but since flutter doesn't currently
-      // have a function like .exists() this is what works for now...
-      items.containsKey(rallyID)? check = false: check = true;
+  sendInvite(friend, context,) async{
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+    final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    AuthLoaded auth =  authBloc.currentState;
+    // Send Invite to Friend
+    database.reference().child('/user/$friend/invites/${user.uid}').update({
+      'rallyID':auth.value['rallyID'],
+      'userEmail':auth.value['userEmail'],
+      'userName':auth.value['userName'],
+      'userPhoto':auth.value['userPhoto'],
     });
-    if(check){
-      return true;
-    } else{
-      return false;
-    }
-
   }
 
+  checkForRallyID(rallyID, context) async{
+    final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    AuthLoaded auth =  authBloc.currentState;
+    var code;
+    FirebaseDatabase database = await getFireBaseInstance();
+    await database.reference().child('rally/').once().then((snapshot) async{
+      if(snapshot.value.containsKey(rallyID) && rallyID != auth.value['rallyID']){
+        print('found $rallyID in directory');
+        await database.reference().child('rally/$rallyID').once().then((snapshot){
+          code = snapshot.value['userID'];
+        });
+      } else if (rallyID == auth.value['rallyID']){
+        print('rallyID is same as Users rallyID');
+        code = "USER_RAL";
+      } else{
+        print('$rallyID not found in /rally');
+        code = 'NOT_FOUND';
+      }
+    });
+    return code;
+  }
 }
 
 getFireBaseUser() async{
