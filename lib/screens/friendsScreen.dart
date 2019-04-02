@@ -6,6 +6,7 @@ import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/events/event.dart';
+import 'package:rallyapp/fireActions.dart';
 import 'package:rallyapp/screens/friendEventScreen.dart';
 import 'package:rallyapp/screens/friendDetailsScreen.dart';
 import 'package:rallyapp/screens/newFriendScreen.dart';
@@ -28,6 +29,7 @@ class FriendsScreenState extends State<FriendsScreen> {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     final _invitesBloc = BlocProvider.of<InviteBloc>(context);
     var maxPossibleWidth = MediaQuery.of(context).size.width;
+    FireActions fireActions = new FireActions();
 
 
     return Scaffold(
@@ -209,7 +211,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                       ),
                                                       InkWell(
                                                         onTap: (){
-
+                                                        fireActions.acceptInvite(invite, context);
                                                         },
                                                         child: Container(
                                                           width: 50,
@@ -223,7 +225,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                       ),
                                                       InkWell(
                                                         onTap: (){
-
+                                                        fireActions.declineInvite(invite, context);
                                                         },
                                                         child: Container(
                                                           width: 50,

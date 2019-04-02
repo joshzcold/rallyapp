@@ -94,6 +94,56 @@ class FireActions {
         '/user/${user.uid}/events/$event').remove();
   }
 
+  acceptInvite(invite, context,) async{
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+    final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    AuthLoaded auth =  authBloc.currentState;
+
+    // Add friend to user's friend list
+    database.reference().child('/user/${user.uid}/friends/${invite.key}').update({
+      'notify': "true",
+      'userEmail': invite.value['userEmail'],
+    });
+
+    // Add user to friend's friend list
+    database.reference().child('/user/${invite.key}/friends/${user.uid}').update({
+      'notify': "true",
+      'userEmail': auth.value['userEmail'],
+    });
+
+    // Remove invite from list
+    database.reference().child('/user/${user.uid}/invites/${invite.key}').remove();
+  }
+
+  declineInvite(invite, context,) async{
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+
+    // Remove invite from list
+    database.reference().child('/user/${user.uid}/invites/${invite.key}').remove();
+  }
+
+  bool checkForRallyID(rallyID){
+    FirebaseDatabase database = getFireBaseInstance();
+    var items;
+    var check;
+    database.reference().child('rally/').once().then((snapshot) =>{
+    items = snapshot.value
+    }).then((something){
+      // check if the generated RallyID is found within the snapshot of the rally
+      // directory. Not the best way to check but since flutter doesn't currently
+      // have a function like .exists() this is what works for now...
+      items.containsKey(rallyID)? check = false: check = true;
+    });
+    if(check){
+      return true;
+    } else{
+      return false;
+    }
+
+  }
+
 }
 
 getFireBaseUser() async{
