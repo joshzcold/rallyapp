@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rallyapp/fireListener.dart';
 
@@ -81,7 +80,6 @@ class SignInPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     var maxWidth = MediaQuery.of(context).size.width;
-    var maxHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: ListView(
         children: <Widget>[
