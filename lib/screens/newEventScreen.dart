@@ -313,6 +313,9 @@ class NewEventState extends State<NewEvent> {
   }
 
      _changeColorButton(maxHeight, maxWidth){
+    if(maxWidth > maxHeight){
+      maxWidth = maxWidth/2;
+    }
     var farDown = 50.0;
     var circleSize = maxWidth *.80;
     var colorSize = 50.0;
