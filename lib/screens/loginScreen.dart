@@ -80,70 +80,100 @@ class SignInPage extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    var maxWidth = MediaQuery.of(context).size.width;
+    var maxHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Sign in"),
-      ),
+      body: ListView(
+        children: <Widget>[
+        Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(height: 100,),
+            Form(
+              key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        width: maxWidth * .80,
+                        child: TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(50)),
+                            ),
+                            hintText: 'Email',
+                          ),
+                          validator: (String value) {
+                            if (value.isEmpty) {
+                              return 'Please enter some text';
+                            }
+                          },
+                        ),
+                      ),
+                      Container(
+                        height: 10,
+                      ),
+                      Container(
+                        width: maxWidth * .80,
+                        child: TextFormField(
+                          controller: _passwordController,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(50)),
+                            ),
+                            hintText: 'Password',
+                          ),
+                          validator: (String value) {
+                            if (value.isEmpty) {
+                              return 'Please enter some text';
+                            }
+                          },
+                        ),
+                      ),
+                      Container(height: 10,),
+                      Container(
+                        alignment: Alignment.center,
+                        child: RaisedButton(
+                          onPressed: () async {
+                            if (_formKey.currentState.validate()) {
+                              signInWithEmailAndPassword(context);
+                            }
+                          },
+                          child: const Text('SIGN IN'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-      body: Builder(builder: (BuildContext context) {
-        return Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (String value) {
-                  if (value.isEmpty) {
-                    return 'Please enter some text';
-                  }
+            Container(
+              height: 30,
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: RaisedButton(
+                onPressed: ()  {
+                  Navigator.pushReplacementNamed(context, '/register');
                 },
+                child: const Text('SIGN UP'),
               ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                validator: (String value) {
-                  if (value.isEmpty) {
-                    return 'Please enter some text';
-                  }
+            ),
+            Container(height: 10,),
+            Container(
+              alignment: Alignment.center,
+              child: RaisedButton(
+                onPressed: (){
+                  signInWithGoogle(context);
                 },
+                child: const Text('SIGN IN WITH GOOGLE'),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                alignment: Alignment.center,
-                child: RaisedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState.validate()) {
-                      signInWithEmailAndPassword(context);
-                    }
-                  },
-                  child: const Text('SIGN IN'),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                alignment: Alignment.center,
-                child: RaisedButton(
-                  onPressed: ()  {
-                    Navigator.pushReplacementNamed(context, '/register');
-                  },
-                  child: const Text('SIGN UP'),
-                ),
-              ),
-              Container(
-                alignment: Alignment.center,
-                child: RaisedButton(
-                  onPressed: (){
-                    signInWithGoogle(context);
-                  },
-                  child: const Text('SIGN IN WITH GOOGLE'),
-                ),
-              ),
-            ],
-          ),
-        );
-      }),
+            ),
+          ],
+        ),
+        ],
+      )
     );
   }
 
