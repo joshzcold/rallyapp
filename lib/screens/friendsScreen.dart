@@ -544,7 +544,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                         setState(() {
                                           newFriendErrorMessage = AlertDialog(
                                             title: new Text("RallyID Not Found"),
-                                            content: new Text("Rally couldn't find that RallyID, double check and try again"),
+                                            content: new Text("Rally couldn't find RallyID: ${newFriendTextController.text} in the directory, double check and try again"),
                                             actions: <Widget>[
                                               // usually buttons at the bottom of the dialog
                                               new FlatButton(
