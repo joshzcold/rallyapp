@@ -174,19 +174,91 @@ class FriendsScreenState extends State<FriendsScreen> {
 
                           /// Show Invites if they exist
                           BlocBuilder(bloc: _invitesBloc, builder: (context, state){
-                            return Text('$state');
+                            if(state is InvitesLoaded && state.invites.length > 0){
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Container(width: 10,),
+                                      Text('Friend Invites', style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                      children: state.invites.entries.map<Widget>((invite) =>
+                                          Card(
+                                            child: Container(
+                                              padding: EdgeInsets.all(10),
+                                              height: 80,
+                                              width: friendCardWidth,
+                                              child: LayoutBuilder(builder: (context, constraints){
+                                                return Container(
+                                                  width: constraints.maxWidth,
+                                                  height: constraints.maxHeight,
+                                                  child: Row(
+                                                    children: <Widget>[
+                                                      /// Invite RallyID
+                                                      Container(
+                                                        width: constraints.maxWidth - 110,
+                                                        child: Text(
+                                                          invite.value['rallyID'],
+                                                          style: TextStyle(fontSize: 20),
+                                                        ),
+                                                      ),
+                                                      InkWell(
+                                                        onTap: (){
+
+                                                        },
+                                                        child: Container(
+                                                          width: 50,
+                                                          height: 30,
+                                                          decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.all(Radius.circular(8))),
+                                                          child:Icon(Icons.check, color: Colors.white,),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        width: 10,
+                                                      ),
+                                                      InkWell(
+                                                        onTap: (){
+
+                                                        },
+                                                        child: Container(
+                                                          width: 50,
+                                                          height: 30,
+                                                          decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(8))),
+                                                          child:Icon(Icons.clear, color: Colors.white,),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                );
+                                              }),
+                                            ),
+                                          )
+                                      ).toList()
+                                  ),
+                                ],
+                              );
+                            } else{
+                              return Container();
+                            }
                           }),
 
 
                           /// Friends Label and the friends list
-                          Container(
-                              height: 30,
-                              width: friendCardWidth,
-                              child: Text(
-                                '    Friends',
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Container(width: 10,),
+                              Text('Friends',
                                 style: TextStyle(
                                     fontSize: 20, fontStyle: FontStyle.italic),
-                              )),
+                              )
+                            ],
+                          ),
                           LayoutBuilder(
                               builder: (context, friendViewConstraints) {
                             return Column(

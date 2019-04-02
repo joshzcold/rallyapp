@@ -9,6 +9,7 @@ import 'package:rallyapp/calendar/week/weekView.dart';
 import 'package:rallyapp/screens/friendsScreen.dart';
 import 'package:rallyapp/screens/newEventScreen.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:rallyapp/main.dart';
 
 List<String> displayHour = [
   "1AM",
@@ -124,7 +125,7 @@ class CalendarPage extends StatelessWidget {
                             FlatButton(
                               padding: EdgeInsets.all(0),
                               onPressed: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => FriendsScreen()));
+                                Navigator.push(context, MyCustomRoute(builder: (context) => FriendsScreen()));
                               },
                               child: Container(
                                 width: maxPossibleWidth/2,
