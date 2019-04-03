@@ -266,27 +266,63 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
             });
           });
           DateTime currentTime = DateTime.now();
+          Map groupedConflictingEvents = {};
+          Map conflictingEventsByTime = {};
           conflictingEvents.forEach((day, events){
             var startingHour;
             var endingHour;
             print('DAY: $day');
+            var lastGroup;
+            var startingGroup;
+            var lastEndTimeValue;
+            var nextEndTimeValue;
+            var firstStartValue;
             timeHour.forEach((hour){
               var cHStart =  new DateTime(currentTime.year,currentTime.month, day, hour).millisecondsSinceEpoch;
               var cHEnd = cHStart + 3599999;
-              int lastEndTimeValue;
-              int lastGroup;
               events.forEach((eventKey, eventValue){
                 var eStart = eventValue['start'];
                 var eEnd = eventValue['end'];
                 if(cHStart >= eStart && cHStart < eEnd || cHEnd >= eStart && cHEnd <= eEnd || cHStart <= eStart && cHEnd >= eEnd ){
+                  if(conflictingEventsByTime['$hour'] == null){
+                    conflictingEventsByTime['$hour'] = {};
+                  }
+                  if(groupedConflictingEvents['$hour'] == null){
+                    groupedConflictingEvents['$hour'] = {};
+                  }
+                  conflictingEventsByTime['$hour'].addAll({eventKey: eventValue});
                   print('BING!: Hour:$hour event Start:$eStart event End:$eEnd');
-                 if(lastEndTimeValue == null || lastEndTimeValue < eEnd){
-                   lastEndTimeValue = eEnd;
-                   if(lastGroup == null || lastGroup < hour && lastEndTimeValue > cHStart){
+                   if(startingGroup == null || startingGroup == hour ){
                      lastGroup = hour;
-//                     print('$lastGroup');
+                     startingGroup = hour;
+                     groupedConflictingEvents['$startingGroup'].addAll({eventKey: eventValue});
+                     if(lastEndTimeValue == null || lastEndTimeValue < eEnd){
+                       lastEndTimeValue = eEnd;
+                     }
+                   } else if(startingGroup+1 == hour){
+                     lastGroup = hour;
+                     conflictingEventsByTime['$hour'].addAll({eventKey:eventValue});
+                     if(firstStartValue == null){
+                       firstStartValue = eStart;
+                     } else if(firstStartValue >= eStart){
+                       firstStartValue = eStart;
+                     }
+                     if(nextEndTimeValue != null && nextEndTimeValue < eEnd){
+                       nextEndTimeValue = eEnd;
+                     }
+                   } else{
+                     if(lastEndTimeValue > firstStartValue || nextEndTimeValue != null && nextEndTimeValue > firstStartValue){
+                       // Change Next End Time when a group is added togethor;
+                       groupedConflictingEvents['$startingGroup'].addAll(conflictingEventsByTime['$lastGroup']);
+                     } else{
+                       startingGroup = lastGroup;
+                       groupedConflictingEvents['$startingGroup'].addAll(conflictingEventsByTime['$lastGroup']);
+                       conflictingEventsByTime['$hour'].addAll({eventKey:eventValue});
+                       lastGroup = lastGroup;
+                       nextEndTimeValue = eEnd;
+                     }
                    }
-                 }
+                 
                 }
               });
             });
