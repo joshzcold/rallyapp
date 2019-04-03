@@ -10,7 +10,7 @@ import 'package:sticky_headers/sticky_headers.dart';
 var currentHour = new DateTime.now().hour;
 
 List<int> timeHour = [
-  24,
+  0,
   1,
   2,
   3,
@@ -249,11 +249,9 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
           newDict.forEach((checkKey, checkValue){
             var cVStart = checkValue['start'];
             var cVEnd = checkValue['end'];
-            print('ITEM CHECKING: $checkKey  $checkValue');
             newDict.forEach((loopKey, loopValue){
               var lVStart = loopValue['start'];
               var lVEnd = loopValue['end'];
-              print('Loop Value: $loopKey  $loopValue');
               if(cVStart < lVStart && lVStart < cVEnd || lVEnd > cVStart && lVEnd < cVEnd){
                 var key = DateTime.fromMillisecondsSinceEpoch(cVStart).day;
                 if(conflictingEvents.containsKey(key)){
@@ -265,6 +263,32 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
                   conflictingEvents[key].addAll({checkKey: checkValue});
                 }
               }
+            });
+          });
+          DateTime currentTime = DateTime.now();
+          conflictingEvents.forEach((day, events){
+            var startingHour;
+            var endingHour;
+            print('DAY: $day');
+            timeHour.forEach((hour){
+              var cHStart =  new DateTime(currentTime.year,currentTime.month, day, hour).millisecondsSinceEpoch;
+              var cHEnd = cHStart + 3599999;
+              int lastEndTimeValue;
+              int lastGroup;
+              events.forEach((eventKey, eventValue){
+                var eStart = eventValue['start'];
+                var eEnd = eventValue['end'];
+                if(cHStart >= eStart && cHStart < eEnd || cHEnd >= eStart && cHEnd <= eEnd || cHStart <= eStart && cHEnd >= eEnd ){
+                  print('BING!: Hour:$hour event Start:$eStart event End:$eEnd');
+                 if(lastEndTimeValue == null || lastEndTimeValue < eEnd){
+                   lastEndTimeValue = eEnd;
+                   if(lastGroup == null || lastGroup < hour && lastEndTimeValue > cHStart){
+                     lastGroup = hour;
+//                     print('$lastGroup');
+                   }
+                 }
+                }
+              });
             });
           });
           return Stack(
