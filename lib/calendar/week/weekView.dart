@@ -6,6 +6,7 @@ import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/screens/friendEventScreen.dart';
 import 'package:rallyapp/screens/userEventScreen.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:uuid/uuid.dart';
 
 var currentHour = new DateTime.now().hour;
 
@@ -246,6 +247,10 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
                 }),
               });
           Map conflictingEvents = {};
+          Map nonConflictingEvents = Map.from(newDict);
+
+          /// Filter out events that detect a collision
+          var uuid = new Uuid();
           newDict.forEach((checkKey, checkValue){
             var cVStart = checkValue['start'];
             var cVEnd = checkValue['end'];
@@ -253,82 +258,113 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
               var lVStart = loopValue['start'];
               var lVEnd = loopValue['end'];
               if(cVStart < lVStart && lVStart < cVEnd || lVEnd > cVStart && lVEnd < cVEnd){
-                var key = DateTime.fromMillisecondsSinceEpoch(cVStart).day;
+                var key = loopKey;
                 if(conflictingEvents.containsKey(key)){
                   conflictingEvents[key].addAll({loopKey: loopValue});
                   conflictingEvents[key].addAll({checkKey: checkValue});
+                  nonConflictingEvents.remove(loopKey);
                 }else{
                   conflictingEvents[key] = {};
                   conflictingEvents[key].addAll({loopKey: loopValue});
                   conflictingEvents[key].addAll({checkKey: checkValue});
+                  nonConflictingEvents.remove(loopKey);
                 }
               }
             });
           });
-          DateTime currentTime = DateTime.now();
-          Map groupedConflictingEvents = {};
-          Map conflictingEventsByTime = {};
-          conflictingEvents.forEach((day, events){
-            var startingHour;
-            var endingHour;
-            print('DAY: $day');
-            var lastGroup;
-            var startingGroup;
-            var lastEndTimeValue;
-            var nextEndTimeValue;
-            var firstStartValue;
-            timeHour.forEach((hour){
-              var cHStart =  new DateTime(currentTime.year,currentTime.month, day, hour).millisecondsSinceEpoch;
-              var cHEnd = cHStart + 3599999;
-              events.forEach((eventKey, eventValue){
-                var eStart = eventValue['start'];
-                var eEnd = eventValue['end'];
-                if(cHStart >= eStart && cHStart < eEnd || cHEnd >= eStart && cHEnd <= eEnd || cHStart <= eStart && cHEnd >= eEnd ){
-                  if(conflictingEventsByTime['$hour'] == null){
-                    conflictingEventsByTime['$hour'] = {};
+
+
+
+          /// Rounds of filtering that compare groups finds similarities
+          /// if a compared group has any found events from the check group
+          /// then the filter adds the biggest one
+          var firstFilterMap = {};
+
+          conflictingEvents.forEach((key, group){
+            var mapKey = uuid.v4();
+            group.forEach((eventKey, eventValue){
+              var comparisonKey = eventKey;
+              conflictingEvents.forEach((key, secondGroup){
+                secondGroup.forEach((secondKey, secondValue){
+                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
+                    var keys = secondGroup.keys.toString();
+                    if(firstFilterMap[mapKey] == null){firstFilterMap[mapKey] = {};}
+                    firstFilterMap[mapKey].addAll(secondGroup);
                   }
-                  if(groupedConflictingEvents['$hour'] == null){
-                    groupedConflictingEvents['$hour'] = {};
+                });
+              });
+            });
+          });
+
+          var secondFilterMap = {};
+
+          firstFilterMap.forEach((key, group){
+            var mapKey = uuid.v4();
+            group.forEach((eventKey, eventValue){
+              var comparisonKey = eventKey;
+              firstFilterMap.forEach((key, secondGroup){
+                secondGroup.forEach((secondKey, secondValue){
+                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
+                    var keys = secondGroup.keys.toString();
+                    if(secondFilterMap[mapKey] == null){secondFilterMap[mapKey] = {};}
+                    secondFilterMap[mapKey].addAll(secondGroup);
                   }
-                  conflictingEventsByTime['$hour'].addAll({eventKey: eventValue});
-                  print('BING!: Hour:$hour event Start:$eStart event End:$eEnd');
-                   if(startingGroup == null || startingGroup == hour ){
-                     lastGroup = hour;
-                     startingGroup = hour;
-                     groupedConflictingEvents['$startingGroup'].addAll({eventKey: eventValue});
-                     if(lastEndTimeValue == null || lastEndTimeValue < eEnd){
-                       lastEndTimeValue = eEnd;
-                     }
-                   } else if(startingGroup+1 == hour){
-                     lastGroup = hour;
-                     conflictingEventsByTime['$hour'].addAll({eventKey:eventValue});
-                     if(firstStartValue == null){
-                       firstStartValue = eStart;
-                     } else if(firstStartValue >= eStart){
-                       firstStartValue = eStart;
-                     }
-                     if(nextEndTimeValue != null && nextEndTimeValue < eEnd){
-                       nextEndTimeValue = eEnd;
-                     }
-                   } else{
-                     if(lastEndTimeValue > firstStartValue || nextEndTimeValue != null && nextEndTimeValue > firstStartValue){
-                       // Change Next End Time when a group is added togethor;
-                       groupedConflictingEvents['$startingGroup'].addAll(conflictingEventsByTime['$lastGroup']);
-                     } else{
-                       startingGroup = lastGroup;
-                       groupedConflictingEvents['$startingGroup'].addAll(conflictingEventsByTime['$lastGroup']);
-                       conflictingEventsByTime['$hour'].addAll({eventKey:eventValue});
-                       lastGroup = lastGroup;
-                       nextEndTimeValue = eEnd;
-                     }
-                   }
-                 
-                }
+                });
+              });
+            });
+          });
+
+          var thirdFilterMap = {};
+
+          secondFilterMap.forEach((key, group){
+            var mapKey = uuid.v4();
+            group.forEach((eventKey, eventValue){
+              var comparisonKey = eventKey;
+              secondFilterMap.forEach((key, secondGroup){
+                secondGroup.forEach((secondKey, secondValue){
+                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
+                    var keys = secondGroup.keys.toString();
+                    if(thirdFilterMap[mapKey] == null){thirdFilterMap[mapKey] = {};}
+                    thirdFilterMap[mapKey].addAll(secondGroup);
+                  }
+                });
+              });
+            });
+          });
+
+          /// Same as the other filters, but at this point it is assumed
+          /// that like groups are now clones of each-other
+          /// this does the same thing, but will add those groups to
+          /// a map that has a shared key so that we end up
+          /// with a single group from those like groups.
+          var conflictingFilteredEvents = {};
+
+          thirdFilterMap.forEach((key, group){
+            group.forEach((eventKey, eventValue){
+              var comparisonKey = eventKey;
+              thirdFilterMap.forEach((key, secondGroup){
+                secondGroup.forEach((secondKey, secondValue){
+                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
+                    List keysOfGroup = secondGroup.keys.toList();
+                    var kF = keysOfGroup.first;
+                    var kL = keysOfGroup.last;
+                    var firstEvent = secondGroup[kF];
+                    var lastEvent = secondGroup[kL];
+                    var firstStartValue = firstEvent['start'];
+                    var lastEndValue = lastEvent['end'];
+                    var dayOf = DateTime.fromMillisecondsSinceEpoch(firstStartValue).day;
+
+                    /// Make a map key from variables above
+                    var mapKey = '$dayOf,$firstStartValue,$lastEndValue';
+                    if(conflictingFilteredEvents[mapKey] == null){conflictingFilteredEvents[mapKey] = {};}
+                    conflictingFilteredEvents[mapKey].addAll(secondGroup);
+                  }
+                });
               });
             });
           });
           return Stack(
-              children: newDict.entries
+              children: nonConflictingEvents.entries
                   .map<Widget>((event) => Stack(
                         children: <Widget>[
                           Positioned(
