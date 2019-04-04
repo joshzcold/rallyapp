@@ -131,7 +131,9 @@ class FriendsScreenState extends State<FriendsScreen> {
                             FlatButton(
                               child: const Text('ADD FRIEND'),
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => NewFriend()));
+                                setState(() {
+                                  newFriendModal = getNewFriendModal(auth);
+                                });
                               },
                             ),
                           ],
@@ -456,201 +458,7 @@ class FriendsScreenState extends State<FriendsScreen> {
         child: FloatingActionButton(
             onPressed: () {
               setState(() {
-                newFriendModal = LayoutBuilder(builder: (context, constraints){
-                  var maxHeight = constraints.maxHeight;
-                  var maxWidth = constraints.maxWidth;
-                  var cardHeightMultiplier = 0.35;
-                  var cardWidthMultiplier = 0.95;
-
-                  if(maxWidth > maxHeight){
-                    cardHeightMultiplier = 0.80;
-                    cardWidthMultiplier = 0.70;
-                  }
-                  return InkWell(
-                    onTap: (){
-                      setState(() {
-                        newFriendModal = Container();
-                      });
-                    },
-                    child: Container(
-                      height: maxHeight,
-                      width: maxWidth,
-                      decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-                      alignment: Alignment.center,
-                      child: Container(
-                          height: maxHeight * cardHeightMultiplier,
-                          width: maxWidth * cardWidthMultiplier,
-                          child: Card(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    Text('New Friend', style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 20
-                                    ),),
-                                  ],
-                                ),
-                                Divider(),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    Container(
-                                      width: (maxWidth * cardWidthMultiplier) * .80,
-                                      child: TextField(
-                                        controller: newFriendTextController,
-                                        textAlign: TextAlign.center,
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(Radius.circular(50)),
-                                          ),
-                                          hintText: 'User Name-#####',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Text('Your RallyID: ', style: TextStyle(color: Colors.grey),),
-                                    Text('${auth.value['rallyID']}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),)
-                                  ],
-                                ),
-                                Container(height: 20,),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    FlatButton(
-                                        onPressed: () {
-                                        Clipboard.setData(new ClipboardData(text:auth.value['rallyID']));
-                                        Scaffold.of(context).showSnackBar(new SnackBar(
-                                          content: new Row(
-                                            children: <Widget>[
-                                              Text('Copied RallyID: ${auth.value['rallyID']}'),
-                                              Container(width: 15, height: 10,),
-                                              Icon(Icons.arrow_forward),
-                                              Container(width: 5, height: 10,),
-                                              Icon(Icons.content_paste),
-                                            ],
-                                          )
-                                        ));
-                                        },
-                                        padding: EdgeInsets.all(0),
-                                        child: Row(
-                                          children: <Widget>[
-                                            Container(
-                                                decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(8))),
-                                                padding: EdgeInsets.all(10.0),
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Icon(Icons.content_paste, color: Colors.white,),
-                                                    Container(width: 5,),
-                                                    Text('Copy RallyID', style: TextStyle(color: Colors.white, fontSize: 15),),
-                                                  ],
-                                                )
-                                            ),
-                                          ],
-                                        )
-                                    ),
-                                    FlatButton(
-                                        onPressed: () async{
-                                          var code = await fireActions.checkForRallyID(newFriendTextController.text, context);
-                                          print(code);
-                                          if(code == "USER_RAL"){
-                                            setState(() {
-                                              setState(() {
-                                                newFriendErrorMessage = AlertDialog(
-                                                  title: new Text("RallyID = Users RallyID"),
-                                                  content: new Column(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: <Widget>[
-                                                      Text("You can't send a friend invite to yourself"),
-                                                      Icon(Icons.favorite_border)
-                                                    ],) ,
-                                                  actions: <Widget>[
-                                                    // usually buttons at the bottom of the dialog
-                                                    new FlatButton(
-                                                      child: new Text("Close"),
-                                                      onPressed: () {
-                                                        setState((){
-                                                          newFriendErrorMessage = Container();
-                                                        });
-                                                      },
-                                                    ),
-                                                  ],
-                                                );
-                                              });
-                                            });
-                                          } else if(code == "NOT_FOUND"){
-                                            setState(() {
-                                              newFriendErrorMessage = AlertDialog(
-                                                title: new Text("RallyID Not Found"),
-                                                content: new Text("Rally couldn't find RallyID: ${newFriendTextController.text} in the directory, double check and try again"),
-                                                actions: <Widget>[
-                                                  // usually buttons at the bottom of the dialog
-                                                  new FlatButton(
-                                                    child: new Text("Close"),
-                                                    onPressed: () {
-                                                      setState((){
-                                                        newFriendErrorMessage = Container();
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
-                                              );
-                                            });
-                                          } else {
-                                            fireActions.sendInvite(code, context);
-                                            setState(() {
-                                              newFriendModal = Container();
-                                              newFriendErrorMessage = AlertDialog(
-                                                title: new Text("Friend Invite Sent!"),
-                                                content: new Text("Once your friend has accepted your invite you'll be able to see their events"),
-                                                actions: <Widget>[
-                                                  // usually buttons at the bottom of the dialog
-                                                  new FlatButton(
-                                                    child: new Text("Close"),
-                                                    onPressed: () {
-                                                      setState((){
-                                                        newFriendErrorMessage = Container();
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
-                                              );
-                                            });
-                                          }
-                                        },
-                                        padding: EdgeInsets.all(0),
-                                        child: Row(
-                                          children: <Widget>[
-                                            Container(
-                                                decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.all(Radius.circular(8))),
-                                                padding: EdgeInsets.all(10.0),
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Icon(Icons.mail, color: Colors.white,),
-                                                    Container(width: 5,),
-                                                    Text('Submit', style: TextStyle(color: Colors.white, fontSize: 15),),
-                                                  ],
-                                                )
-                                            ),
-                                          ],
-                                        )
-                                    ),
-                                  ],
-                                ),
-                                Container(height: 10,)
-                              ],
-                            ),
-                          )
-                      ),
-                    ),
-                  );
-                });
+                newFriendModal = getNewFriendModal(auth);
               });
             },
             backgroundColor: Colors.blue,
@@ -1065,6 +873,204 @@ class FriendsScreenState extends State<FriendsScreen> {
             ),
           )),
     );
+  }
+
+  Widget getNewFriendModal(auth) {
+    return LayoutBuilder(builder: (context, constraints){
+      var maxHeight = constraints.maxHeight;
+      var maxWidth = constraints.maxWidth;
+      var cardHeightMultiplier = 0.35;
+      var cardWidthMultiplier = 0.95;
+
+      if(maxWidth > maxHeight){
+        cardHeightMultiplier = 0.80;
+        cardWidthMultiplier = 0.70;
+      }
+      return InkWell(
+        onTap: (){
+          setState(() {
+            newFriendModal = Container();
+          });
+        },
+        child: Container(
+          height: maxHeight,
+          width: maxWidth,
+          decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          alignment: Alignment.center,
+          child: Container(
+              height: maxHeight * cardHeightMultiplier,
+              width: maxWidth * cardWidthMultiplier,
+              child: Card(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text('New Friend', style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20
+                        ),),
+                      ],
+                    ),
+                    Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Container(
+                          width: (maxWidth * cardWidthMultiplier) * .80,
+                          child: TextField(
+                            controller: newFriendTextController,
+                            textAlign: TextAlign.center,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(50)),
+                              ),
+                              hintText: 'User Name-#####',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text('Your RallyID: ', style: TextStyle(color: Colors.grey),),
+                        Text('${auth.value['rallyID']}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),)
+                      ],
+                    ),
+                    Container(height: 20,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        FlatButton(
+                            onPressed: () {
+                              Clipboard.setData(new ClipboardData(text:auth.value['rallyID']));
+                              Scaffold.of(context).showSnackBar(new SnackBar(
+                                  content: new Row(
+                                    children: <Widget>[
+                                      Text('Copied RallyID: ${auth.value['rallyID']}'),
+                                      Container(width: 15, height: 10,),
+                                      Icon(Icons.arrow_forward),
+                                      Container(width: 5, height: 10,),
+                                      Icon(Icons.content_paste),
+                                    ],
+                                  )
+                              ));
+                            },
+                            padding: EdgeInsets.all(0),
+                            child: Row(
+                              children: <Widget>[
+                                Container(
+                                    decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(8))),
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Icon(Icons.content_paste, color: Colors.white,),
+                                        Container(width: 5,),
+                                        Text('Copy RallyID', style: TextStyle(color: Colors.white, fontSize: 15),),
+                                      ],
+                                    )
+                                ),
+                              ],
+                            )
+                        ),
+                        FlatButton(
+                            onPressed: () async{
+                              var code = await fireActions.checkForRallyID(newFriendTextController.text, context);
+                              print(code);
+                              if(code == "USER_RAL"){
+                                setState(() {
+                                  setState(() {
+                                    newFriendErrorMessage = AlertDialog(
+                                      title: new Text("RallyID = Users RallyID"),
+                                      content: new Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text("You can't send a friend invite to yourself"),
+                                          Icon(Icons.favorite_border)
+                                        ],) ,
+                                      actions: <Widget>[
+                                        // usually buttons at the bottom of the dialog
+                                        new FlatButton(
+                                          child: new Text("Close"),
+                                          onPressed: () {
+                                            setState((){
+                                              newFriendErrorMessage = Container();
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  });
+                                });
+                              } else if(code == "NOT_FOUND"){
+                                setState(() {
+                                  newFriendErrorMessage = AlertDialog(
+                                    title: new Text("RallyID Not Found"),
+                                    content: new Text("Rally couldn't find RallyID: ${newFriendTextController.text} in the directory, double check and try again"),
+                                    actions: <Widget>[
+                                      // usually buttons at the bottom of the dialog
+                                      new FlatButton(
+                                        child: new Text("Close"),
+                                        onPressed: () {
+                                          setState((){
+                                            newFriendErrorMessage = Container();
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                              } else {
+                                fireActions.sendInvite(code, context);
+                                setState(() {
+                                  newFriendModal = Container();
+                                  newFriendErrorMessage = AlertDialog(
+                                    title: new Text("Friend Invite Sent!"),
+                                    content: new Text("Once your friend has accepted your invite you'll be able to see their events"),
+                                    actions: <Widget>[
+                                      // usually buttons at the bottom of the dialog
+                                      new FlatButton(
+                                        child: new Text("Close"),
+                                        onPressed: () {
+                                          setState((){
+                                            newFriendErrorMessage = Container();
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                              }
+                            },
+                            padding: EdgeInsets.all(0),
+                            child: Row(
+                              children: <Widget>[
+                                Container(
+                                    decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.all(Radius.circular(8))),
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Icon(Icons.mail, color: Colors.white,),
+                                        Container(width: 5,),
+                                        Text('Submit', style: TextStyle(color: Colors.white, fontSize: 15),),
+                                      ],
+                                    )
+                                ),
+                              ],
+                            )
+                        ),
+                      ],
+                    ),
+                    Container(height: 10,)
+                  ],
+                ),
+              )
+          ),
+        ),
+      );
+    });
   }
 }
 
