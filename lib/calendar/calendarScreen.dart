@@ -410,87 +410,91 @@ class CalendarPageState extends State<CalendarPage> {
                           BlocBuilder(bloc: _eventsBloc, builder: (context, state){
                             var selectedUserEvents = state.events[event.value['user']];
                             var selectedEvent = selectedUserEvents[event.key];
-                            return Column(
-                              children: <Widget>[
-                                // SPACER
-                                Container(
-                                  height: 10,
-                                ),
-                                /// Each Event Card
-                                Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                      boxShadow: [
-                                        new BoxShadow(
-                                          color: Colors.grey[500],
-                                          blurRadius: 5.0,
-                                          offset: Offset(0.0, 0.0),
-                                        )
-                                      ],
-                                      color: Color(_getColorFromHex(selectedEvent['color'])),
-                                    ),
-                                    child: ClipPath(
-                                      clipper: CardCornerClipper(),
-                                      child: Container(
-                                        width: detailEventsCardWidth * .95,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                          color: Colors.white,
-                                        ),
-                                        child: FlatButton(
-                                            padding: EdgeInsets.all(0),
-                                            onPressed: () {
-                                              if(auth.key == event.value['user']){
-                                                Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
-                                              } else{
-                                                Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
-                                              }
-                                            },
-                                            child: Container(
-                                                padding: EdgeInsets.all(10),
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Column(
-                                                      children: <Widget>[
-                                                        CircleAvatar(
-                                                          backgroundImage: NetworkImage(selectedEvent['userPhoto']),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    Container(width: 20,),
-                                                    Column(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                      children: <Widget>[
-                                                        Text(
-                                                          '${selectedEvent['userName']}',
-                                                          style: TextStyle(fontSize: 15),
-                                                        ),
-                                                        Row(
-                                                          /// RETURN TIME OF EVENT
-                                                            children:
-                                                            returnTimeInPrettyFormat(selectedEvent)),
-                                                        Text(
-                                                          '${selectedEvent['title']}',
-                                                          style: TextStyle(fontSize: 15),
-                                                        ),
-
-                                                        _joinedFriendsConflictingDetails(selectedEvent)
-
-                                                      ],
-                                                    )
-                                                  ],
-                                                )
-                                            )
-                                        ),
+                            if(selectedEvent == null){
+                              return Container();
+                            } else{
+                              return Column(
+                                children: <Widget>[
+                                  // SPACER
+                                  Container(
+                                    height: 10,
+                                  ),
+                                  /// Each Event Card
+                                  Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                        boxShadow: [
+                                          new BoxShadow(
+                                            color: Colors.grey[500],
+                                            blurRadius: 5.0,
+                                            offset: Offset(0.0, 0.0),
+                                          )
+                                        ],
+                                        color: Color(_getColorFromHex(selectedEvent['color'])),
                                       ),
-                                    )
-                                ),
-                                // SPACER
-                                Container(
-                                  height: 10,
-                                ),
-                              ],
-                            );
+                                      child: ClipPath(
+                                        clipper: CardCornerClipper(),
+                                        child: Container(
+                                          width: detailEventsCardWidth * .95,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                            color: Colors.white,
+                                          ),
+                                          child: FlatButton(
+                                              padding: EdgeInsets.all(0),
+                                              onPressed: () {
+                                                if(auth.key == event.value['user']){
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
+                                                } else{
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                                                }
+                                              },
+                                              child: Container(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Row(
+                                                    children: <Widget>[
+                                                      Column(
+                                                        children: <Widget>[
+                                                          CircleAvatar(
+                                                            backgroundImage: NetworkImage(selectedEvent['userPhoto']),
+                                                          )
+                                                        ],
+                                                      ),
+                                                      Container(width: 20,),
+                                                      Column(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                        children: <Widget>[
+                                                          Text(
+                                                            '${selectedEvent['userName']}',
+                                                            style: TextStyle(fontSize: 15),
+                                                          ),
+                                                          Row(
+                                                            /// RETURN TIME OF EVENT
+                                                              children:
+                                                              returnTimeInPrettyFormat(selectedEvent)),
+                                                          Text(
+                                                            '${selectedEvent['title']}',
+                                                            style: TextStyle(fontSize: 15),
+                                                          ),
+
+                                                          _joinedFriendsConflictingDetails(selectedEvent)
+
+                                                        ],
+                                                      )
+                                                    ],
+                                                  )
+                                              )
+                                          ),
+                                        ),
+                                      )
+                                  ),
+                                  // SPACER
+                                  Container(
+                                    height: 10,
+                                  ),
+                                ],
+                              );
+                            }
                           })).toList()),
                 )
             ),
