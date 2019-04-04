@@ -55,7 +55,6 @@ class CalendarPage extends StatelessWidget {
   int currentMonth;
   int calculatedDayNumber = daysBeforeStart;
 
-
   @override
   Widget build(BuildContext context) {
     horizontalHeaderScrollController = PageController(
@@ -350,7 +349,7 @@ class CalendarPage extends StatelessWidget {
                                                 week.removeLast();
                                               }
                                             }
-                                            return calendar(context, week);
+                                            return WeekView(week: week);
                                           },
                                         ))
                                     )
@@ -364,6 +363,158 @@ class CalendarPage extends StatelessWidget {
               });
 
   }
+
+  void toggleFriendEventsExpand(
+      friend, friendCardWidth, eventsPassedToday, friendViewConstraints, _eventsBloc) {
+    if (expanded[friend.key]) {
+      setState(() {
+        friendCardHeight = 140;
+        eventsSection[friend.key] = Container();
+        expanded[friend.key] = false;
+      });
+    } else {
+      ///SetState for events processed on each friend card
+      setState(() {
+        friendCardHeight = friendViewConstraints.maxHeight;
+
+        eventsSection[friend.key] = BlocBuilder(
+          bloc: _eventsBloc, builder: (context, state){
+          var events = state.events[friend.key];
+          var eventsPassedToday = {};
+          var sortedEvents = {};
+          var listOfTimes = [];
+
+          DateTime currentTime = DateTime.now();
+          if (events != null) {
+            // forEach to find events passed today
+            events.forEach((k, event) {
+              if (event['end'] >
+                  currentTime.millisecondsSinceEpoch) {
+                eventsPassedToday.addAll({k: event});
+                listOfTimes.add(event['start']);
+              }
+            });
+            listOfTimes..sort();
+            // after sorting, add events in order
+            for(var time in listOfTimes){
+              eventsPassedToday.forEach((k,value){
+                if(time == value['start']){
+                  sortedEvents.addAll({k:value});
+                }
+              });
+            }
+          }
+          eventsPassedToday = sortedEvents;
+          return Column(
+            children: <Widget>[
+              Container(
+                height: 30,
+                width: friendCardWidth,
+                child: FlatButton(
+                    child: Center(
+                      child: Icon(Icons.keyboard_arrow_up),
+                    ),
+                    onPressed: () {
+                      toggleFriendEventsExpand(friend, friendCardWidth,
+                          eventsPassedToday, friendViewConstraints, _eventsBloc);
+                    }),
+              ),
+              Container(
+                color:Colors.grey[100],
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: eventsPassedToday.entries
+                        .map<Widget>((event) =>
+                        Column(
+                          children: <Widget>[
+                            // SPACER
+                            Container(
+                              height: 10,
+                            ),
+                            /// Each Event Card
+                            ///
+
+                            Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                  boxShadow: [
+                                    new BoxShadow(
+                                      color: Colors.grey[500],
+                                      blurRadius: 5.0,
+                                      offset: Offset(0.0, 0.0),
+                                    )
+                                  ],
+                                  color: Color(_getColorFromHex(event.value['color'])),
+                                ),
+                                child: ClipPath(
+                                  clipper: CardCornerClipper(),
+                                  child: Container(
+                                    width: friendCardWidth * .95,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                      color: Colors.white,
+                                    ),
+                                    child: FlatButton(
+                                        padding: EdgeInsets.all(0),
+                                        onPressed: () {
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                                        },
+                                        child: Container(
+                                            padding: EdgeInsets.all(10),
+                                            child: Column(
+                                              children: <Widget>[
+                                                Row(
+                                                  /// RETURN TIME OF EVENT
+                                                    children: returnTimeInPrettyFormat(event)),
+                                                Text(
+                                                  '${event.value['title']}',
+                                                  style: TextStyle(fontSize: 15),
+                                                ),
+
+                                                _joinedFriends(event)
+
+                                              ],
+                                            ))),
+                                  ),
+                                )
+                            ),
+                            // SPACER
+                            Container(
+                              height: 10,
+                            ),
+                          ],
+                        )).toList()),
+              )
+            ],
+          );
+        },
+        );
+      });
+    }
+  }
+
+
+  Widget _joinedFriends(event) {
+    if (event.value['party']['friends'] != null) {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Text('Joined Friends: '),
+          Row(
+              children: event.value['party']['friends'].entries
+                  .map<Widget>((friend) => CircleAvatar(
+                radius: 10,
+                backgroundImage: NetworkImage(friend
+                    .value['userPhoto']),
+              ),).toList()
+          )
+        ],
+      );
+    } else {
+      return Container();
+    }
+  }
+
 
   calculateDayStyle(DateTime day, width, context) {
     DateTime cday = DateTime.now();

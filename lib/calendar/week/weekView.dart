@@ -39,59 +39,420 @@ List<int> timeHour = [
 
 List<int> columns = [1, 2, 3, 4, 5, 6, 7];
 
+class WeekView extends StatefulWidget{
+  final List week;
+  WeekView({@required this.week});
 
- calendar(BuildContext context, week){
-
-    return LayoutBuilder(builder:
-              (BuildContext context, BoxConstraints viewportConstraints) {
-            // You can change up this value later to increase or decrease the height
-            // of the week grid.
-            // If you change the +800 after maxHeightWanted, change that value in
-            // the parent widget as well.
-            double maxHeightWanted = viewportConstraints.maxHeight;
-            double maxPossibleWidth = viewportConstraints.maxWidth;
-            return Container(
-                height: maxHeightWanted,
-                width: maxPossibleWidth,
-                child: Stack(
-                  children: <Widget>[
-                    Row(
-                        children: columns
-                            .map((columns) =>
-                            Expanded(
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                        border: Border(
-                                            right: BorderSide(
-                                                color: Color(0xFFdadce0),
-                                                width: 1))),
-                                    child: Column(
-                                        children: timeHour
-                                            .map((hour) =>
-                                            Expanded(
-                                                child: Container(
-                                                    decoration: BoxDecoration(
-                                                        border: Border(
-                                                            bottom: BorderSide(
-                                                                color: Color(
-                                                                    0xFFdadce0),
-                                                                width: 1))),
-                                                    child: Row(
-                                                      children: <Widget>[
-                                                        Container()
-                                                      ],
-                                                    ))))
-                                            .toList()))))
-                            .toList()),
-                    eventCards(context, maxHeightWanted, maxPossibleWidth,
-                        week),
-                    currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, week)
-                  ],
-                ),
-              );
-          });
+  @override
+  WeekViewState createState() => WeekViewState(week: week);
 }
 
+class WeekViewState extends State<WeekView>{
+  final List week;
+  WeekViewState({@required this.week});
+
+  Widget conflictedEventsModal = Container();
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return LayoutBuilder(builder:
+        (BuildContext context, BoxConstraints viewportConstraints) {
+      // You can change up this value later to increase or decrease the height
+      // of the week grid.
+      // If you change the +800 after maxHeightWanted, change that value in
+      // the parent widget as well.
+      double maxHeightWanted = viewportConstraints.maxHeight;
+      double maxPossibleWidth = viewportConstraints.maxWidth;
+      return Container(
+        height: maxHeightWanted,
+        width: maxPossibleWidth,
+        child: Stack(
+          children: <Widget>[
+            Row(
+                children: columns
+                    .map((columns) =>
+                    Expanded(
+                        child: Container(
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    right: BorderSide(
+                                        color: Color(0xFFdadce0),
+                                        width: 1))),
+                            child: Column(
+                                children: timeHour
+                                    .map((hour) =>
+                                    Expanded(
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border(
+                                                    bottom: BorderSide(
+                                                        color: Color(
+                                                            0xFFdadce0),
+                                                        width: 1))),
+                                            child: Row(
+                                              children: <Widget>[
+                                                Container()
+                                              ],
+                                            ))))
+                                    .toList()))))
+                    .toList()),
+            eventCards(context, maxHeightWanted, maxPossibleWidth,
+                week),
+            currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, week),
+            AnimatedSwitcher(
+              // the duration can be adjusted to expand the friend events
+              // faster or slower.
+                duration: Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double>animation) {
+                  return FadeTransition(opacity: animation,
+                    child: child,
+                  );
+                },
+                child: conflictedEventsModal
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  eventCards(context, maxHeight, maxWidth, week) {
+    final _eventsBloc = BlocProvider.of<EventsBloc>(context);
+    final _authBloc = BlocProvider.of<AuthBloc>(context);
+    return BlocBuilder(
+        bloc: _eventsBloc,
+        builder: (BuildContext context, state) {
+          Map<dynamic, dynamic> newDict = {};
+          state.events.entries.forEach((item) => {
+          item.value.forEach((key, value) {
+            int sTime = value['start'];
+            DateTime startWeek =
+            week.first.subtract(Duration(hours: 6));
+            DateTime endWeek = week.last
+                .add(Duration(hours: 18))
+                .subtract(Duration(minutes: 1));
+            if (sTime >= startWeek.millisecondsSinceEpoch &&
+                sTime <= endWeek.millisecondsSinceEpoch) {
+              newDict.addAll({key: value});
+            }
+          }),
+          });
+          Map conflictingEvents = {};
+          Map nonConflictingEvents = Map.from(newDict);
+
+          /// Filter out events that detect a collision
+          var uuid = new Uuid();
+          newDict.forEach((checkKey, checkValue){
+            var cVStart = checkValue['start'];
+            var cVEnd = checkValue['end'];
+            newDict.forEach((loopKey, loopValue){
+              var lVStart = loopValue['start'];
+              var lVEnd = loopValue['end'];
+              if(cVStart < lVStart && lVStart < cVEnd || lVEnd > cVStart && lVEnd < cVEnd){
+                var key = loopKey;
+                if(conflictingEvents.containsKey(key)){
+                  conflictingEvents[key].addAll({loopKey: loopValue});
+                  conflictingEvents[key].addAll({checkKey: checkValue});
+                  nonConflictingEvents.remove(loopKey);
+                }else{
+                  conflictingEvents[key] = {};
+                  conflictingEvents[key].addAll({loopKey: loopValue});
+                  conflictingEvents[key].addAll({checkKey: checkValue});
+                  nonConflictingEvents.remove(loopKey);
+                }
+              }
+            });
+          });
+
+
+
+          /// Rounds of filtering that compare groups finds similarities
+          /// if a compared group has any found events from the check group
+          /// then the filter adds the biggest one
+          var firstFilterMap = {};
+
+          conflictingEvents.forEach((key, group){
+            var mapKey = uuid.v4();
+            group.forEach((eventKey, eventValue){
+              var comparisonKey = eventKey;
+              conflictingEvents.forEach((key, secondGroup){
+                secondGroup.forEach((secondKey, secondValue){
+                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
+                    var keys = secondGroup.keys.toString();
+                    if(firstFilterMap[mapKey] == null){firstFilterMap[mapKey] = {};}
+                    firstFilterMap[mapKey].addAll(secondGroup);
+                  }
+                });
+              });
+            });
+          });
+
+          var secondFilterMap = {};
+
+          firstFilterMap.forEach((key, group){
+            var mapKey = uuid.v4();
+            group.forEach((eventKey, eventValue){
+              var comparisonKey = eventKey;
+              firstFilterMap.forEach((key, secondGroup){
+                secondGroup.forEach((secondKey, secondValue){
+                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
+                    var keys = secondGroup.keys.toString();
+                    if(secondFilterMap[mapKey] == null){secondFilterMap[mapKey] = {};}
+                    secondFilterMap[mapKey].addAll(secondGroup);
+                  }
+                });
+              });
+            });
+          });
+
+          var thirdFilterMap = {};
+
+          secondFilterMap.forEach((key, group){
+            var mapKey = uuid.v4();
+            group.forEach((eventKey, eventValue){
+              var comparisonKey = eventKey;
+              secondFilterMap.forEach((key, secondGroup){
+                secondGroup.forEach((secondKey, secondValue){
+                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
+                    var keys = secondGroup.keys.toString();
+                    if(thirdFilterMap[mapKey] == null){thirdFilterMap[mapKey] = {};}
+                    thirdFilterMap[mapKey].addAll(secondGroup);
+                  }
+                });
+              });
+            });
+          });
+
+          /// Same as the other filters, but at this point it is assumed
+          /// that like groups are now clones of each-other
+          /// this does the same thing, but will add those groups to
+          /// a map that has a shared key so that we end up
+          /// with a single group from those like groups.
+          var conflictingFilteredEvents = {};
+
+          thirdFilterMap.forEach((key, group){
+            group.forEach((eventKey, eventValue){
+              var comparisonKey = eventKey;
+              thirdFilterMap.forEach((key, secondGroup){
+                secondGroup.forEach((secondKey, secondValue){
+                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
+
+                    var listOfTimes = [];
+                    var sortedEvents = {};
+                    secondGroup.forEach((k, event) {
+                      listOfTimes.add(event['start']);
+                    });
+                    listOfTimes..sort();
+                    // after sorting, add events in order
+                    for(var time in listOfTimes){
+                      secondGroup.forEach((k,value){
+                        if(time == value['start']){
+                          sortedEvents.addAll({k:value});
+                        }
+                      });
+                    }
+
+
+                    List keysOfGroup = sortedEvents.keys.toList();
+                    var kF = keysOfGroup.first;
+                    var kL = keysOfGroup.last;
+                    var firstEvent = sortedEvents[kF];
+                    var lastEvent = sortedEvents[kL];
+                    var firstStartValue = firstEvent['start'];
+                    var lastEndValue = lastEvent['end'];
+                    var dayOf = DateTime.fromMillisecondsSinceEpoch(firstStartValue).day;
+
+                    /// Make a map key from variables above
+                    var mapKey = '$dayOf,$firstStartValue,$lastEndValue';
+                    if(conflictingFilteredEvents[mapKey] == null){conflictingFilteredEvents[mapKey] = {};}
+                    conflictingFilteredEvents[mapKey].addAll(secondGroup);
+                  }
+                });
+              });
+            });
+          });
+          return Stack(
+            children: <Widget>[
+              /// NON Conflicting EVENTS
+              Stack(
+                  children: nonConflictingEvents.entries
+                      .map<Widget>((event) => Stack(
+                    children: <Widget>[
+                      Positioned(
+                        height: getHeightByTime(event, maxHeight),
+                        width: getWidthByScreenSize(context),
+                        top:
+                        moveBoxDownBasedOfConstraints(event, maxHeight),
+                        left:
+                        moveBoxRightBasedOfConstraints(event, maxWidth),
+                        child: Card(
+                            clipBehavior: Clip.hardEdge,
+                            color:
+                            Color(_getColorFromHex(event.value['color'])),
+                            child: BlocBuilder(bloc: _authBloc, builder:(context, auth){
+                              return FlatButton(
+                                clipBehavior: Clip.hardEdge,
+                                padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                onPressed: () {
+                                  if(auth.key == event.value['user']){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
+                                  } else{
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                                  }
+                                },
+                                child: ListView(
+                                  padding: EdgeInsets.all(0),
+                                  children: <Widget>[
+                                    // User Image
+                                    LayoutBuilder(builder: (context, constraints){
+                                      return CircleAvatar(
+                                        backgroundColor: Color(_getColorFromHex(event.value['color'])),
+                                        radius: constraints.maxWidth/2,
+                                        backgroundImage: NetworkImage(event
+                                            .value['userPhoto']),
+                                      );
+                                    },),
+                                    // User Name & Description
+                                    Column(
+                                      children: <Widget>[
+                                        Text(event.value['userName'], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),),
+                                        Text(event.value['title'], style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w400),)
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              );
+                            })
+                        ),
+                      ),
+                      Positioned(
+                        height: getHeightByTime(event, maxHeight) + 100,
+                        width: 20,
+                        top: moveBoxDownBasedOfConstraints(event, maxHeight),
+                        left: moveJoinedFriendsRightBasedOfConstraints(event, maxWidth),
+                        child: GridView.count(
+                            primary: false,
+                            padding: const EdgeInsets.all(0),
+                            crossAxisSpacing: 0,
+                            crossAxisCount: 1,
+                            children: _joinedFriends(event)),
+                      ),
+                    ],
+                  ))
+                      .toList()),
+
+              /// Conflicting EVENTS
+              Stack(
+                  children: conflictingFilteredEvents.entries.map<Widget>((groupOfEvents)=>
+                      Positioned(
+                          height: getHeightByTimeConflicting(groupOfEvents, maxHeight) + (10 * groupOfEvents.value.length),
+                          width: getWidthByScreenSize(context),
+                          top:
+                          moveBoxDownBasedOfConstraintsConflicting(groupOfEvents, maxHeight),
+                          left:
+                          moveBoxRightBasedOfConstraintsConflicting(groupOfEvents, maxWidth),
+                          child: LayoutBuilder(builder: (context, constraints){
+                            var initialHeight = getHeightByTimeConflicting(groupOfEvents, maxHeight) + (10 * groupOfEvents.value.length);
+                            var initialWidth = getWidthByScreenSize(context);
+                            var i = 0;
+                            return InkWell(
+                                onTap: (){
+                                  setState(() {
+                                    showConflictedEventsDetails(groupOfEvents, _eventsBloc, context);
+                                  });
+                                },
+                                child:Stack(
+                                    children: groupOfEvents.value.entries.map<Widget>((event) =>
+                                        Positioned(
+                                          height: initialHeight,
+                                          top: 5.0 * i,
+                                          width: initialWidth -5,
+                                          child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                color: Colors.blue[900 - 100 *i++],
+                                              ),
+                                              child: BlocBuilder(bloc: _authBloc, builder:(context, auth){
+                                                return ListView(
+                                                    children: groupOfEvents.value.entries.map<Widget>((event) =>
+                                                        Column(
+                                                          children: <Widget>[
+                                                            Container(height: 10,),
+                                                            Text('${event.value['start']}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                                                            Icon(Icons.arrow_downward, size: 20, color: Colors.orange,),
+                                                            Text('${event.value['end']}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                                                            Container(height: 10,),
+                                                          ],
+                                                        )
+                                                    ).toList()
+                                                );
+                                              })
+                                          ),
+                                        )
+                                    ).toList()
+                                )
+                            );
+                          })
+                      )
+                  ).toList()
+              ),
+            ],
+          );
+        });
+  }
+  showConflictedEventsDetails(groupOfEvents, _eventsBloc, context) {
+    ///SetState for events processed on each friend card
+    setState(() {
+      conflictedEventsModal = LayoutBuilder(builder: (context, constraints){
+        var maxHeight = constraints.maxHeight;
+        var maxWidth = constraints.maxWidth;
+        var cardHeightMultiplier = 0.35;
+        var cardWidthMultiplier = 0.95;
+
+        if(maxWidth > maxHeight){
+          cardHeightMultiplier = 0.80;
+          cardWidthMultiplier = 0.70;
+        }
+        return InkWell(
+          onTap: (){
+            setState(() {
+              conflictedEventsModal = Container();
+            });
+          },
+          child: Container(
+            height: maxHeight,
+            width: maxWidth,
+            decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+            alignment: Alignment.center,
+            child: Container(
+                height: maxHeight * cardHeightMultiplier,
+                width: maxWidth * cardWidthMultiplier,
+                child: Card(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Text('New Friend', style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20
+                          ),),
+                        ],
+                      ),
+                      Divider(),
+                    ],
+                  ),
+                )
+            ),
+          ),
+        );
+      });
+    });
+  }
+
+}
 
 double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
   double height = constraints;
@@ -260,285 +621,176 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
     }
   }
 
-  eventCards(context, maxHeight, maxWidth, week) {
-    final _eventsBloc = BlocProvider.of<EventsBloc>(context);
-    final _authBloc = BlocProvider.of<AuthBloc>(context);
-    return BlocBuilder(
-        bloc: _eventsBloc,
-        builder: (BuildContext context, state) {
-          Map<dynamic, dynamic> newDict = {};
-          state.events.entries.forEach((item) => {
-                item.value.forEach((key, value) {
-                  int sTime = value['start'];
-                  DateTime startWeek =
-                      week.first.subtract(Duration(hours: 6));
-                  DateTime endWeek = week.last
-                      .add(Duration(hours: 18))
-                      .subtract(Duration(minutes: 1));
-                  if (sTime >= startWeek.millisecondsSinceEpoch &&
-                      sTime <= endWeek.millisecondsSinceEpoch) {
-                    newDict.addAll({key: value});
-                  }
-                }),
-              });
-          Map conflictingEvents = {};
-          Map nonConflictingEvents = Map.from(newDict);
 
-          /// Filter out events that detect a collision
-          var uuid = new Uuid();
-          newDict.forEach((checkKey, checkValue){
-            var cVStart = checkValue['start'];
-            var cVEnd = checkValue['end'];
-            newDict.forEach((loopKey, loopValue){
-              var lVStart = loopValue['start'];
-              var lVEnd = loopValue['end'];
-              if(cVStart < lVStart && lVStart < cVEnd || lVEnd > cVStart && lVEnd < cVEnd){
-                var key = loopKey;
-                if(conflictingEvents.containsKey(key)){
-                  conflictingEvents[key].addAll({loopKey: loopValue});
-                  conflictingEvents[key].addAll({checkKey: checkValue});
-                  nonConflictingEvents.remove(loopKey);
-                }else{
-                  conflictingEvents[key] = {};
-                  conflictingEvents[key].addAll({loopKey: loopValue});
-                  conflictingEvents[key].addAll({checkKey: checkValue});
-                  nonConflictingEvents.remove(loopKey);
-                }
-              }
-            });
-          });
+returnTimeInPrettyFormat(event) {
+  var startTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
+  var startDay = startTime.day.toString();
+  var startMonth = startTime.month.toString();
+  var startHour = startTime.hour.toString();
+  var startMinute = ':' + startTime.minute.toString();
 
-
-
-          /// Rounds of filtering that compare groups finds similarities
-          /// if a compared group has any found events from the check group
-          /// then the filter adds the biggest one
-          var firstFilterMap = {};
-
-          conflictingEvents.forEach((key, group){
-            var mapKey = uuid.v4();
-            group.forEach((eventKey, eventValue){
-              var comparisonKey = eventKey;
-              conflictingEvents.forEach((key, secondGroup){
-                secondGroup.forEach((secondKey, secondValue){
-                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
-                    var keys = secondGroup.keys.toString();
-                    if(firstFilterMap[mapKey] == null){firstFilterMap[mapKey] = {};}
-                    firstFilterMap[mapKey].addAll(secondGroup);
-                  }
-                });
-              });
-            });
-          });
-
-          var secondFilterMap = {};
-
-          firstFilterMap.forEach((key, group){
-            var mapKey = uuid.v4();
-            group.forEach((eventKey, eventValue){
-              var comparisonKey = eventKey;
-              firstFilterMap.forEach((key, secondGroup){
-                secondGroup.forEach((secondKey, secondValue){
-                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
-                    var keys = secondGroup.keys.toString();
-                    if(secondFilterMap[mapKey] == null){secondFilterMap[mapKey] = {};}
-                    secondFilterMap[mapKey].addAll(secondGroup);
-                  }
-                });
-              });
-            });
-          });
-
-          var thirdFilterMap = {};
-
-          secondFilterMap.forEach((key, group){
-            var mapKey = uuid.v4();
-            group.forEach((eventKey, eventValue){
-              var comparisonKey = eventKey;
-              secondFilterMap.forEach((key, secondGroup){
-                secondGroup.forEach((secondKey, secondValue){
-                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
-                    var keys = secondGroup.keys.toString();
-                    if(thirdFilterMap[mapKey] == null){thirdFilterMap[mapKey] = {};}
-                    thirdFilterMap[mapKey].addAll(secondGroup);
-                  }
-                });
-              });
-            });
-          });
-
-          /// Same as the other filters, but at this point it is assumed
-          /// that like groups are now clones of each-other
-          /// this does the same thing, but will add those groups to
-          /// a map that has a shared key so that we end up
-          /// with a single group from those like groups.
-          var conflictingFilteredEvents = {};
-
-          thirdFilterMap.forEach((key, group){
-            group.forEach((eventKey, eventValue){
-              var comparisonKey = eventKey;
-              thirdFilterMap.forEach((key, secondGroup){
-                secondGroup.forEach((secondKey, secondValue){
-                  if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
-
-                    var listOfTimes = [];
-                    var sortedEvents = {};
-                    secondGroup.forEach((k, event) {
-                        listOfTimes.add(event['start']);
-                    });
-                    listOfTimes..sort();
-                    // after sorting, add events in order
-                    for(var time in listOfTimes){
-                      secondGroup.forEach((k,value){
-                        if(time == value['start']){
-                          sortedEvents.addAll({k:value});
-                        }
-                      });
-                    }
-
-
-                    List keysOfGroup = sortedEvents.keys.toList();
-                    var kF = keysOfGroup.first;
-                    var kL = keysOfGroup.last;
-                    var firstEvent = sortedEvents[kF];
-                    var lastEvent = sortedEvents[kL];
-                    var firstStartValue = firstEvent['start'];
-                    var lastEndValue = lastEvent['end'];
-                    var dayOf = DateTime.fromMillisecondsSinceEpoch(firstStartValue).day;
-
-                    /// Make a map key from variables above
-                    var mapKey = '$dayOf,$firstStartValue,$lastEndValue';
-                    if(conflictingFilteredEvents[mapKey] == null){conflictingFilteredEvents[mapKey] = {};}
-                    conflictingFilteredEvents[mapKey].addAll(secondGroup);
-                  }
-                });
-              });
-            });
-          });
-          return Stack(
-            children: <Widget>[
-              /// NON Conflicting EVENTS
-          Stack(
-          children: nonConflictingEvents.entries
-              .map<Widget>((event) => Stack(
-            children: <Widget>[
-              Positioned(
-                height: getHeightByTime(event, maxHeight),
-                width: getWidthByScreenSize(context),
-                top:
-                moveBoxDownBasedOfConstraints(event, maxHeight),
-                left:
-                moveBoxRightBasedOfConstraints(event, maxWidth),
-                child: Card(
-                    clipBehavior: Clip.hardEdge,
-                    color:
-                    Color(_getColorFromHex(event.value['color'])),
-                    child: BlocBuilder(bloc: _authBloc, builder:(context, auth){
-                      return FlatButton(
-                        clipBehavior: Clip.hardEdge,
-                        padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        onPressed: () {
-                          if(auth.key == event.value['user']){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
-                          } else{
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
-                          }
-                        },
-                        child: ListView(
-                          padding: EdgeInsets.all(0),
-                          children: <Widget>[
-                            // User Image
-                            LayoutBuilder(builder: (context, constraints){
-                              return CircleAvatar(
-                                backgroundColor: Color(_getColorFromHex(event.value['color'])),
-                                radius: constraints.maxWidth/2,
-                                backgroundImage: NetworkImage(event
-                                    .value['userPhoto']),
-                              );
-                            },),
-                            // User Name & Description
-                            Column(
-                              children: <Widget>[
-                                Text(event.value['userName'], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),),
-                                Text(event.value['title'], style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w400),)
-                              ],
-                            )
-                          ],
-                        ),
-                      );
-                    })
-                ),
-              ),
-              Positioned(
-                height: getHeightByTime(event, maxHeight) + 100,
-                width: 20,
-                top: moveBoxDownBasedOfConstraints(event, maxHeight),
-                left: moveJoinedFriendsRightBasedOfConstraints(event, maxWidth),
-                child: GridView.count(
-                    primary: false,
-                    padding: const EdgeInsets.all(0),
-                    crossAxisSpacing: 0,
-                    crossAxisCount: 1,
-                    children: _joinedFriends(event)),
-              ),
-            ],
-          ))
-              .toList()),
-
-              /// Conflicting EVENTS
-              Stack(
-                  children: conflictingFilteredEvents.entries.map<Widget>((groupOfEvents)=>
-                      Positioned(
-                          height: getHeightByTimeConflicting(groupOfEvents, maxHeight) + (10 * groupOfEvents.value.length),
-                          width: getWidthByScreenSize(context),
-                          top:
-                          moveBoxDownBasedOfConstraintsConflicting(groupOfEvents, maxHeight),
-                          left:
-                          moveBoxRightBasedOfConstraintsConflicting(groupOfEvents, maxWidth),
-                          child: LayoutBuilder(builder: (context, constraints){
-                            var initialHeight = getHeightByTimeConflicting(groupOfEvents, maxHeight) + (10 * groupOfEvents.value.length);
-                            var initialWidth = getWidthByScreenSize(context);
-                            var i = 0;
-                            return InkWell(
-                              onTap: (){
-
-                              },
-                              child:Stack(
-                                  children: groupOfEvents.value.entries.map<Widget>((event) =>
-                                      Positioned(
-                                        height: initialHeight,
-                                        top: 5.0 * i,
-                                        width: initialWidth -5,
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                              color: Colors.blue[900 - 100 *i++],
-                                            ),
-                                            child: BlocBuilder(bloc: _authBloc, builder:(context, auth){
-                                              return ListView(
-                                                children: groupOfEvents.value.entries.map<Widget>((event) =>
-                                                    Column(
-                                                      children: <Widget>[
-                                                        Container(height: 10,),
-                                                        Text('${event.value['start']}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                                                        Icon(Icons.arrow_downward, size: 20, color: Colors.orange,),
-                                                        Text('${event.value['end']}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                                                        Container(height: 10,),
-                                                      ],
-                                                    )
-                                                ).toList()
-                                              );
-                                            })
-                                        ),
-                                      )
-                                  ).toList()
-                              )
-                            );
-                          })
-                      )
-                  ).toList()
-              )
-            ],
-          );
-        });
+  var endTime = DateTime.fromMillisecondsSinceEpoch(event.value['end']);
+//    var endMonth = endTime.month.toString();
+  var endHour = endTime.hour.toString();
+  var endMinute = ':' + endTime.minute.toString();
+  var indicator = "AM";
+  if (startTime.hour * 60 + startTime.minute > 720) {
+    indicator = "PM";
   }
+
+  switch (startHour) {
+    case "0":
+      startHour = "12";
+      indicator = "AM";
+      break;
+    case "13":
+      startHour = "1";
+      indicator = "PM";
+      break;
+    case "14":
+      startHour = "2";
+      indicator = "PM";
+      break;
+    case "15":
+      startHour = "3";
+      indicator = "PM";
+      break;
+    case "16":
+      startHour = "4";
+      indicator = "PM";
+      break;
+    case "17":
+      startHour = "5";
+      indicator = "PM";
+      break;
+    case "18":
+      startHour = "6";
+      indicator = "PM";
+      break;
+    case "19":
+      startHour = "7";
+      indicator = "PM";
+      break;
+    case "20":
+      startHour = "8";
+      indicator = "PM";
+      break;
+    case "21":
+      startHour = "9";
+      indicator = "PM";
+      break;
+    case "22":
+      startHour = "10";
+      indicator = "PM";
+      break;
+    case "23":
+      startHour = "11";
+      indicator = "PM";
+      break;
+    case "24":
+      startHour = "12";
+      indicator = "AM";
+      break;
+  }
+
+  switch (endHour) {
+    case "13":
+      endHour = "1";
+      indicator = "PM";
+      break;
+    case "14":
+      endHour = "2";
+      indicator = "PM";
+      break;
+    case "15":
+      endHour = "3";
+      indicator = "PM";
+      break;
+    case "16":
+      endHour = "4";
+      indicator = "PM";
+      break;
+    case "17":
+      endHour = "5";
+      indicator = "PM";
+      break;
+    case "18":
+      endHour = "6";
+      indicator = "PM";
+      break;
+    case "19":
+      endHour = "7";
+      indicator = "PM";
+      break;
+    case "20":
+      endHour = "8";
+      indicator = "PM";
+      break;
+    case "21":
+      endHour = "9";
+      indicator = "PM";
+      break;
+    case "22":
+      endHour = "10";
+      indicator = "PM";
+      break;
+    case "23":
+      endHour = "11";
+      indicator = "PM";
+      break;
+    case "24":
+      endHour = "12";
+      indicator = "PM";
+      break;
+  }
+
+  if (startMinute == ":0") {
+    startMinute = "";
+  }
+  if (endMinute == ":0") {
+    endMinute = "";
+  }
+
+  return [
+    Text(
+      '$startMonth/$startDay',
+      style: TextStyle(
+        fontSize: 25,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+    Container(
+      width: 20,
+    ),
+    Text('$startHour$startMinute$indicator - $endHour$endMinute$indicator'),
+  ];
+}
+
+
+
+class CardCornerClipper extends CustomClipper<Path>{
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+
+    // Draw a straight line from current point to the bottom left corner.
+    path.lineTo(0.0, size.height);
+
+    path.lineTo(size.width, size.height);
+
+    path.lineTo(size.width, size.height * .40);
+
+    path.lineTo(size.width *.90, 0.0);
+
+    // Draw a straight line from current point to the top right corner.
+    path.lineTo(0.0, 0.0);
+
+    // Draws a straight line from current point to the first point of the path.
+    // In this case (0, 0), since that's where the paths start by default.
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
