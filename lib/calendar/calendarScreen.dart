@@ -348,7 +348,7 @@ class CalendarPageState extends State<CalendarPage> {
                                         week.removeLast();
                                       }
                                     }
-                                    return WeekView(week:week, callback: showConflictedEventsDetails);
+                                    return WeekView(week:week, conflictEventsDetailscallback: showConflictedEventsDetails);
                                   },
                                 ))
                         )

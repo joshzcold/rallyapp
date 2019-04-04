@@ -41,8 +41,8 @@ List<int> columns = [1, 2, 3, 4, 5, 6, 7];
 
 class WeekView extends StatefulWidget{
   final List week;
-  final Function callback;
-  WeekView({@required this.week, this.callback});
+  final Function conflictEventsDetailsCallBack;
+  WeekView({@required this.week, this.conflictEventsDetailsCallBack});
 
   @override
   WeekViewState createState() => WeekViewState();
@@ -92,7 +92,7 @@ class WeekViewState extends State<WeekView>{
                                             ))))
                                     .toList()))))
                     .toList()),
-            eventCards(context, maxHeightWanted, maxPossibleWidth, this.widget.week, this.widget.callback),
+            eventCards(context, maxHeightWanted, maxPossibleWidth, this.widget.week, this.widget.conflictEventsDetailsCallBack),
             currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, this.widget.week),
           ],
         ),
@@ -101,7 +101,7 @@ class WeekViewState extends State<WeekView>{
   }
 }
 
-eventCards(context, maxHeight, maxWidth, week ,callback) {
+eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack) {
   final _eventsBloc = BlocProvider.of<EventsBloc>(context);
   final _authBloc = BlocProvider.of<AuthBloc>(context);
  return BlocBuilder(
@@ -338,7 +338,7 @@ eventCards(context, maxHeight, maxWidth, week ,callback) {
                           return InkWell(
                               onTap: (){
                                 AuthLoaded auth = _authBloc.currentState;
-                                callback(groupOfEvents, _eventsBloc, context, auth);
+                                conflictEventsDetailsCallBack(groupOfEvents, _eventsBloc, context, auth);
                               },
                               child:Stack(
                                   children: groupOfEvents.value.entries.map<Widget>((event) =>
