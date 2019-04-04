@@ -245,7 +245,7 @@ eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack) {
                   /// Make a map key from variables above
                   var mapKey = '$dayOf,$firstStartValue,$lastEndValue';
                   if(conflictingFilteredEvents[mapKey] == null){conflictingFilteredEvents[mapKey] = {};}
-                  conflictingFilteredEvents[mapKey].addAll(secondGroup);
+                  conflictingFilteredEvents[mapKey].addAll(sortedEvents);
                 }
               });
             });
@@ -329,7 +329,6 @@ eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack) {
                         top: moveBoxDownBasedOfConstraintsConflicting(groupOfEvents, maxHeight),
                         left: moveBoxRightBasedOfConstraintsConflicting(groupOfEvents, maxWidth) + 2.5,
                         child: LayoutBuilder(builder: (context, constraints) {
-                          var initialHeight = getHeightByTimeConflicting(groupOfEvents, maxHeight) + (10 * groupOfEvents.value.length);
                           var initialWidth = getWidthByScreenSize(context);
                           return InkWell(
                               onTap: () {
