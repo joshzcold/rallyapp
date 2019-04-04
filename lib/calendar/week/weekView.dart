@@ -325,53 +325,81 @@ eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack) {
             Stack(
                 children: conflictingFilteredEvents.entries.map<Widget>((groupOfEvents)=>
                     Positioned(
-                        height: getHeightByTimeConflicting(groupOfEvents, maxHeight) + (10 * groupOfEvents.value.length),
-                        width: getWidthByScreenSize(context),
-                        top:
-                        moveBoxDownBasedOfConstraintsConflicting(groupOfEvents, maxHeight),
-                        left:
-                        moveBoxRightBasedOfConstraintsConflicting(groupOfEvents, maxWidth),
-                        child: LayoutBuilder(builder: (context, constraints){
+                        width: getWidthByScreenSize(context) -5,
+                        top: moveBoxDownBasedOfConstraintsConflicting(groupOfEvents, maxHeight),
+                        left: moveBoxRightBasedOfConstraintsConflicting(groupOfEvents, maxWidth) + 2.5,
+                        child: LayoutBuilder(builder: (context, constraints) {
                           var initialHeight = getHeightByTimeConflicting(groupOfEvents, maxHeight) + (10 * groupOfEvents.value.length);
                           var initialWidth = getWidthByScreenSize(context);
-                          var i = 0;
                           return InkWell(
-                              onTap: (){
+                              onTap: () {
                                 AuthLoaded auth = _authBloc.currentState;
-                                conflictEventsDetailsCallBack(groupOfEvents, _eventsBloc, context, auth);
+                                conflictEventsDetailsCallBack(
+                                    groupOfEvents, _eventsBloc, context, auth);
                               },
-                              child:Stack(
-                                  children: groupOfEvents.value.entries.map<Widget>((event) =>
-                                      Positioned(
-                                        height: initialHeight,
-                                        top: 5.0 * i,
-                                        width: initialWidth -5,
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                              color: Colors.blue[900 - 100 *i++],
-                                            ),
-                                            child: BlocBuilder(bloc: _authBloc, builder:(context, auth){
-                                              return ListView(
-                                                  children: groupOfEvents.value.entries.map<Widget>((event) =>
-                                                      Column(
-                                                        children: <Widget>[
-                                                          Container(height: 10,),
-                                                          Text('${event.value['start']}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                                                          Icon(Icons.arrow_downward, size: 20, color: Colors.orange,),
-                                                          Text('${event.value['end']}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                                                          Container(height: 10,),
-                                                        ],
-                                                      )
-                                                  ).toList()
-                                              );
-                                            })
-                                        ),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                      border: Border.all(color: Color(0xFFdadce0), width: 1.0),
+                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                    boxShadow: [
+                                      new BoxShadow(
+                                        color: Colors.grey[500],
+                                        blurRadius: 1.0,
+                                        offset: Offset(-1, 0.5),
                                       )
-                                  ).toList()
-                              )
+                                    ],
+                                  ),
+//                                  height: initialHeight,
+                                  width: initialWidth,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Container(height: 10,),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Icon(Icons.library_books, color: Colors.grey,),
+                                        ],
+                                      ),
+                                      Container(height: 10,),
+                                      Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: groupOfEvents.value.entries.map<Widget>((event) =>
+                                              Column(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                children: <Widget>[
+                                                  Container(
+                                                    width: initialWidth - 15,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                      color: Color(_getColorFromHex(event.value['color'])),
+                                                    ),
+                                                    padding: EdgeInsets.all(2),
+                                                    child: Column(
+                                                      children: <Widget>[
+                                                        Container(height: 10,),
+                                                        Text('${timePrettyFormatSingle(event.value['start'])}',
+                                                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 8),),
+                                                        Icon(Icons.arrow_downward, size: 20, color: Colors.white,),
+                                                        Text('${timePrettyFormatSingle(event.value['end'])}',
+                                                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 8),),
+                                                        Container(height: 8,),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Container(height: 5,),
+                                                ],
+                                              )
+                                          ).toList()
+                                      ),
+                                    ],
+                                  )
+                                ),
                           );
-                        })
+                        }
+                          )
                     )
                 ).toList()
             ),
@@ -547,12 +575,85 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
     }
   }
 
+timePrettyFormatSingle(time) {
+  var parsedTime = DateTime.fromMillisecondsSinceEpoch(time);
+  var parsedTimeHour = parsedTime.hour.toString();
+  var parsedTimeMinutes = ':' + parsedTime.minute.toString();
+
+  var indicator = 'AM';
+  if (parsedTime.hour * 60 + parsedTime.minute > 720) {
+    indicator = "PM";
+  }
+
+  switch (parsedTimeHour) {
+    case "0":
+      parsedTimeHour = "12";
+      indicator = "AM";
+      break;
+    case "13":
+      parsedTimeHour = "1";
+      indicator = "PM";
+      break;
+    case "14":
+      parsedTimeHour = "2";
+      indicator = "PM";
+      break;
+    case "15":
+      parsedTimeHour = "3";
+      indicator = "PM";
+      break;
+    case "16":
+      parsedTimeHour = "4";
+      indicator = "PM";
+      break;
+    case "17":
+      parsedTimeHour = "5";
+      indicator = "PM";
+      break;
+    case "18":
+      parsedTimeHour = "6";
+      indicator = "PM";
+      break;
+    case "19":
+      parsedTimeHour = "7";
+      indicator = "PM";
+      break;
+    case "20":
+      parsedTimeHour = "8";
+      indicator = "PM";
+      break;
+    case "21":
+      parsedTimeHour = "9";
+      indicator = "PM";
+      break;
+    case "22":
+      parsedTimeHour = "10";
+      indicator = "PM";
+      break;
+    case "23":
+      parsedTimeHour = "11";
+      indicator = "PM";
+      break;
+    case "24":
+      parsedTimeHour = "12";
+      indicator = "AM";
+      break;
+  }
+
+  if (parsedTimeMinutes == ":0") {
+    parsedTimeMinutes = "";
+  }
+
+  return parsedTimeHour+parsedTimeMinutes+indicator;
+}
+
+
 
 returnTimeInPrettyFormat(event) {
   var startTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
   var startDay = startTime.day.toString();
   var startMonth = startTime.month.toString();
-  var startHour = startTime.hour.toString();
+  var hour = startTime.hour.toString();
   var startMinute = ':' + startTime.minute.toString();
 
   var endTime = DateTime.fromMillisecondsSinceEpoch(event.value['end']);
@@ -564,57 +665,57 @@ returnTimeInPrettyFormat(event) {
     indicator = "PM";
   }
 
-  switch (startHour) {
+  switch (hour) {
     case "0":
-      startHour = "12";
+      hour = "12";
       indicator = "AM";
       break;
     case "13":
-      startHour = "1";
+      hour = "1";
       indicator = "PM";
       break;
     case "14":
-      startHour = "2";
+      hour = "2";
       indicator = "PM";
       break;
     case "15":
-      startHour = "3";
+      hour = "3";
       indicator = "PM";
       break;
     case "16":
-      startHour = "4";
+      hour = "4";
       indicator = "PM";
       break;
     case "17":
-      startHour = "5";
+      hour = "5";
       indicator = "PM";
       break;
     case "18":
-      startHour = "6";
+      hour = "6";
       indicator = "PM";
       break;
     case "19":
-      startHour = "7";
+      hour = "7";
       indicator = "PM";
       break;
     case "20":
-      startHour = "8";
+      hour = "8";
       indicator = "PM";
       break;
     case "21":
-      startHour = "9";
+      hour = "9";
       indicator = "PM";
       break;
     case "22":
-      startHour = "10";
+      hour = "10";
       indicator = "PM";
       break;
     case "23":
-      startHour = "11";
+      hour = "11";
       indicator = "PM";
       break;
     case "24":
-      startHour = "12";
+      hour = "12";
       indicator = "AM";
       break;
   }
@@ -688,7 +789,7 @@ returnTimeInPrettyFormat(event) {
     Container(
       width: 20,
     ),
-    Text('$startHour$startMinute$indicator - $endHour$endMinute$indicator'),
+    Text('$hour$startMinute$indicator - $endHour$endMinute$indicator'),
   ];
 }
 
