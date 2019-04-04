@@ -189,6 +189,41 @@ currentTimeIndicator(BuildContext context, double maxHeightWanted,
     return (dayInWeek * column);
   }
 
+  double moveBoxRightBasedOfConstraintsConflicting(groupOfEvents, constraints) {
+    double column = constraints / 7;
+    List<String> parsedKey = groupOfEvents.key.split(',');
+    var sTime = DateTime.fromMillisecondsSinceEpoch(int.parse(parsedKey[1]));
+    var dayInWeek = sTime.weekday;
+    if (dayInWeek == 7) {
+      dayInWeek = 0;
+    }
+    return (dayInWeek * column);
+  }
+
+  double moveBoxDownBasedOfConstraintsConflicting(groupOfEvents, constraints) {
+    double height = constraints;
+    double hour = height / 24;
+    List<String> parsedKey = groupOfEvents.key.split(',');
+    var sTime = DateTime.fromMillisecondsSinceEpoch(int.parse(parsedKey[1]));
+    var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
+    double distanceDown = hoursFromMidnight * hour;
+    return distanceDown;
+  }
+
+  double getHeightByTimeConflicting(groupOfEvents, constraints) {
+    double height = constraints;
+    double hour = height / 24;
+    List<String> parsedKey = groupOfEvents.key.split(',');
+    var sTime = DateTime.fromMillisecondsSinceEpoch(int.parse(parsedKey[1]));
+    var eTime = DateTime.fromMillisecondsSinceEpoch(int.parse(parsedKey[2]));
+    var startValue = sTime.hour * 60 + sTime.minute;
+    var endValue = eTime.hour * 60 + eTime.minute;
+    var subtractedValue = endValue - startValue;
+    double numOfHours = subtractedValue / 60;
+    double result = hour * numOfHours;
+    return result;
+  }
+
 double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
    var adjustment = -10;
   double column = constraints / 7;
@@ -345,11 +380,28 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
               thirdFilterMap.forEach((key, secondGroup){
                 secondGroup.forEach((secondKey, secondValue){
                   if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
-                    List keysOfGroup = secondGroup.keys.toList();
+
+                    var listOfTimes = [];
+                    var sortedEvents = {};
+                    secondGroup.forEach((k, event) {
+                        listOfTimes.add(event['start']);
+                    });
+                    listOfTimes..sort();
+                    // after sorting, add events in order
+                    for(var time in listOfTimes){
+                      secondGroup.forEach((k,value){
+                        if(time == value['start']){
+                          sortedEvents.addAll({k:value});
+                        }
+                      });
+                    }
+
+
+                    List keysOfGroup = sortedEvents.keys.toList();
                     var kF = keysOfGroup.first;
                     var kL = keysOfGroup.last;
-                    var firstEvent = secondGroup[kF];
-                    var lastEvent = secondGroup[kL];
+                    var firstEvent = sortedEvents[kF];
+                    var lastEvent = sortedEvents[kL];
                     var firstStartValue = firstEvent['start'];
                     var lastEndValue = lastEvent['end'];
                     var dayOf = DateTime.fromMillisecondsSinceEpoch(firstStartValue).day;
@@ -364,70 +416,129 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
             });
           });
           return Stack(
-              children: nonConflictingEvents.entries
-                  .map<Widget>((event) => Stack(
-                        children: <Widget>[
-                          Positioned(
-                            height: getHeightByTime(event, maxHeight),
-                            width: getWidthByScreenSize(context),
-                            top:
-                                moveBoxDownBasedOfConstraints(event, maxHeight),
-                            left:
-                                moveBoxRightBasedOfConstraints(event, maxWidth),
-                            child: Card(
-                              clipBehavior: Clip.hardEdge,
-                              color:
-                                  Color(_getColorFromHex(event.value['color'])),
-                              child: BlocBuilder(bloc: _authBloc, builder:(context, auth){
-                                return FlatButton(
-                                clipBehavior: Clip.hardEdge,
-                                padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                onPressed: () {
-                                  if(auth.key == event.value['user']){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
-                                  } else{
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
-                                  }
-                                },
-                                child: ListView(
-                                  padding: EdgeInsets.all(0),
-                                  children: <Widget>[
-                                    // User Image
-                                    LayoutBuilder(builder: (context, constraints){
-                                      return CircleAvatar(
-                                        backgroundColor: Color(_getColorFromHex(event.value['color'])),
-                                        radius: constraints.maxWidth/2,
-                                        backgroundImage: NetworkImage(event
-                                            .value['userPhoto']),
-                                      );
-                                    },),
-                                    // User Name & Description
-                                    Column(
-                                      children: <Widget>[
-                                        Text(event.value['userName'], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),),
-                                        Text(event.value['title'], style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w400),)
-                                      ],
-                                    )
-                                  ],
-                                ),
+            children: <Widget>[
+              /// NON Conflicting EVENTS
+          Stack(
+          children: nonConflictingEvents.entries
+              .map<Widget>((event) => Stack(
+            children: <Widget>[
+              Positioned(
+                height: getHeightByTime(event, maxHeight),
+                width: getWidthByScreenSize(context),
+                top:
+                moveBoxDownBasedOfConstraints(event, maxHeight),
+                left:
+                moveBoxRightBasedOfConstraints(event, maxWidth),
+                child: Card(
+                    clipBehavior: Clip.hardEdge,
+                    color:
+                    Color(_getColorFromHex(event.value['color'])),
+                    child: BlocBuilder(bloc: _authBloc, builder:(context, auth){
+                      return FlatButton(
+                        clipBehavior: Clip.hardEdge,
+                        padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        onPressed: () {
+                          if(auth.key == event.value['user']){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
+                          } else{
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                          }
+                        },
+                        child: ListView(
+                          padding: EdgeInsets.all(0),
+                          children: <Widget>[
+                            // User Image
+                            LayoutBuilder(builder: (context, constraints){
+                              return CircleAvatar(
+                                backgroundColor: Color(_getColorFromHex(event.value['color'])),
+                                radius: constraints.maxWidth/2,
+                                backgroundImage: NetworkImage(event
+                                    .value['userPhoto']),
                               );
-                              })
-                            ),
-                          ),
-                          Positioned(
-                            height: getHeightByTime(event, maxHeight) + 100,
-                            width: 20,
-                            top: moveBoxDownBasedOfConstraints(event, maxHeight),
-                            left: moveJoinedFriendsRightBasedOfConstraints(event, maxWidth),
-                            child: GridView.count(
-                                primary: false,
-                                padding: const EdgeInsets.all(0),
-                                crossAxisSpacing: 0,
-                                crossAxisCount: 1,
-                                children: _joinedFriends(event)),
-                          )
-                        ],
-                      ))
-                  .toList());
+                            },),
+                            // User Name & Description
+                            Column(
+                              children: <Widget>[
+                                Text(event.value['userName'], style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),),
+                                Text(event.value['title'], style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w400),)
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    })
+                ),
+              ),
+              Positioned(
+                height: getHeightByTime(event, maxHeight) + 100,
+                width: 20,
+                top: moveBoxDownBasedOfConstraints(event, maxHeight),
+                left: moveJoinedFriendsRightBasedOfConstraints(event, maxWidth),
+                child: GridView.count(
+                    primary: false,
+                    padding: const EdgeInsets.all(0),
+                    crossAxisSpacing: 0,
+                    crossAxisCount: 1,
+                    children: _joinedFriends(event)),
+              ),
+            ],
+          ))
+              .toList()),
+
+              /// Conflicting EVENTS
+              Stack(
+                  children: conflictingFilteredEvents.entries.map<Widget>((groupOfEvents)=>
+                      Positioned(
+                          height: getHeightByTimeConflicting(groupOfEvents, maxHeight) + (10 * groupOfEvents.value.length),
+                          width: getWidthByScreenSize(context),
+                          top:
+                          moveBoxDownBasedOfConstraintsConflicting(groupOfEvents, maxHeight),
+                          left:
+                          moveBoxRightBasedOfConstraintsConflicting(groupOfEvents, maxWidth),
+                          child: LayoutBuilder(builder: (context, constraints){
+                            var initialHeight = getHeightByTimeConflicting(groupOfEvents, maxHeight) + (10 * groupOfEvents.value.length);
+                            var initialWidth = getWidthByScreenSize(context);
+                            var i = 0;
+                            return InkWell(
+                              onTap: (){
+
+                              },
+                              child:Stack(
+                                  children: groupOfEvents.value.entries.map<Widget>((event) =>
+                                      Positioned(
+                                        height: initialHeight,
+                                        top: 5.0 * i,
+                                        width: initialWidth -5,
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                              color: Colors.blue[900 - 100 *i++],
+                                            ),
+                                            child: BlocBuilder(bloc: _authBloc, builder:(context, auth){
+                                              return ListView(
+                                                children: groupOfEvents.value.entries.map<Widget>((event) =>
+                                                    Column(
+                                                      children: <Widget>[
+                                                        Container(height: 10,),
+                                                        Text('${event.value['start']}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                                                        Icon(Icons.arrow_downward, size: 20, color: Colors.orange,),
+                                                        Text('${event.value['end']}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                                                        Container(height: 10,),
+                                                      ],
+                                                    )
+                                                ).toList()
+                                              );
+                                            })
+                                        ),
+                                      )
+                                  ).toList()
+                              )
+                            );
+                          })
+                      )
+                  ).toList()
+              )
+            ],
+          );
         });
   }
