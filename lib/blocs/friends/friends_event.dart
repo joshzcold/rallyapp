@@ -34,12 +34,3 @@ class ReplaceFriendInfo extends FriendsEvent{
   String toString() => 'ReplaceFriendInfo { uid: $uid, key: $key, value: $value}';
 }
 
-class ClearFriends extends FriendsEvent{
-  @override
-  String toString() => 'ClearFriends';
-}
-
-class ManualDoneLoadingFriends extends FriendsEvent{
-  @override
-  String toString() => 'ManualDoneLoadingFriends';
-}

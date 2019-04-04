@@ -12,19 +12,31 @@ import 'package:rallyapp/screens/friendDetailsScreen.dart';
 import 'package:rallyapp/screens/newFriendScreen.dart';
 import 'package:rallyapp/screens/settingsScreen.dart';
 
+TextEditingController newFriendTextController;
+Widget newFriendModal;
+Widget newFriendErrorMessage;
+Map expanded;
+Map eventsSection;
+
 class FriendsScreen extends StatefulWidget {
   @override
   FriendsScreenState createState() => FriendsScreenState();
 }
 
 class FriendsScreenState extends State<FriendsScreen> {
-  var expanded = {};
-  var friendCardHeight = 110.0;
-  var eventsSection = {};
-  Widget newFriendModal = Container();
-  Widget newFriendErrorMessage = Container();
-  TextEditingController newFriendTextController = TextEditingController();
 
+  @override
+  void initState(){
+    super.initState();
+    newFriendTextController = TextEditingController();
+    newFriendModal = Container();
+    newFriendErrorMessage = Container();
+    expanded = {};
+    eventsSection = {};
+  }
+
+  var friendCardHeight = 110.0;
+  static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +50,7 @@ class FriendsScreenState extends State<FriendsScreen> {
     final key = new GlobalKey<ScaffoldState>();
 
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       key: key,
       bottomNavigationBar: friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc),
       body: BlocBuilder(
@@ -154,18 +167,52 @@ class FriendsScreenState extends State<FriendsScreen> {
                             }
                           }),
 
-
+                          BlocBuilder(bloc: _friendsBloc, builder: (context, friends){
+                            if(friends.friends.length > 0 ){
+                              return  Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(width: 10,),
+                                  Text('Friends',
+                                    style: TextStyle(
+                                        fontSize: 20, fontStyle: FontStyle.italic),
+                                  )
+                                ],
+                              );
+                            } else{
+                              return Center(
+                                child: Card(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      const ListTile(
+                                        leading: Icon(Icons.insert_emoticon),
+                                        title: Text('NO FRIENDS'),
+                                        subtitle: Text(
+                                            'Try sending your rallyID to your friends using Rally'),
+                                      ),
+                                      ButtonTheme.bar(
+                                        // make buttons use the appropriate styles for cards
+                                        child: ButtonBar(
+                                          children: <Widget>[
+                                            FlatButton(
+                                              child: const Text('ADD FRIEND'),
+                                              onPressed: () {
+                                                setState(() {
+                                                  newFriendModal = getNewFriendModal(auth);
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                          }),
                           /// Friends Label and the friends list
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Container(width: 10,),
-                              Text('Friends',
-                                style: TextStyle(
-                                    fontSize: 20, fontStyle: FontStyle.italic),
-                              )
-                            ],
-                          ),
                           LayoutBuilder(
                               builder: (context, friendViewConstraints) {
                                 return Column(
@@ -793,7 +840,7 @@ class FriendsScreenState extends State<FriendsScreen> {
           decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
           alignment: Alignment.center,
           child: Container(
-              height: maxHeight * cardHeightMultiplier,
+              height: 300,
               width: maxWidth * cardWidthMultiplier,
               child: Card(
                 child: Column(
@@ -815,6 +862,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                         Container(
                           width: (maxWidth * cardWidthMultiplier) * .80,
                           child: TextField(
+                            key: _formKey,
                             controller: newFriendTextController,
                             textAlign: TextAlign.center,
                             decoration: InputDecoration(
@@ -918,9 +966,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                   );
                                 });
                               } else {
-                                fireActions.sendInvite(code, context);
                                 setState(() {
-                                  newFriendModal = Container();
                                   newFriendErrorMessage = AlertDialog(
                                     title: new Text("Friend Invite Sent!"),
                                     content: new Text("Once your friend has accepted your invite you'll be able to see their events"),
@@ -931,12 +977,14 @@ class FriendsScreenState extends State<FriendsScreen> {
                                         onPressed: () {
                                           setState((){
                                             newFriendErrorMessage = Container();
+//                                            newFriendModal = Container();
                                           });
                                         },
                                       ),
                                     ],
                                   );
                                 });
+                                fireActions.sendInvite(code, context);
                               }
                             },
                             padding: EdgeInsets.all(0),
@@ -1066,35 +1114,3 @@ class CardCornerClipper extends CustomClipper<Path>{
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
-
-
-//return Center(
-//                child: Card(
-//                  child: Column(
-//                    mainAxisSize: MainAxisSize.min,
-//                    children: <Widget>[
-//                      const ListTile(
-//                        leading: Icon(Icons.insert_emoticon),
-//                        title: Text('NO FRIENDS'),
-//                        subtitle: Text(
-//                            'Try sending your rallyID to your friends using Rally'),
-//                      ),
-//                      ButtonTheme.bar(
-//                        // make buttons use the appropriate styles for cards
-//                        child: ButtonBar(
-//                          children: <Widget>[
-//                            FlatButton(
-//                              child: const Text('ADD FRIEND'),
-//                              onPressed: () {
-//                                setState(() {
-//                                  newFriendModal = getNewFriendModal(auth);
-//                                });
-//                              },
-//                            ),
-//                          ],
-//                        ),
-//                      ),
-//                    ],
-//                  ),
-//                ),
-//              )
