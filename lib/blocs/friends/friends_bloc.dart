@@ -5,7 +5,7 @@ import 'package:rallyapp/blocs/friends/friends.dart';
 class FriendsBloc extends Bloc<FriendsEvent, FriendsState>{
 
   @override
-  FriendsState get initialState => FriendsLoading();
+  FriendsState get initialState => FriendsLoaded();
 
   @override
   Stream<FriendsState> mapEventToState(FriendsState currentState, FriendsEvent event) async*{

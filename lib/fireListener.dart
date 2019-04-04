@@ -69,7 +69,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
     // Grabbing user data
     database.reference().child('user/$uid/info').once().then((snapshot) =>{
       authBloc.dispatch(AddAuth(uid,snapshot.value)),
-    }).whenComplete((){eventBloc.dispatch(ManualDoneLoading());});
+    });
 
     // Setting Listener on User Info CHANGE
     database.reference().child('user/$uid/info').onChildChanged.listen((event){

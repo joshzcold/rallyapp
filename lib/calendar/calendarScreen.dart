@@ -414,8 +414,6 @@ class CalendarPageState extends State<CalendarPage> {
                                 height: 10,
                               ),
                               /// Each Event Card
-                              ///
-
                               Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.all(Radius.circular(8.0)),

@@ -5,7 +5,7 @@ import 'package:rallyapp/blocs/events/event.dart';
 class EventsBloc extends Bloc<EventsEvent, EventsState>{
 
   @override
-  EventsState get initialState => EventsLoading();
+  EventsState get initialState => EventsLoaded({});
 
   @override
   Stream<EventsState> mapEventToState(EventsState currentState, EventsEvent event) async*{
@@ -15,60 +15,28 @@ class EventsBloc extends Bloc<EventsEvent, EventsState>{
       yield* _mapRemoveEventsToState(currentState, event);
     } else if(event is ReplaceEventInfo){
       yield* _mapReplaceFriendDetailToState(currentState, event);
-    } else if(event is ClearEvents){
-      yield* _mapClearEventsToState(currentState);
-    } else if (event is ManualDoneLoading){
-      yield* _mapManualDoneLoading(currentState);
     }
   }
 
   Stream<EventsState>_mapAddEventsToState(currentState ,event) async*{
-    if(currentState is EventsLoading){
-      currentState = {};
-      currentState[event.uid] = {};
-    } else if(currentState is EventsLoaded){
-      currentState = currentState.events;
-      if(currentState[event.uid] == null){
-        currentState[event.uid] = {};
-      }
+    final updatedEvents = Map.of(currentState.events);
+    if(updatedEvents[event.uid] == null){
+      updatedEvents[event.uid] = {};
     }
-    final updatedEvents = Map.of(currentState);
     updatedEvents[event.uid].addAll({event.key: event.value});
     yield EventsLoaded(updatedEvents);
   }
 
   Stream<EventsState>_mapRemoveEventsToState(currentState ,event) async*{
-    if(currentState is EventsLoading){
-      currentState = {};
-    } else if(currentState is EventsLoaded){
-      currentState = currentState.events;
-    }
-    final updatedEvents = Map.of(currentState);
+    final updatedEvents = Map.of(currentState.events);
     updatedEvents[event.uid].remove(event.key);
     yield EventsLoaded(updatedEvents);
   }
 
   Stream<EventsState>_mapReplaceFriendDetailToState(currentState ,event) async*{
-    if(currentState is EventsLoading){
-      currentState = {};
-    } else if(currentState is EventsLoaded){
-      currentState = currentState.events;
-    }
-    final updatedEvents = Map.of(currentState);
+    final updatedEvents = Map.of(currentState.events);
     updatedEvents[event.uid].update(event.key, (dynamic val) => event.value);
     yield EventsLoaded(updatedEvents);
   }
 
-  Stream<EventsState>_mapClearEventsToState(currentState) async*{
-    currentState = {};
-    yield EventsLoading();
-  }
-
-  Stream<EventsState>_mapManualDoneLoading(currentState) async*{
-    if(currentState is EventsLoading){
-      yield EventsLoaded({});
-    } else if(currentState is EventsLoaded){
-      yield EventsLoaded(currentState.events);
-    }
-  }
 }

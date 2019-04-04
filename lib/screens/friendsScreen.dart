@@ -39,113 +39,10 @@ class FriendsScreenState extends State<FriendsScreen> {
 
     return Scaffold(
       key: key,
-      bottomNavigationBar: BottomAppBar(
-          child: Container(
-            height: 55,
-            child: Row(
-              children: <Widget>[
-                FlatButton(
-                    padding: EdgeInsets.all(0),
-                    onPressed: (){
-                      Navigator.pop(context);
-                    },
-                    child:  Container(
-                      width: maxPossibleWidth/2,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(Icons.calendar_today, color: Colors.grey,),
-                          Text('Calendar', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),)
-                        ],
-                      ),
-                    )),
-                FlatButton(
-                  padding: EdgeInsets.all(0),
-                  onPressed: (){},
-                  child: Container(
-                      width: maxPossibleWidth/2,
-                      child: LayoutBuilder(builder: (context, constraints){
-                        return Stack(
-                          children: <Widget>[
-                            Center(
-                              child: Column(
-                                children: <Widget>[
-                                  Icon(Icons.group, color: Colors.blue,),
-                                  Text('Friends', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),),
-                                ],
-                                mainAxisAlignment: MainAxisAlignment.center,
-                              ),
-                            ),
-                            BlocBuilder(bloc: _invitesBloc, builder: (context, state){
-                              if(state is InvitesLoaded && state.invites.length > 0){
-                                return Positioned(
-                                    top: constraints.maxHeight/4 - 5,
-                                    left: constraints.maxWidth/2 + 5,
-                                    child: Container(
-                                        height: 15,
-                                        width: 15,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.green
-                                        ),
-                                        child: Center(
-                                          child:Text('${state.invites.length}', style:
-                                          TextStyle(color: Colors.white, fontSize: 14),),
-                                        )
-                                    ));
-                              } else{
-                                return Container();
-                              }
-                            },),
-                          ],
-                        );
-                      })
-
-                  ),
-                )
-              ],
-            ),
-          )
-      ),
+      bottomNavigationBar: friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc),
       body: BlocBuilder(
           bloc: _friendsBloc,
           builder: (BuildContext context, state) {
-            /// NO FRIENDS ARE LOADED
-            if (state is FriendsLoading) {
-              print('FriendsLoading...');
-              return Center(
-                child: Card(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const ListTile(
-                        leading: Icon(Icons.insert_emoticon),
-                        title: Text('NO FRIENDS'),
-                        subtitle: Text(
-                            'Try sending your rallyID to your friends using Rally'),
-                      ),
-                      ButtonTheme.bar(
-                        // make buttons use the appropriate styles for cards
-                        child: ButtonBar(
-                          children: <Widget>[
-                            FlatButton(
-                              child: const Text('ADD FRIEND'),
-                              onPressed: () {
-                                setState(() {
-                                  newFriendModal = getNewFriendModal(auth);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-
-              /// FRIENDS ARE LOADED
-            } else if (state is FriendsLoaded) {
               state.friends.forEach((k, friend) {
                 if (eventsSection[k] != Container()) {
                   if (eventsSection[k] == null) {
@@ -154,7 +51,6 @@ class FriendsScreenState extends State<FriendsScreen> {
                   }
                 }
               });
-              print('FriendsLoaded: ${state.friends.entries}');
               return LayoutBuilder(
                 builder: (context, constraints) {
                   var userCardWidth = constraints.maxWidth * .80;
@@ -452,7 +348,6 @@ class FriendsScreenState extends State<FriendsScreen> {
                   );
                 },
               );
-            }
           }),
       floatingActionButton: Container(
         child: FloatingActionButton(
@@ -1074,6 +969,77 @@ class FriendsScreenState extends State<FriendsScreen> {
   }
 }
 
+friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc) {
+  return BottomAppBar(
+      child: Container(
+        height: 55,
+        child: Row(
+          children: <Widget>[
+            FlatButton(
+                padding: EdgeInsets.all(0),
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+                child:  Container(
+                  width: maxPossibleWidth/2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(Icons.calendar_today, color: Colors.grey,),
+                      Text('Calendar', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),)
+                    ],
+                  ),
+                )),
+            FlatButton(
+              padding: EdgeInsets.all(0),
+              onPressed: (){},
+              child: Container(
+                  width: maxPossibleWidth/2,
+                  child: LayoutBuilder(builder: (context, constraints){
+                    return Stack(
+                      children: <Widget>[
+                        Center(
+                          child: Column(
+                            children: <Widget>[
+                              Icon(Icons.group, color: Colors.blue,),
+                              Text('Friends', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),),
+                            ],
+                            mainAxisAlignment: MainAxisAlignment.center,
+                          ),
+                        ),
+                        BlocBuilder(bloc: _invitesBloc, builder: (context, state){
+                          if(state is InvitesLoaded && state.invites.length > 0){
+                            return Positioned(
+                                top: constraints.maxHeight/4 - 5,
+                                left: constraints.maxWidth/2 + 5,
+                                child: Container(
+                                    height: 15,
+                                    width: 15,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.green
+                                    ),
+                                    child: Center(
+                                      child:Text('${state.invites.length}', style:
+                                      TextStyle(color: Colors.white, fontSize: 14),),
+                                    )
+                                ));
+                          } else{
+                            return Container();
+                          }
+                        },),
+                      ],
+                    );
+                  })
+
+              ),
+            )
+          ],
+        ),
+      )
+  );
+}
+
 class CardCornerClipper extends CustomClipper<Path>{
   @override
   Path getClip(Size size) {
@@ -1100,3 +1066,35 @@ class CardCornerClipper extends CustomClipper<Path>{
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
+
+
+//return Center(
+//                child: Card(
+//                  child: Column(
+//                    mainAxisSize: MainAxisSize.min,
+//                    children: <Widget>[
+//                      const ListTile(
+//                        leading: Icon(Icons.insert_emoticon),
+//                        title: Text('NO FRIENDS'),
+//                        subtitle: Text(
+//                            'Try sending your rallyID to your friends using Rally'),
+//                      ),
+//                      ButtonTheme.bar(
+//                        // make buttons use the appropriate styles for cards
+//                        child: ButtonBar(
+//                          children: <Widget>[
+//                            FlatButton(
+//                              child: const Text('ADD FRIEND'),
+//                              onPressed: () {
+//                                setState(() {
+//                                  newFriendModal = getNewFriendModal(auth);
+//                                });
+//                              },
+//                            ),
+//                          ],
+//                        ),
+//                      ),
+//                    ],
+//                  ),
+//                ),
+//              )

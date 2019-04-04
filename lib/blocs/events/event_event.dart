@@ -35,13 +35,3 @@ class ReplaceEventInfo extends EventsEvent{
   @override
   String toString() => 'ReplaceEventInfo { uid: $uid, key: $key, value: $value}';
 }
-
-class ClearEvents extends EventsEvent{
-  @override
-  String toString() => 'ClearEvents';
-}
-
-class ManualDoneLoading extends EventsEvent{
-  @override
-  String toString() => 'ManualDoneLoading';
-}
