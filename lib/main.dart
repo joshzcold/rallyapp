@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+
 import 'package:rallyapp/blocs/app/month.dart';
 
 import 'package:rallyapp/screens/loginScreen.dart';
@@ -16,8 +20,37 @@ import 'package:rallyapp/blocs/app/indexBloc.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
 
 void main() {
-runApp(Rally());
+  Future<String> settingsValue = readConf();
+
+  runApp(Rally());
 }
+
+Future<String> readConf() async {
+  try {
+    final file = await _localFile;
+
+    // Read the file
+    String contents = await file.readAsString();
+
+    return contents;
+
+  } catch (e) {
+    // If encountering an error, return 0
+    return "";
+  }
+}
+
+Future<String> get _localPath async {
+  final directory = await getApplicationDocumentsDirectory();
+
+  return directory.path;
+}
+
+Future<File> get _localFile async {
+  final path = await _localPath;
+  return File('$path/rally.conf');
+}
+
 
 class Rally extends StatelessWidget {
   @override
@@ -39,9 +72,6 @@ class Rally extends StatelessWidget {
             '/': (context) => SignInPage(),
             '/register': (context) => RegisterPage(),
             '/main': (context) => CalendarPage(),
-            '/friends': (context) => FriendsScreen(),
-            '/settings': (context) => Settings(),
-            '/newEvent': (context) => NewEvent()
           },
         )
     );

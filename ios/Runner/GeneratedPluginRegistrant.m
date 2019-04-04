@@ -8,6 +8,7 @@
 #import <firebase_database/FirebaseDatabasePlugin.h>
 #import <flutter_local_notifications/FlutterLocalNotificationsPlugin.h>
 #import <google_sign_in/GoogleSignInPlugin.h>
+#import <path_provider/PathProviderPlugin.h>
 
 @implementation GeneratedPluginRegistrant
 
@@ -17,6 +18,7 @@
   [FLTFirebaseDatabasePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseDatabasePlugin"]];
   [FlutterLocalNotificationsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterLocalNotificationsPlugin"]];
   [FLTGoogleSignInPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleSignInPlugin"]];
+  [FLTPathProviderPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTPathProviderPlugin"]];
 }
 
 @end
