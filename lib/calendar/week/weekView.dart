@@ -650,13 +650,13 @@ timePrettyFormatSingle(time) {
 
 
 returnTimeInPrettyFormat(event) {
-  var startTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
+  var startTime = DateTime.fromMillisecondsSinceEpoch(event['start']);
   var startDay = startTime.day.toString();
   var startMonth = startTime.month.toString();
   var hour = startTime.hour.toString();
   var startMinute = ':' + startTime.minute.toString();
 
-  var endTime = DateTime.fromMillisecondsSinceEpoch(event.value['end']);
+  var endTime = DateTime.fromMillisecondsSinceEpoch(event['end']);
 //    var endMonth = endTime.month.toString();
   var endHour = endTime.hour.toString();
   var endMinute = ':' + endTime.minute.toString();
@@ -782,12 +782,11 @@ returnTimeInPrettyFormat(event) {
     Text(
       '$startMonth/$startDay',
       style: TextStyle(
-        fontSize: 25,
         fontWeight: FontWeight.bold,
       ),
     ),
     Container(
-      width: 20,
+      width: 10,
     ),
     Text('$hour$startMinute$indicator - $endHour$endMinute$indicator'),
   ];

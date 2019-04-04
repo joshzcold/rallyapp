@@ -407,68 +407,91 @@ class CalendarPageState extends State<CalendarPage> {
                   child:ListView(
                       children: groupOfEvents.value.entries
                           .map<Widget>((event) =>
-                          Column(
-                            children: <Widget>[
-                              // SPACER
-                              Container(
-                                height: 10,
-                              ),
-                              /// Each Event Card
-                              Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                    boxShadow: [
-                                      new BoxShadow(
-                                        color: Colors.grey[500],
-                                        blurRadius: 5.0,
-                                        offset: Offset(0.0, 0.0),
-                                      )
-                                    ],
-                                    color: Color(_getColorFromHex(event.value['color'])),
-                                  ),
-                                  child: ClipPath(
-                                    clipper: CardCornerClipper(),
-                                    child: Container(
-                                      width: detailEventsCardWidth * .95,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                        color: Colors.white,
-                                      ),
-                                      child: FlatButton(
-                                          padding: EdgeInsets.all(0),
-                                          onPressed: () {
-                                            if(auth.key == event.value['user']){
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
-                                            } else{
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
-                                            }
-                                          },
-                                          child: Container(
-                                              padding: EdgeInsets.all(10),
-                                              child: Column(
-                                                children: <Widget>[
-                                                  Row(
-                                                    /// RETURN TIME OF EVENT
-                                                      children:
-                                                      returnTimeInPrettyFormat(event)),
-                                                  Text(
-                                                    '${event.value['title']}',
-                                                    style: TextStyle(fontSize: 15),
-                                                  ),
-
-                                                  _joinedFriends(event)
-
-                                                ],
-                                              ))),
+                          BlocBuilder(bloc: _eventsBloc, builder: (context, state){
+                            var selectedUserEvents = state.events[event.value['user']];
+                            var selectedEvent = selectedUserEvents[event.key];
+                            return Column(
+                              children: <Widget>[
+                                // SPACER
+                                Container(
+                                  height: 10,
+                                ),
+                                /// Each Event Card
+                                Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                      boxShadow: [
+                                        new BoxShadow(
+                                          color: Colors.grey[500],
+                                          blurRadius: 5.0,
+                                          offset: Offset(0.0, 0.0),
+                                        )
+                                      ],
+                                      color: Color(_getColorFromHex(selectedEvent['color'])),
                                     ),
-                                  )
-                              ),
-                              // SPACER
-                              Container(
-                                height: 10,
-                              ),
-                            ],
-                          )).toList()),
+                                    child: ClipPath(
+                                      clipper: CardCornerClipper(),
+                                      child: Container(
+                                        width: detailEventsCardWidth * .95,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                          color: Colors.white,
+                                        ),
+                                        child: FlatButton(
+                                            padding: EdgeInsets.all(0),
+                                            onPressed: () {
+                                              if(auth.key == event.value['user']){
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
+                                              } else{
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                                              }
+                                            },
+                                            child: Container(
+                                                padding: EdgeInsets.all(10),
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Column(
+                                                      children: <Widget>[
+                                                        CircleAvatar(
+                                                          backgroundImage: NetworkImage(selectedEvent['userPhoto']),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    Container(width: 20,),
+                                                    Column(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          '${selectedEvent['userName']}',
+                                                          style: TextStyle(fontSize: 15),
+                                                        ),
+                                                        Row(
+                                                          /// RETURN TIME OF EVENT
+                                                            children:
+                                                            returnTimeInPrettyFormat(selectedEvent)),
+                                                        Text(
+                                                          '${selectedEvent['title']}',
+                                                          style: TextStyle(fontSize: 15),
+                                                        ),
+
+                                                        _joinedFriendsConflictingDetails(selectedEvent)
+
+                                                      ],
+                                                    )
+                                                  ],
+                                                )
+                                            )
+                                        ),
+                                      ),
+                                    )
+                                ),
+                                // SPACER
+                                Container(
+                                  height: 10,
+                                ),
+                              ],
+                            );
+                          })).toList()),
                 )
             ),
           ),
@@ -484,6 +507,27 @@ class CalendarPageState extends State<CalendarPage> {
       hexColor = "FF" + hexColor;
     }
     return int.parse(hexColor, radix: 16);
+  }
+
+  Widget _joinedFriendsConflictingDetails(event) {
+    if (event['party']['friends'] != null) {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Text('Joined Friends: '),
+          Row(
+              children: event['party']['friends'].entries
+                  .map<Widget>((friend) => CircleAvatar(
+                radius: 10,
+                backgroundImage: NetworkImage(friend
+                    .value['userPhoto']),
+              ),).toList()
+          )
+        ],
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget _joinedFriends(event) {
