@@ -5,7 +5,6 @@ import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/screens/friendEventScreen.dart';
 import 'package:rallyapp/screens/userEventScreen.dart';
-import 'package:sticky_headers/sticky_headers.dart';
 import 'package:uuid/uuid.dart';
 
 var currentHour = new DateTime.now().hour;
@@ -179,7 +178,6 @@ class WeekViewState extends State<WeekView>{
               conflictingEvents.forEach((key, secondGroup){
                 secondGroup.forEach((secondKey, secondValue){
                   if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
-                    var keys = secondGroup.keys.toString();
                     if(firstFilterMap[mapKey] == null){firstFilterMap[mapKey] = {};}
                     firstFilterMap[mapKey].addAll(secondGroup);
                   }
@@ -197,7 +195,6 @@ class WeekViewState extends State<WeekView>{
               firstFilterMap.forEach((key, secondGroup){
                 secondGroup.forEach((secondKey, secondValue){
                   if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
-                    var keys = secondGroup.keys.toString();
                     if(secondFilterMap[mapKey] == null){secondFilterMap[mapKey] = {};}
                     secondFilterMap[mapKey].addAll(secondGroup);
                   }
@@ -215,7 +212,6 @@ class WeekViewState extends State<WeekView>{
               secondFilterMap.forEach((key, secondGroup){
                 secondGroup.forEach((secondKey, secondValue){
                   if(secondGroup.containsKey(comparisonKey) && group.length <= secondGroup.length){
-                    var keys = secondGroup.keys.toString();
                     if(thirdFilterMap[mapKey] == null){thirdFilterMap[mapKey] = {};}
                     thirdFilterMap[mapKey].addAll(secondGroup);
                   }
