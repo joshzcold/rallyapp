@@ -530,27 +530,6 @@ class CalendarPageState extends State<CalendarPage> {
     }
   }
 
-  Widget _joinedFriends(event) {
-    if (event.value['party']['friends'] != null) {
-      return Row(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          Text('Joined Friends: '),
-          Row(
-              children: event.value['party']['friends'].entries
-                  .map<Widget>((friend) => CircleAvatar(
-                radius: 10,
-                backgroundImage: NetworkImage(friend
-                    .value['userPhoto']),
-              ),).toList()
-          )
-        ],
-      );
-    } else {
-      return Container();
-    }
-  }
-
   calculateDayStyle(DateTime day, width, context) {
     DateTime cday = DateTime.now();
     String value =
