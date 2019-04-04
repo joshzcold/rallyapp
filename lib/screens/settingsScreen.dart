@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rallyapp/widgets/themeButton.dart';
+import 'package:rallyapp/widgets/themeSelector.dart';
 
 Widget themeSelectorModal;
 
@@ -51,42 +52,13 @@ class SettingsState extends State<Settings>{
 
   getThemeSelectorModal() {
     setState(() {
-      themeSelectorModal = LayoutBuilder(builder: (context, constraints){
-        var maxHeight = constraints.maxHeight;
-        var maxWidth = constraints.maxWidth;
-        var cardHeightMultiplier = 0.35;
-        var cardWidthMultiplier = 0.95;
+      themeSelectorModal = themeSelector(context, closeThemeSelectorModal);
+    });
+  }
 
-        if(maxWidth > maxHeight){
-          cardHeightMultiplier = 0.80;
-          cardWidthMultiplier = 0.70;
-        }
-        return InkWell(
-          onTap: (){
-            setState(() {
-              themeSelectorModal = Container();
-            });
-          },
-          child: Container(
-            height: maxHeight,
-            width: maxWidth,
-            decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-            alignment: Alignment.center,
-            child: Container(
-                height: 300,
-                width: maxWidth * cardWidthMultiplier,
-                child: Card(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-
-                    ],
-                  ),
-                )
-            ),
-          ),
-        );
-      });
+  closeThemeSelectorModal(){
+    setState(() {
+      themeSelectorModal = Container();
     });
   }
 }
