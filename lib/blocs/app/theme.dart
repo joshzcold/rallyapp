@@ -3,11 +3,87 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 Map lightTheme = {
-  'background': ''
+  'background': '',
+  'border':'',
+  'solidIconDark':'',
+  'solidIconLight':'',
+  'colorPrimary':'',
+  'colorSecondary':'',
+  'colorSucess':'',
+  'colorAttention':'',
+  'colorDanger':'',
 };
 
 Map darkTheme = {
-  'background': ''
+  'background': '',
+  'border':'',
+  'solidIconDark':'',
+  'solidIconLight':'',
+  'colorPrimary':'',
+  'colorSecondary':'',
+  'colorSucess':'',
+  'colorAttention':'',
+  'colorDanger':'',
+};
+
+Map amoLEDTheme = {
+  'background': '',
+  'border':'',
+  'solidIconDark':'',
+  'solidIconLight':'',
+  'colorPrimary':'',
+  'colorSecondary':'',
+  'colorSucess':'',
+  'colorAttention':'',
+  'colorDanger':'',
+};
+
+Map blueTheme = {
+  'background': '',
+  'border':'',
+  'solidIconDark':'',
+  'solidIconLight':'',
+  'colorPrimary':'',
+  'colorSecondary':'',
+  'colorSucess':'',
+  'colorAttention':'',
+  'colorDanger':'',
+};
+
+Map redTheme = {
+  'background': '',
+  'border':'',
+  'solidIconDark':'',
+  'solidIconLight':'',
+  'colorPrimary':'',
+  'colorSecondary':'',
+  'colorSucess':'',
+  'colorAttention':'',
+  'colorDanger':'',
+};
+
+Map greenTheme = {
+  'background': '',
+  'border':'',
+  'solidIconDark':'',
+  'solidIconLight':'',
+  'colorPrimary':'',
+  'colorSecondary':'',
+  'colorSucess':'',
+  'colorAttention':'',
+  'colorDanger':'',
+};
+
+Map pinkTheme = {
+  'background': '',
+  'border':'',
+  'solidIconDark':'',
+  'solidIconLight':'',
+  'colorPrimary':'',
+  'colorSecondary':'',
+  'colorSucess':'',
+  'colorAttention':'',
+  'colorDanger':'',
 };
 
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState>{

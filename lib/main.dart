@@ -18,6 +18,7 @@ import 'package:rallyapp/blocs/events/event_bloc.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/app/indexBloc.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 
 void main() {
   Future<String> settingsValue = readConf();
