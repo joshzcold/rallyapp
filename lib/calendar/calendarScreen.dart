@@ -408,7 +408,7 @@ class CalendarPageState extends State<CalendarPage> {
                 height: maxHeight * cardHeightMultiplier,
                 width: maxWidth * cardWidthMultiplier,
                 child: Card(
-                  color: theme.theme['background'],
+                  color: theme.theme['cardListBackground'],
                   child:ListView(
                       children: groupOfEvents.value.entries
                           .map<Widget>((event) =>

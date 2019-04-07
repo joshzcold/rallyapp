@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/fireActions.dart';
@@ -59,9 +60,13 @@ class UserEventState extends State<UserEvent> {
   Widget colorWheel = Container();
   @override
   Widget build(BuildContext context) {
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+
     var maxWidth = MediaQuery.of(context).size.width;
     var maxHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: theme.theme['background'],
           appBar: AppBar(
             backgroundColor: Color(_getColorFromHex(colorSelection)),
             actions: <Widget>[
@@ -105,34 +110,41 @@ class UserEventState extends State<UserEvent> {
                     ],
                   )
               ),
-              PopupMenuButton<MenuChoices>(
-                onSelected: (MenuChoices result) {
-                  if(result == MenuChoices.delete){
-                    fireActions.deleteEvent(event.key, context);
-                    Navigator.pop(context);
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuChoices>>[
-                   PopupMenuItem<MenuChoices>(
-                    value: MenuChoices.delete,
-                    child: Row(
-                      children: <Widget>[
-                        Container(width: 10,),
-                        Container(
-                            padding: EdgeInsets.all(10.0),
-                            child: Row(
-                              children: <Widget>[
-                                Icon(Icons.delete_forever, color: Colors.grey,),
-                                Container(width: 5,),
-                                Text('Delete', style: TextStyle(fontSize: 15),)
-                              ],
-                            )
-                        ),
-                      ],
-                    )
-                  ),
-                ],
-              ),
+
+              Theme(
+                data: Theme.of(context).copyWith(
+                  cardColor: theme.theme['card'],
+                  iconTheme: IconThemeData(color: Colors.white)
+                ),
+                child: PopupMenuButton<MenuChoices>(
+                  onSelected: (MenuChoices result) {
+                    if(result == MenuChoices.delete){
+                      fireActions.deleteEvent(event.key, context);
+                      Navigator.pop(context);
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuChoices>>[
+                    PopupMenuItem<MenuChoices>(
+                        value: MenuChoices.delete,
+                        child: Row(
+                          children: <Widget>[
+                            Container(width: 10,),
+                            Container(
+                                padding: EdgeInsets.all(10.0),
+                                child: Row(
+                                  children: <Widget>[
+                                    Icon(Icons.delete_forever, color: theme.theme['solidIconDark'],),
+                                    Container(width: 5,),
+                                    Text('Delete', style: TextStyle(fontSize: 15, color: theme.theme['text']),)
+                                  ],
+                                )
+                            ),
+                          ],
+                        )
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
           body: ListView(
@@ -151,7 +163,7 @@ class UserEventState extends State<UserEvent> {
                               ),
                               Text(
                                 'Start Time',
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle']),
                               ),
                               FlatButton(
                                   padding: EdgeInsets.all(0),
@@ -165,7 +177,7 @@ class UserEventState extends State<UserEvent> {
                                       lastDate: DateTime.now().add(Duration(days: 365 * 2)),
                                       builder: (BuildContext context, Widget child) {
                                         return Theme(
-                                          data: ThemeData.light(),
+                                          data: ThemeData.dark(),
                                           child: child,
                                         );
                                       },
@@ -178,7 +190,7 @@ class UserEventState extends State<UserEvent> {
                                         context: context,
                                         builder: (BuildContext context, Widget child) {
                                           return Theme(
-                                            data: ThemeData.light(),
+                                            data: ThemeData.dark(),
                                             child: child,
                                           );
                                         },
@@ -206,7 +218,7 @@ class UserEventState extends State<UserEvent> {
                                     child: Text(
                                       '$startTimeText',
                                       style: TextStyle(
-                                          fontSize: 20, fontWeight: FontWeight.bold),
+                                          fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
                                       textAlign: TextAlign.center,
                                     ),
                                   )),
@@ -215,7 +227,7 @@ class UserEventState extends State<UserEvent> {
                               ),
                               Text('End Time',
                                   style:
-                                  TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                  TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
                               FlatButton(
                                   padding: EdgeInsets.all(0),
                                   onPressed: () {
@@ -228,7 +240,7 @@ class UserEventState extends State<UserEvent> {
                                       lastDate: DateTime.now().add(Duration(days: 365 * 2)),
                                       builder: (BuildContext context, Widget child) {
                                         return Theme(
-                                          data: ThemeData.light(),
+                                          data: ThemeData.dark(),
                                           child: child,
                                         );
                                       },
@@ -241,7 +253,7 @@ class UserEventState extends State<UserEvent> {
                                         context: context,
                                         builder: (BuildContext context, Widget child) {
                                           return Theme(
-                                            data: ThemeData.light(),
+                                            data: ThemeData.dark(),
                                             child: child,
                                           );
                                         },
@@ -270,7 +282,8 @@ class UserEventState extends State<UserEvent> {
                                     child: Text(
                                       '$endTimeText',
                                       style: TextStyle(
-                                          fontSize: 20, fontWeight: FontWeight.bold),
+                                          fontSize: 20, fontWeight: FontWeight.bold,
+                                      color: theme.theme['text']),
                                       textAlign: TextAlign.center,
                                     ),
                                   )),
@@ -284,13 +297,15 @@ class UserEventState extends State<UserEvent> {
                             children: <Widget>[
                               Text('Event Title',
                                   style:
-                                  TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                  TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
                               Container(
                                 width: maxWidth * .70,
-                                child: TextField(
+                                child: TextFormField(
+                                  style: TextStyle(color: theme.theme['text']),
                                   controller: _gameTitleController,
                                   decoration: InputDecoration(
-                                    icon: Icon(Icons.videogame_asset),
+                                    icon: Icon(Icons.videogame_asset, color: theme.theme['solidIconDark'],),
+                                    hintStyle: TextStyle(color: theme.theme['text']),
                                     hintText: 'Playing Halo with some Bros, chilling.',
                                   ),
                                 ),
@@ -303,14 +318,16 @@ class UserEventState extends State<UserEvent> {
 
                               Text('Party Limit',
                                   style:
-                                  TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                  TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
                               Container(
                                 width: maxWidth * .20,
-                                child: TextField(
+                                child: TextFormField(
+                                  style: TextStyle(color: theme.theme['text']),
                                   textAlign: TextAlign.center,
                                   controller: _partyLimitController,
                                   decoration: new InputDecoration(
-                                    icon: Icon(Icons.group),
+                                    icon: Icon(Icons.group, color: theme.theme['solidIconDark'],),
+                                    hintStyle: TextStyle(color: theme.theme['text']),
                                     hintText: '0',
                                   ),
                                   keyboardType: TextInputType.number,
@@ -326,12 +343,12 @@ class UserEventState extends State<UserEvent> {
                               ),
                               FlatButton(
                                   onPressed: (){
-                                    _changeColorButton(maxHeight, maxWidth);
+                                    _changeColorButton(maxHeight, maxWidth, theme);
                                   },
                                   padding: EdgeInsets.all(0),
                                   child: Row(
                                     children: <Widget>[
-                                      Icon(Icons.brush, size: 30, color: Colors.grey,),
+                                      Icon(Icons.brush, size: 30, color: theme.theme['solidIconDark'],),
                                       Container(width: 10,),
                                       Container(
                                         height: 50,
@@ -349,7 +366,7 @@ class UserEventState extends State<UserEvent> {
                           Container(
                             height: 30,
                           ),
-                          calculateJoinedFriendsWidget(context, event.key)
+                          calculateJoinedFriendsWidget(context, event.key, theme)
                         ],
                       ),
                       Positioned(
@@ -376,7 +393,7 @@ class UserEventState extends State<UserEvent> {
       );
   }
 
-  _changeColorButton(maxHeight, maxWidth){
+  _changeColorButton(maxHeight, maxWidth, theme){
     var farDown = maxHeight/4;
     var circleSize = maxWidth *.80;
     var colorSize = 50.0;
@@ -406,7 +423,7 @@ class UserEventState extends State<UserEvent> {
                     height: circleSize,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white,
+                      color: theme.theme['card'],
                       boxShadow: [
                         new BoxShadow(
                           color: Colors.grey[500],
@@ -593,7 +610,7 @@ class UserEventState extends State<UserEvent> {
     return int.parse(hexColor, radix: 16);
   }
 
-  calculateJoinedFriendsWidget(context, eventKey) {
+  calculateJoinedFriendsWidget(context, eventKey, theme) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
     AuthLoaded auth =  authBloc.currentState;
@@ -611,9 +628,10 @@ class UserEventState extends State<UserEvent> {
             children: <Widget>[
               Text('Joined Friends',
                   style:
-                  TextStyle(fontStyle: FontStyle.italic ,fontSize: 15)),
+                  TextStyle(fontStyle: FontStyle.italic ,fontSize: 15, color: theme.theme['text'])),
               Column(
                 children: friends.entries.map<Widget>((friend) => Card(
+                  color: theme.theme['card'],
                   child: Container(
                       padding: EdgeInsets.all(0),
                       child: Container(
@@ -637,9 +655,9 @@ class UserEventState extends State<UserEvent> {
                             /// Friend User Name
                             Text(
                               friend.value['userName'],
-                              style: TextStyle(fontSize: 20),
+                              style: TextStyle(fontSize: 20, color: theme.theme['text']),
                             ),
-                            IconButton(icon: Icon(Icons.cancel), onPressed: (){
+                            IconButton(icon: Icon(Icons.cancel, color: theme.theme['solidIconDark'],), onPressed: (){
                               fireActions.removeJoinedFriend(eventKey, friend.key, context);
                             })
                           ],

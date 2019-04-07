@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/fireActions.dart';
@@ -15,9 +16,12 @@ class FriendEvent extends StatelessWidget {
   Widget build(BuildContext context) {
     var party = event.value['party'];
     var partyLimit = party['partyLimit'];
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
 
     var maxWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: theme.theme['background'],
         appBar: AppBar(
           centerTitle: true,
           title:Text(event.value['userName'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -48,7 +52,7 @@ class FriendEvent extends StatelessWidget {
                             ),
                             Text(
                               'Start Time',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle']),
                             ),
                               Container(
                                   height: 30,
@@ -61,7 +65,7 @@ class FriendEvent extends StatelessWidget {
                                   child: Text(
                                     '${DateTime.fromMillisecondsSinceEpoch(event.value['start'])}',
                                     style: TextStyle(
-                                        fontSize: 20, fontWeight: FontWeight.bold),
+                                        fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -70,7 +74,7 @@ class FriendEvent extends StatelessWidget {
                             ),
                             Text('End Time',
                                 style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
                             Container(
                                   height: 30,
                                   width: maxWidth * .80,
@@ -82,7 +86,7 @@ class FriendEvent extends StatelessWidget {
                                   child: Text(
                                     '${DateTime.fromMillisecondsSinceEpoch(event.value['end'])}',
                                     style: TextStyle(
-                                        fontSize: 20, fontWeight: FontWeight.bold),
+                                        fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -101,7 +105,7 @@ class FriendEvent extends StatelessWidget {
                                   children: <Widget>[
                                     Text('Event Title',
                                         style:
-                                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
 
                                   ],
                                 )
@@ -120,7 +124,7 @@ class FriendEvent extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Text(event.value['title']),
+                                  Text(event.value['title'], style: TextStyle(color: theme.theme['text']),),
                                 ],
                               ),
                             ),
@@ -135,21 +139,21 @@ class FriendEvent extends StatelessWidget {
                                   children: <Widget>[
                                     Text('Party Limit',
                                         style:
-                                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
                                     Container(
                                       width: maxWidth * .20,
                                       child: Row(
                                         children: <Widget>[
                                           Icon(Icons.group, color: Colors.grey),
                                           Container(width: 10,),
-                                          Text(partyLimit)
+                                          Text(partyLimit, style: TextStyle(color: theme.theme['text']),)
                                         ],
                                       )
 
                                     )
                                   ],
                                 ),
-                                joinLeaveButton(context),
+                                joinLeaveButton(context, theme),
                               ],
                             )
                           ],
@@ -157,7 +161,7 @@ class FriendEvent extends StatelessWidget {
                         Container(
                           height: 20,
                         ),
-                        calculateJoinedFriendsWidget(context, event)
+                        calculateJoinedFriendsWidget(context, event, theme)
                       ],
                     ),
                   ],
@@ -175,7 +179,7 @@ class FriendEvent extends StatelessWidget {
     return int.parse(hexColor, radix: 16);
   }
 
-  calculateJoinedFriendsWidget(context, event) {
+  calculateJoinedFriendsWidget(context, event, theme) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(bloc: _eventsBloc, builder: (context, state){
         var selectedEvents = state.events['${event.value['user']}'];
@@ -190,9 +194,10 @@ class FriendEvent extends StatelessWidget {
             children: <Widget>[
               Text('Joined Friends',
                   style:
-                  TextStyle(fontStyle: FontStyle.italic ,fontSize: 15)),
+                  TextStyle(fontStyle: FontStyle.italic ,fontSize: 15, color: theme.theme['text'])),
               Column(
                 children: friends.entries.map<Widget>((friend) => Card(
+                  color: theme.theme['card'],
                   child: Container(
                       padding: EdgeInsets.all(0),
                       child: Container(
@@ -216,7 +221,7 @@ class FriendEvent extends StatelessWidget {
                             /// Friend User Name
                             Text(
                               friend.value['userName'],
-                              style: TextStyle(fontSize: 20),
+                              style: TextStyle(fontSize: 20, color: theme.theme['text']),
                             ),
                           ],
                         ),
@@ -229,7 +234,7 @@ class FriendEvent extends StatelessWidget {
       },);
   }
 
-  joinLeaveButton(context) {
+  joinLeaveButton(context, theme) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(bloc: _eventsBloc, builder: (context, state){
       var selectedEvents = state.events['${event.value['user']}'];
@@ -248,7 +253,7 @@ class FriendEvent extends StatelessWidget {
               children: <Widget>[
                 Container(width: 10,),
                 Container(
-                    decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.all(Radius.circular(8))),
+                    decoration: BoxDecoration(color: theme.theme['colorAttention'], borderRadius: BorderRadius.all(Radius.circular(8))),
                     padding: EdgeInsets.all(10.0),
                     child: Row(
                       children: <Widget>[
@@ -273,7 +278,7 @@ class FriendEvent extends StatelessWidget {
                 children: <Widget>[
                   Container(width: 10,),
                   Container(
-                      decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(8))),
+                      decoration: BoxDecoration(color: theme.theme['colorSecondary'], borderRadius: BorderRadius.all(Radius.circular(8))),
                       padding: EdgeInsets.all(10.0),
                       child: Row(
                         children: <Widget>[

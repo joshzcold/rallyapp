@@ -53,7 +53,7 @@ Map darkTheme = {
   'colorPrimary':Colors.orange,
   'colorSecondary':Colors.grey[600],
   'colorSuccess':Colors.green,
-  'colorAttention':Colors.yellow,
+  'colorAttention':Colors.yellow[800],
   'colorDanger':Colors.red,
 };
 

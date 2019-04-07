@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/fireListener.dart';
 
 
@@ -79,8 +81,11 @@ class SignInPage extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
     var maxWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: theme.theme['background'],
       body: ListView(
         children: <Widget>[
         Column(
@@ -96,12 +101,14 @@ class SignInPage extends StatelessWidget{
                       Container(
                         width: maxWidth * .80,
                         child: TextFormField(
+                          style: TextStyle(color: theme.theme['text']),
                           controller: _emailController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.all(Radius.circular(50)),
                             ),
                             hintText: 'Email',
+                            hintStyle: TextStyle(color: theme.theme['text'])
                           ),
                           validator: (String value) {
                             if (value.isEmpty) {
@@ -116,12 +123,14 @@ class SignInPage extends StatelessWidget{
                       Container(
                         width: maxWidth * .80,
                         child: TextFormField(
+                          style: TextStyle(color: theme.theme['text']),
                           controller: _passwordController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.all(Radius.circular(50)),
                             ),
                             hintText: 'Password',
+                              hintStyle: TextStyle(color: theme.theme['text'])
                           ),
                           validator: (String value) {
                             if (value.isEmpty) {
@@ -131,17 +140,21 @@ class SignInPage extends StatelessWidget{
                         ),
                       ),
                       Container(height: 10,),
-                      Container(
-                        alignment: Alignment.center,
-                        child: RaisedButton(
+                      FlatButton(
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
                               signInWithEmailAndPassword(context);
                             }
                           },
-                          child: const Text('SIGN IN'),
+                          child: Container(
+                            padding: EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                              color: theme.theme['colorPrimary'],
+                            ),
+                            child: Text('SIGN IN', style: TextStyle(color: Colors.white),),
+                          )
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -149,25 +162,34 @@ class SignInPage extends StatelessWidget{
             Container(
               height: 30,
             ),
-            Container(
-              alignment: Alignment.center,
-              child: RaisedButton(
+            FlatButton(
                 onPressed: ()  {
                   Navigator.pushReplacementNamed(context, '/register');
                 },
-                child: const Text('SIGN UP'),
+                  child: Container(
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      color: theme.theme['colorSecondary'],
+                    ),
+                    child: Text('SIGN UP', style: TextStyle(color: Colors.white),),
+                  )
               ),
-            ),
+
             Container(height: 10,),
-            Container(
-              alignment: Alignment.center,
-              child: RaisedButton(
+            FlatButton(
                 onPressed: (){
                   signInWithGoogle(context);
                 },
-                child: const Text('SIGN IN WITH GOOGLE'),
+                  child: Container(
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      color: theme.theme['colorPrimary'],
+                    ),
+                    child: Text('SIGN IN WITH GOOGLE', style: TextStyle(color: Colors.white),),
+                  )
               ),
-            ),
           ],
         ),
         ],

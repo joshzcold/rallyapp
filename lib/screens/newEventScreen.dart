@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/fireActions.dart';
 
 class NewEvent extends StatefulWidget {
@@ -30,14 +32,18 @@ class NewEventState extends State<NewEvent> {
 
   var endTimeText = '$twoHours';
   var endTime = DateTime.now().add(Duration(hours: 2));
+
   Widget colorWheel = Container();
   @override
   Widget build(BuildContext context) {
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
     var maxWidth = MediaQuery.of(context).size.width;
     var maxHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+        backgroundColor: theme.theme['background'],
         appBar: AppBar(
-          title: Text("New Event"),
+          title: Text("New Event", style: TextStyle(color: Colors.white),),
           backgroundColor: Color(_getColorFromHex(colorSelection)),
           actions: <Widget>[
             FlatButton(
@@ -87,7 +93,7 @@ class NewEventState extends State<NewEvent> {
                             ),
                             Text(
                               'Start Time',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle']),
                             ),
                             FlatButton(
                                 padding: EdgeInsets.all(0),
@@ -101,7 +107,7 @@ class NewEventState extends State<NewEvent> {
                                     lastDate: DateTime.now().add(Duration(days: 365 * 2)),
                                     builder: (BuildContext context, Widget child) {
                                       return Theme(
-                                        data: ThemeData.light(),
+                                        data: ThemeData.dark(),
                                         child: child,
                                       );
                                     },
@@ -114,7 +120,7 @@ class NewEventState extends State<NewEvent> {
                                       context: context,
                                       builder: (BuildContext context, Widget child) {
                                         return Theme(
-                                          data: ThemeData.light(),
+                                          data: ThemeData.dark(),
                                           child: child,
                                         );
                                       },
@@ -142,7 +148,7 @@ class NewEventState extends State<NewEvent> {
                                   child: Text(
                                     '$startTimeText',
                                     style: TextStyle(
-                                        fontSize: 20, fontWeight: FontWeight.bold),
+                                        fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
                                     textAlign: TextAlign.center,
                                   ),
                                 )),
@@ -151,7 +157,7 @@ class NewEventState extends State<NewEvent> {
                             ),
                             Text('End Time',
                                 style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
                             FlatButton(
                                 padding: EdgeInsets.all(0),
                                 onPressed: () {
@@ -164,7 +170,7 @@ class NewEventState extends State<NewEvent> {
                                     lastDate: DateTime.now().add(Duration(days: 365 * 2)),
                                     builder: (BuildContext context, Widget child) {
                                       return Theme(
-                                        data: ThemeData.light(),
+                                        data: ThemeData.dark(),
                                         child: child,
                                       );
                                     },
@@ -177,7 +183,7 @@ class NewEventState extends State<NewEvent> {
                                       context: context,
                                       builder: (BuildContext context, Widget child) {
                                         return Theme(
-                                          data: ThemeData.light(),
+                                          data: ThemeData.dark(),
                                           child: child,
                                         );
                                       },
@@ -206,7 +212,7 @@ class NewEventState extends State<NewEvent> {
                                   child: Text(
                                     '$endTimeText',
                                     style: TextStyle(
-                                        fontSize: 20, fontWeight: FontWeight.bold),
+                                        fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
                                     textAlign: TextAlign.center,
                                   ),
                                 )),
@@ -220,13 +226,16 @@ class NewEventState extends State<NewEvent> {
                           children: <Widget>[
                             Text('Event Title',
                                 style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
                             Container(
                               width: maxWidth * .70,
-                              child: TextField(
+                              child: TextFormField(
+                                style: TextStyle(color: theme.theme['text']),
+                                textAlign: TextAlign.start,
                                 controller: _gameTitleController,
                                 decoration: InputDecoration(
-                                  icon: Icon(Icons.videogame_asset),
+                                  icon: Icon(Icons.videogame_asset, color: theme.theme['solidIconDark'],),
+                                  hintStyle: TextStyle(color: theme.theme['text']),
                                   hintText: 'Playing Halo with some Bros, chilling.',
                                 ),
                               ),
@@ -239,14 +248,16 @@ class NewEventState extends State<NewEvent> {
 
                             Text('Party Limit',
                                 style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
                             Container(
                               width: maxWidth * .20,
-                              child: TextField(
+                              child: TextFormField(
+                                style: TextStyle(color: theme.theme['text']),
                                 textAlign: TextAlign.center,
                                 controller: _partyLimitController,
                                 decoration: new InputDecoration(
-                                  icon: Icon(Icons.group),
+                                  icon: Icon(Icons.group, color: theme.theme['solidIconDark'],),
+                                  hintStyle: TextStyle(color: theme.theme['text']),
                                   hintText: '0',
                                 ),
                                 keyboardType: TextInputType.number,
@@ -262,12 +273,12 @@ class NewEventState extends State<NewEvent> {
                             ),
                             FlatButton(
                               onPressed: (){
-                                _changeColorButton(maxHeight, maxWidth);
+                                _changeColorButton(maxHeight, maxWidth, theme);
                               },
                               padding: EdgeInsets.all(0),
                               child: Row(
                                 children: <Widget>[
-                                  Icon(Icons.brush, size: 30, color: Colors.grey,),
+                                  Icon(Icons.brush, size: 30, color: theme.theme['solidIconDark'],),
                                   Container(width: 10,),
                                   Container(
                                     height: 50,
@@ -312,7 +323,7 @@ class NewEventState extends State<NewEvent> {
         );
   }
 
-     _changeColorButton(maxHeight, maxWidth){
+     _changeColorButton(maxHeight, maxWidth, theme){
     if(maxWidth > maxHeight){
       maxWidth = maxWidth/2;
     }
@@ -345,7 +356,7 @@ class NewEventState extends State<NewEvent> {
                     height: circleSize,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white,
+                      color: theme.theme['card'],
                       boxShadow: [
                         new BoxShadow(
                           color: Colors.grey[500],

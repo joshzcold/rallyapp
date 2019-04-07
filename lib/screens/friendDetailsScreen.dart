@@ -9,7 +9,7 @@ class FriendDetails extends StatelessWidget{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Friend Event'),
+        title: Text('Friend Details'),
       ),
       body: LayoutBuilder(
         builder: (context, viewPortConstraints) {
