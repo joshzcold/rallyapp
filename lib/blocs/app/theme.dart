@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:rallyapp/utility/config.dart';
+import 'package:ini/ini.dart';
 
 /// background: everything behind the grid and the main color of most pages
 /// text: Text on the background or header color
@@ -170,24 +173,87 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState>{
 
   Stream<ThemeState>_mapChangeThemeToState(currentState ,event) async*{
     if(event.theme == "light"){
+      var config = await readConf();
+      if(!config.hasSection('theme')){
+        config.addSection('theme');
+        config.set('theme', 'appTheme', 'light');
+        writeToConf(config);
+      } else{
+        config.set('theme', 'appTheme', 'light');
+        writeToConf(config);
+      }
       yield ThemeLoaded(lightTheme);
     }
     else if(event.theme == "dark"){
+      var config = await readConf();
+      if(!config.hasSection('theme')){
+        config.addSection('theme');
+        config.set('theme', 'appTheme', 'dark');
+        writeToConf(config);
+      } else{
+        config.set('theme', 'appTheme', 'dark');
+        writeToConf(config);
+      }
       yield ThemeLoaded(darkTheme);
     }
     else if(event.theme == "amoled"){
+      var config = await readConf();
+      if(!config.hasSection('theme')){
+        config.addSection('theme');
+        config.set('theme', 'appTheme', 'amoled');
+        writeToConf(config);
+      } else{
+        config.set('theme', 'appTheme', 'amoled');
+        writeToConf(config);
+      }
       yield ThemeLoaded(amoLEDTheme);
     }
     else if(event.theme == "blue"){
+      var config = await readConf();
+      if(!config.hasSection('theme')){
+        config.addSection('theme');
+        config.set('theme', 'appTheme', 'blue');
+        writeToConf(config);
+      } else{
+        config.set('theme', 'appTheme', 'blue');
+        writeToConf(config);
+      }
       yield ThemeLoaded(blueTheme);
     }
     else if(event.theme == "red"){
+      var config = await readConf();
+      if(!config.hasSection('theme')){
+        config.addSection('theme');
+        config.set('theme', 'appTheme', 'red');
+        writeToConf(config);
+      } else{
+        config.set('theme', 'appTheme', 'red');
+        writeToConf(config);
+      }
       yield ThemeLoaded(redTheme);
     }
     else if(event.theme == "green"){
+      var config = await readConf();
+      if(!config.hasSection('theme')){
+        config.addSection('theme');
+        config.set('theme', 'appTheme', 'green');
+        writeToConf(config);
+      } else{
+        config.set('theme', 'appTheme', 'green');
+        writeToConf(config);
+      }
       yield ThemeLoaded(greenTheme);
     }
     else if(event.theme == "pink"){
+      var config = await readConf();
+      if(!config.hasSection('theme')){
+        config.addSection('theme');
+        config.set('theme', 'appTheme', 'pink');
+        writeToConf(config);
+      } else{
+        config.set('theme', 'appTheme', 'pink');
+        writeToConf(config);
+      }
       yield ThemeLoaded(pinkTheme);
     }
   }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ini/ini.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:rallyapp/blocs/app/month.dart';
@@ -22,13 +23,24 @@ import 'package:rallyapp/blocs/app/theme.dart';
 
 import 'package:rallyapp/utility/config.dart';
 
-void main() {
-  Future<String> settingsValue = readConf();
-
-  runApp(Rally());
+void main() async{
+  var themeValue;
+  var config = await readConf();
+  if(config is FileSystemException){
+    writeToConf('');
+    config = await readConf();
+  } if(config.hasSection('theme')){
+    themeValue = config.get('theme', 'appTheme');
+  } else{
+    themeValue = "light";
+  }
+  runApp(Rally(themeValue));
 }
 
 class Rally extends StatelessWidget {
+  final String themeValue;
+  Rally(this.themeValue);
+
   @override
   Widget build(BuildContext context) {
     return BlocProviderTree(
@@ -43,6 +55,7 @@ class Rally extends StatelessWidget {
       ],
         child: Builder(builder: (context){
           ThemeBloc _themeBloc = BlocProvider.of<ThemeBloc>(context);
+          _themeBloc.dispatch(ChangeTheme(themeValue));
           return BlocBuilder(bloc: _themeBloc, builder: (context, state){
             return MaterialApp(
               debugShowCheckedModeBanner: false,

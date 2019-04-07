@@ -3,19 +3,29 @@
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
+import 'package:ini/ini.dart';
+Future<String> writeToConf(contents) async{
+  try{
+    final file = await _localFile;
+    file.writeAsString(contents.toString());
+    return "success";
+  } catch(e){
+    return e;
+  }
+}
 
-Future<String> readConf() async {
+Future<Config> readConf() async {
   try {
     final file = await _localFile;
 
     // Read the file
-    String contents = await file.readAsString();
+    Config config = new Config.fromStrings(file.readAsLinesSync());
 
-    return contents;
+    return config;
 
   } catch (e) {
     // If encountering an error, return 0
-    return "";
+    return e;
   }
 }
 
@@ -27,5 +37,5 @@ Future<String> get _localPath async {
 
 Future<File> get _localFile async {
   final path = await _localPath;
-  return File('$path/rally.conf');
+  return File('$path/rally.ini');
 }

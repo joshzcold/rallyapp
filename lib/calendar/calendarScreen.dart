@@ -106,7 +106,7 @@ class CalendarPageState extends State<CalendarPage> {
                 preferredSize: Size.fromHeight(1)),
             bottomNavigationBar: BottomAppBar(
                 child: Container(
-                  color: theme.theme['header'],
+                  color: theme.theme['footer'],
                   height: 55,
                   child: Row(
                     children: <Widget>[
