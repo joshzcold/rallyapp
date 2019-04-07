@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 
 List header = [
   'Jun',
@@ -13,6 +15,8 @@ List header = [
 List rows = [1,2,3,4,5];
 
 themeButton(context, constraints, getThemeSelectorModal){
+  ThemeBloc _themeBloc = BlocProvider.of<ThemeBloc>(context);
+  ThemeLoaded theme = _themeBloc.currentState;
   return Column(
     mainAxisSize: MainAxisSize.max,
     children: <Widget>[
@@ -34,7 +38,7 @@ themeButton(context, constraints, getThemeSelectorModal){
                 offset: Offset(0.0, 0.0),
               )
             ],
-            color: Colors.white,
+            color: theme.theme['background'],
           ),
           height: 300,
           width: constraints.maxWidth * .90,
@@ -47,7 +51,7 @@ themeButton(context, constraints, getThemeSelectorModal){
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.vertical(top: Radius.circular(8.0)),
-                        color: Colors.white,
+                        color: theme.theme['header'],
                       ),
                       height: 50,
                       width: constraints.maxWidth * .90,
@@ -57,10 +61,10 @@ themeButton(context, constraints, getThemeSelectorModal){
                                 decoration: BoxDecoration(
                                   border: Border(
                                     right: BorderSide(
-                                        color: Color(0xFFdadce0),
+                                        color: theme.theme['border'],
                                         width: 1),
                                     bottom: BorderSide(
-                                        color: Color(0xFFdadce0),
+                                        color: theme.theme['border'],
                                         width: 1),),
                                 ),
                                 height: 50,
@@ -68,7 +72,7 @@ themeButton(context, constraints, getThemeSelectorModal){
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children:calculateDayStyle(column),
+                                  children:calculateDayStyle(column, theme),
                                 ),
                               )
                           ).toList()
@@ -94,7 +98,7 @@ themeButton(context, constraints, getThemeSelectorModal){
                                               decoration: BoxDecoration(
                                                   border: Border(
                                                       right: BorderSide(
-                                                          color: Color(0xFFdadce0),
+                                                          color: theme.theme['border'],
                                                           width: 1))),
                                               child: Column(
                                                   children: rows
@@ -104,8 +108,7 @@ themeButton(context, constraints, getThemeSelectorModal){
                                                               decoration: BoxDecoration(
                                                                   border: Border(
                                                                       bottom: BorderSide(
-                                                                          color: Color(
-                                                                              0xFFdadce0),
+                                                                          color: theme.theme['border'],
                                                                           width: 1))),
                                                               child: Row(
                                                                 children: <Widget>[
@@ -129,17 +132,17 @@ themeButton(context, constraints, getThemeSelectorModal){
                         width: 50,
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.blue,
+                            color: theme.theme['colorPrimary'],
                             boxShadow: [
                               new BoxShadow(
-                                color: Colors.grey[500],
+                                color: theme.theme['border'],
                                 blurRadius: 2.0,
                                 offset: Offset(0.5, 0.0),
                               )
                             ]
                         ),
                         child: Center(
-                          child: Icon(Icons.add, color: Colors.white,),
+                          child: Icon(Icons.add,color: theme.theme['solidIconLight']),
                         ),
                       )
                   )
@@ -150,6 +153,7 @@ themeButton(context, constraints, getThemeSelectorModal){
               Container(
                 height: 50,
                 width: constraints.maxWidth*.90,
+                color: theme.theme['footer'],
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -158,7 +162,7 @@ themeButton(context, constraints, getThemeSelectorModal){
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Icon(Icons.calendar_today, color: Colors.grey,),
+                          Icon(Icons.calendar_today, color: theme.theme['solidIconDark'],),
                           Text('Calendar', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),)
                         ],
                       ),
@@ -171,7 +175,7 @@ themeButton(context, constraints, getThemeSelectorModal){
                               Center(
                                 child: Column(
                                   children: <Widget>[
-                                    Icon(Icons.group, color: Colors.blue,),
+                                    Icon(Icons.group, color: theme.theme['colorPrimary'],),
                                     Text('Friends', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),),
                                   ],
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -185,7 +189,7 @@ themeButton(context, constraints, getThemeSelectorModal){
                                       width: 15,
                                       decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: Colors.green
+                                          color: theme.theme['colorSuccess']
                                       ),
                                       child: Center(
                                         child:Text('3', style:
@@ -208,51 +212,51 @@ themeButton(context, constraints, getThemeSelectorModal){
   );
 }
 
-List<Widget> calculateDayStyle(column) {
+List<Widget> calculateDayStyle(column, theme) {
   if(column == '16'){
     return [
-      Text('$column', style: TextStyle(color: Colors.blue),),
-      Text('T', style: TextStyle(color: Colors.blue, fontSize: 8),),
+      Text('$column', style: TextStyle(color: theme.theme['headerTodayText']),),
+      Text('T', style: TextStyle(color: theme.theme['headerTodayText'], fontSize: 8),),
     ];
   }
   else if(column == '12'){
     return [
-      Text('$column', style: TextStyle(color: Colors.grey),),
-      Text('S', style: TextStyle(color: Colors.grey, fontSize: 8),),
+      Text('$column', style: TextStyle(color: theme.theme['headerText']),),
+      Text('S', style: TextStyle(color: theme.theme['headerText'], fontSize: 8),),
     ];
   }
   else if(column == '13'){
     return [
-      Text('$column', style: TextStyle(color: Colors.grey),),
-      Text('M', style: TextStyle(color: Colors.grey, fontSize: 8),),
+      Text('$column', style: TextStyle(color: theme.theme['headerText']),),
+      Text('M', style: TextStyle(color: theme.theme['headerText'], fontSize: 8),),
     ];
   }
   else if(column == '14'){
     return [
-      Text('$column', style: TextStyle(color: Colors.grey),),
-      Text('T', style: TextStyle(color: Colors.grey, fontSize: 8),),
+      Text('$column', style: TextStyle(color: theme.theme['headerText']),),
+      Text('T', style: TextStyle(color: theme.theme['headerText'], fontSize: 8),),
     ];
   }
   else if(column == '15'){
     return [
-      Text('$column', style: TextStyle(color: Colors.grey),),
-      Text('W', style: TextStyle(color: Colors.grey, fontSize: 8),),
+      Text('$column', style: TextStyle(color: theme.theme['headerText']),),
+      Text('W', style: TextStyle(color: theme.theme['headerText'], fontSize: 8),),
     ];
   }
   else if(column == '17'){
     return [
-      Text('$column', style: TextStyle(color: Colors.grey),),
-      Text('F', style: TextStyle(color: Colors.grey, fontSize: 8),),
+      Text('$column', style: TextStyle(color: theme.theme['headerText']),),
+      Text('F', style: TextStyle(color: theme.theme['headerText'], fontSize: 8),),
     ];
   }
   else if(column == '18'){
     return [
-      Text('$column', style: TextStyle(color: Colors.grey),),
-      Text('S', style: TextStyle(color: Colors.grey, fontSize: 8),),
+      Text('$column', style: TextStyle(color: theme.theme['headerText']),),
+      Text('S', style: TextStyle(color: theme.theme['headerText'], fontSize: 8),),
     ];
   } else {
     return [
-      Text('$column', style: TextStyle(color: Colors.grey),),
+      Text('$column', style: TextStyle(color: theme.theme['headerText']),),
     ];
   }
 

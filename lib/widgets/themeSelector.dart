@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 
 themeSelector(context, closeThemeSelectorModal){
+  ThemeBloc _themeBloc = BlocProvider.of<ThemeBloc>(context);
   return LayoutBuilder(builder: (context, constraints){
     var maxHeight = constraints.maxHeight;
     var maxWidth = constraints.maxWidth;
@@ -41,19 +45,19 @@ themeSelector(context, closeThemeSelectorModal){
                 children: <Widget>[
                   /// THE CARDS INSIDE THE CARD
                   Container(height: 20,),
-                  lightThemeCard(maxWidth, cardWidthMultiplier),
+                  lightThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
                   Container(height: 10,),
-                  darkThemeCard(maxWidth, cardWidthMultiplier),
+                  darkThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
                   Container(height: 10,),
-                  amoLEDThemeCard(maxWidth, cardWidthMultiplier),
+                  amoLEDThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
                   Container(height: 10,),
-                  blueThemeCard(maxWidth, cardWidthMultiplier),
+                  blueThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
                   Container(height: 10,),
-                  redThemeCard(maxWidth, cardWidthMultiplier),
+                  redThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
                   Container(height: 10,),
-                  greenThemeCard(maxWidth, cardWidthMultiplier),
+                  greenThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
                   Container(height: 10,),
-                  pinkThemeCard(maxWidth, cardWidthMultiplier),
+                  pinkThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
                   Container(height: 20,),
                 ],
               ),
@@ -64,18 +68,19 @@ themeSelector(context, closeThemeSelectorModal){
   });
 }
 
-lightThemeCard(maxWidth, cardWidthMultiplier) {
+lightThemeCard(maxWidth, cardWidthMultiplier, ThemeBloc _themeBloc, closeThemeSelectorModal) {
   return /// LIGHT THEME
     InkWell(
       onTap: (){
-
+        _themeBloc.dispatch(ChangeTheme("light"));
+        closeThemeSelectorModal();
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
           /// Background Color
-          color: Colors.white,
-          border: Border.all(color: Colors.grey)
+          color: lightTheme['background'],
+          border: Border.all(color: lightTheme['border'])
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -84,7 +89,7 @@ lightThemeCard(maxWidth, cardWidthMultiplier) {
             /// Header font color, label
             Container(
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: lightTheme['header'],
                   borderRadius: BorderRadius.vertical(top: Radius.circular(8.0))
               ),
               height: 50,
@@ -93,7 +98,7 @@ lightThemeCard(maxWidth, cardWidthMultiplier) {
                 children: <Widget>[
                   Container(width: 30,),
                   Text('Light',
-                    style: TextStyle(color: Colors.grey, fontSize: 20,
+                    style: TextStyle(color: lightTheme['headerText'], fontSize: 20,
                         fontWeight: FontWeight.bold),)
                 ],
               ),
@@ -108,28 +113,28 @@ lightThemeCard(maxWidth, cardWidthMultiplier) {
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blue
+                      color: lightTheme['colorPrimary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.grey
+                      color: lightTheme['colorSecondary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.green
+                      color: lightTheme['colorSuccess']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.orange
+                      color: lightTheme['colorAttention']
                   ),
                 ),
               ],
@@ -141,18 +146,19 @@ lightThemeCard(maxWidth, cardWidthMultiplier) {
     );
 }
 
-darkThemeCard(maxWidth, cardWidthMultiplier) {
+darkThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal) {
   return /// DARK THEME
     InkWell(
       onTap: (){
-
+        _themeBloc.dispatch(ChangeTheme("dark"));
+        closeThemeSelectorModal();
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          border: Border.all(color: Colors.grey[700]),
+          border: Border.all(color: darkTheme['header']),
           /// Background Color
-          color: Colors.grey[700],
+          color: darkTheme['background'],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -161,7 +167,7 @@ darkThemeCard(maxWidth, cardWidthMultiplier) {
             /// Header font color, label
             Container(
               decoration: BoxDecoration(
-                  color: Colors.grey[800],
+                  color: darkTheme['header'],
                   borderRadius: BorderRadius.vertical(top: Radius.circular(8.0))
               ),
               height: 50,
@@ -170,7 +176,7 @@ darkThemeCard(maxWidth, cardWidthMultiplier) {
                 children: <Widget>[
                   Container(width: 30,),
                   Text('Dark',
-                    style: TextStyle(color: Colors.white, fontSize: 20,
+                    style: TextStyle(color: darkTheme['headerText'], fontSize: 20,
                         fontWeight: FontWeight.bold),)
                 ],
               ),
@@ -185,28 +191,28 @@ darkThemeCard(maxWidth, cardWidthMultiplier) {
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blue
+                      color: darkTheme['colorPrimary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.grey
+                      color: darkTheme['colorSecondary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.green
+                      color: darkTheme['colorSuccess']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.orange
+                      color: darkTheme['colorAttention']
                   ),
                 ),
               ],
@@ -218,18 +224,19 @@ darkThemeCard(maxWidth, cardWidthMultiplier) {
     );
 }
 
-amoLEDThemeCard(maxWidth, cardWidthMultiplier) {
+amoLEDThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal) {
   return /// AmoLED THEME
     InkWell(
       onTap: (){
-
+        _themeBloc.dispatch(ChangeTheme("amoled"));
+        closeThemeSelectorModal();
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          border: Border.all(color: Colors.black),
+          border: Border.all(color: amoLEDTheme['header']),
           /// Background Color
-          color: Colors.black,
+          color: amoLEDTheme['background'],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -238,7 +245,7 @@ amoLEDThemeCard(maxWidth, cardWidthMultiplier) {
             /// Header font color, label
             Container(
               decoration: BoxDecoration(
-                  color: Colors.black,
+                  color: amoLEDTheme['header'],
                   borderRadius: BorderRadius.vertical(top: Radius.circular(8.0))
               ),
               height: 50,
@@ -247,7 +254,7 @@ amoLEDThemeCard(maxWidth, cardWidthMultiplier) {
                 children: <Widget>[
                   Container(width: 30,),
                   Text('AMOLED',
-                    style: TextStyle(color: Colors.white, fontSize: 20,
+                    style: TextStyle(color: amoLEDTheme['headerText'], fontSize: 20,
                         fontWeight: FontWeight.bold),)
                 ],
               ),
@@ -262,28 +269,28 @@ amoLEDThemeCard(maxWidth, cardWidthMultiplier) {
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blue
+                      color: amoLEDTheme['colorPrimary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.grey
+                      color: amoLEDTheme['colorSecondary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.green
+                      color: amoLEDTheme['colorSuccess']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.orange
+                      color: amoLEDTheme['colorAttention']
                   ),
                 ),
               ],
@@ -295,18 +302,19 @@ amoLEDThemeCard(maxWidth, cardWidthMultiplier) {
     );
 }
 
-blueThemeCard(maxWidth, cardWidthMultiplier) {
+blueThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal) {
   return /// BLUE THEME
     InkWell(
       onTap: (){
-
+        _themeBloc.dispatch(ChangeTheme("blue"));
+        closeThemeSelectorModal();
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          border: Border.all(color: Colors.blue),
+          border: Border.all(color: blueTheme['header']),
           /// Background Color
-          color: Colors.white,
+          color: blueTheme['background'],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -315,7 +323,7 @@ blueThemeCard(maxWidth, cardWidthMultiplier) {
             /// Header font color, label
             Container(
               decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: blueTheme['header'],
                   borderRadius: BorderRadius.vertical(top: Radius.circular(8.0))
               ),
               height: 50,
@@ -324,7 +332,7 @@ blueThemeCard(maxWidth, cardWidthMultiplier) {
                 children: <Widget>[
                   Container(width: 30,),
                   Text('Blue',
-                    style: TextStyle(color: Colors.white, fontSize: 20,
+                    style: TextStyle(color: blueTheme['headerText'], fontSize: 20,
                         fontWeight: FontWeight.bold),)
                 ],
               ),
@@ -339,28 +347,28 @@ blueThemeCard(maxWidth, cardWidthMultiplier) {
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blue
+                      color: blueTheme['colorPrimary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.grey
+                      color: blueTheme['colorSecondary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.green
+                      color: blueTheme['colorSuccess']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.orange
+                      color: blueTheme['colorAttention']
                   ),
                 ),
               ],
@@ -372,18 +380,19 @@ blueThemeCard(maxWidth, cardWidthMultiplier) {
     );
 }
 
-redThemeCard(maxWidth, cardWidthMultiplier) {
+redThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal) {
   return /// RED THEME
     InkWell(
       onTap: (){
-
+        _themeBloc.dispatch(ChangeTheme("red"));
+        closeThemeSelectorModal();
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          border: Border.all(color: Colors.red),
+          border: Border.all(color: redTheme['header']),
           /// Background Color
-          color: Colors.white,
+          color: redTheme['background'],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -392,7 +401,7 @@ redThemeCard(maxWidth, cardWidthMultiplier) {
             /// Header font color, label
             Container(
               decoration: BoxDecoration(
-                  color: Colors.red,
+                  color: redTheme['header'],
                   borderRadius: BorderRadius.vertical(top: Radius.circular(8.0))
               ),
               height: 50,
@@ -401,7 +410,7 @@ redThemeCard(maxWidth, cardWidthMultiplier) {
                 children: <Widget>[
                   Container(width: 30,),
                   Text('Red',
-                    style: TextStyle(color: Colors.white, fontSize: 20,
+                    style: TextStyle(color: redTheme['headerText'], fontSize: 20,
                         fontWeight: FontWeight.bold),)
                 ],
               ),
@@ -416,28 +425,28 @@ redThemeCard(maxWidth, cardWidthMultiplier) {
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blue
+                      color: redTheme['colorPrimary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.grey
+                      color: redTheme['colorSecondary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.green
+                      color: redTheme['colorSuccess']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.orange
+                      color: redTheme['colorAttention']
                   ),
                 ),
               ],
@@ -449,18 +458,19 @@ redThemeCard(maxWidth, cardWidthMultiplier) {
     );
 }
 
-greenThemeCard(maxWidth, cardWidthMultiplier) {
+greenThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal) {
   return /// GREEN THEME
     InkWell(
       onTap: (){
-
+        _themeBloc.dispatch(ChangeTheme("green"));
+        closeThemeSelectorModal();
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          border: Border.all(color: Colors.green),
+          border: Border.all(color: greenTheme['header']),
           /// Background Color
-          color: Colors.white,
+          color: greenTheme['background'],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -469,7 +479,7 @@ greenThemeCard(maxWidth, cardWidthMultiplier) {
             /// Header font color, label
             Container(
               decoration: BoxDecoration(
-                  color: Colors.green,
+                  color: greenTheme['header'],
                   borderRadius: BorderRadius.vertical(top: Radius.circular(8.0))
               ),
               height: 50,
@@ -478,7 +488,7 @@ greenThemeCard(maxWidth, cardWidthMultiplier) {
                 children: <Widget>[
                   Container(width: 30,),
                   Text('Green',
-                    style: TextStyle(color: Colors.white, fontSize: 20,
+                    style: TextStyle(color: greenTheme['headerText'], fontSize: 20,
                         fontWeight: FontWeight.bold),)
                 ],
               ),
@@ -493,28 +503,28 @@ greenThemeCard(maxWidth, cardWidthMultiplier) {
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blue
+                      color: greenTheme['colorPrimary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.grey
+                      color: greenTheme['colorSecondary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.green
+                      color: greenTheme['colorSuccess']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.orange
+                      color: greenTheme['colorAttention']
                   ),
                 ),
               ],
@@ -526,18 +536,19 @@ greenThemeCard(maxWidth, cardWidthMultiplier) {
     );
 }
 
-pinkThemeCard(maxWidth, cardWidthMultiplier) {
+pinkThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal) {
   return /// PINK THEME
     InkWell(
       onTap: (){
-
+        _themeBloc.dispatch(ChangeTheme("pink"));
+        closeThemeSelectorModal();
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          border: Border.all(color: Colors.pink),
+          border: Border.all(color: pinkTheme['header']),
           /// Background Color
-          color: Colors.white,
+          color: pinkTheme['background'],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -546,7 +557,7 @@ pinkThemeCard(maxWidth, cardWidthMultiplier) {
             /// Header font color, label
             Container(
               decoration: BoxDecoration(
-                  color: Colors.pink,
+                  color: pinkTheme['header'],
                   borderRadius: BorderRadius.vertical(top: Radius.circular(8.0))
               ),
               height: 50,
@@ -555,7 +566,7 @@ pinkThemeCard(maxWidth, cardWidthMultiplier) {
                 children: <Widget>[
                   Container(width: 30,),
                   Text('Pink',
-                    style: TextStyle(color: Colors.white, fontSize: 20,
+                    style: TextStyle(color: pinkTheme['headerText'], fontSize: 20,
                         fontWeight: FontWeight.bold),)
                 ],
               ),
@@ -570,28 +581,28 @@ pinkThemeCard(maxWidth, cardWidthMultiplier) {
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.blue
+                      color: pinkTheme['colorPrimary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.grey
+                      color: pinkTheme['colorSecondary']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.green
+                      color: pinkTheme['colorSuccess']
                   ),
                 ),
                 Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.orange
+                      color: pinkTheme['colorAttention']
                   ),
                 ),
               ],

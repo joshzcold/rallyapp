@@ -20,38 +20,13 @@ import 'package:rallyapp/blocs/app/indexBloc.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
 import 'package:rallyapp/blocs/app/theme.dart';
 
+import 'package:rallyapp/utility/config.dart';
+
 void main() {
   Future<String> settingsValue = readConf();
 
   runApp(Rally());
 }
-
-Future<String> readConf() async {
-  try {
-    final file = await _localFile;
-
-    // Read the file
-    String contents = await file.readAsString();
-
-    return contents;
-
-  } catch (e) {
-    // If encountering an error, return 0
-    return "";
-  }
-}
-
-Future<String> get _localPath async {
-  final directory = await getApplicationDocumentsDirectory();
-
-  return directory.path;
-}
-
-Future<File> get _localFile async {
-  final path = await _localPath;
-  return File('$path/rally.conf');
-}
-
 
 class Rally extends StatelessWidget {
   @override
@@ -64,17 +39,23 @@ class Rally extends StatelessWidget {
         BlocProvider<CalendarIndexBloc>(bloc: CalendarIndexBloc()),
         BlocProvider<MonthBloc>(bloc: MonthBloc()),
         BlocProvider<InviteBloc>(bloc: InviteBloc()),
+        BlocProvider<ThemeBloc>(bloc: ThemeBloc()),
       ],
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Rally',
-          initialRoute: '/',
-          routes: {
-            '/': (context) => SignInPage(),
-            '/register': (context) => RegisterPage(),
-            '/main': (context) => CalendarPage(),
-          },
-        )
+        child: Builder(builder: (context){
+          ThemeBloc _themeBloc = BlocProvider.of<ThemeBloc>(context);
+          return BlocBuilder(bloc: _themeBloc, builder: (context, state){
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Rally',
+              initialRoute: '/',
+              routes: {
+                '/': (context) => SignInPage(),
+                '/register': (context) => RegisterPage(),
+                '/main': (context) => CalendarPage(),
+              },
+            );
+          });
+        })
     );
   }
 }

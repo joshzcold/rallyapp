@@ -1,95 +1,143 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+
+/// background: everything behind the grid and the main color of most pages
+/// text: Text on the background or header color
+/// header: Top row on the calendar and also appbars in other pages
+/// border: border for grid on calendar and any card elements
+/// solidIconDark: Icon color for when its display with a lighter background
+/// solidIconLight: Icon color for when its displayed with a darker background
+/// colorPrimary: main buttons New event or sent friend invite
+/// colorSecondary: secondary buttons mostly for canceling
+/// colorSuccess: color used for alerts of success
+/// colorAttention: color used for something to get the user's attention
+/// colorDanger: color used to display an error message or a dangerous button.
 
 Map lightTheme = {
-  'background': '',
-  'border':'',
-  'solidIconDark':'',
-  'solidIconLight':'',
-  'colorPrimary':'',
-  'colorSecondary':'',
-  'colorSucess':'',
-  'colorAttention':'',
-  'colorDanger':'',
+  'background': Colors.white,
+  'text': Colors.grey[500],
+  'header': Colors.white,
+  'headerText': Colors.grey[500],
+  'headerTodayText': Colors.blue,
+  'footer': Colors.white,
+  'border': Colors.grey[400],
+  'solidIconDark':Colors.grey,
+  'solidIconLight':Colors.white,
+  'colorPrimary':Colors.blue,
+  'colorSecondary':Colors.grey,
+  'colorSuccess':Colors.green,
+  'colorAttention':Colors.orange,
+  'colorDanger':Colors.red,
 };
 
 Map darkTheme = {
-  'background': '',
-  'border':'',
-  'solidIconDark':'',
-  'solidIconLight':'',
-  'colorPrimary':'',
-  'colorSecondary':'',
-  'colorSucess':'',
-  'colorAttention':'',
-  'colorDanger':'',
+  'background': Colors.grey[700],
+  'text': Colors.grey[500],
+  'header':Colors.grey[800],
+  'headerText': Colors.grey[500],
+  'headerTodayText': Colors.orange,
+  'footer': Colors.grey[800],
+  'border':Colors.grey[600],
+  'solidIconDark':Colors.orange,
+  'solidIconLight':Colors.grey[600],
+  'colorPrimary':Colors.orange,
+  'colorSecondary':Colors.grey[600],
+  'colorSuccess':Colors.green,
+  'colorAttention':Colors.yellow,
+  'colorDanger':Colors.red,
 };
 
 Map amoLEDTheme = {
-  'background': '',
-  'border':'',
-  'solidIconDark':'',
-  'solidIconLight':'',
-  'colorPrimary':'',
-  'colorSecondary':'',
-  'colorSucess':'',
-  'colorAttention':'',
-  'colorDanger':'',
+  'background': Colors.black,
+  'text': Colors.grey[500],
+  'header':Colors.black,
+  'headerText': Colors.grey[500],
+  'headerTodayText': Colors.white,
+  'footer': Colors.black,
+  'border':Colors.grey[800],
+  'solidIconDark':Colors.grey[500],
+  'solidIconLight':Colors.white,
+  'colorPrimary':Colors.blue[900],
+  'colorSecondary':Colors.blueGrey,
+  'colorSuccess':Colors.green[900],
+  'colorAttention':Colors.orange[900],
+  'colorDanger':Colors.red[900],
 };
 
 Map blueTheme = {
-  'background': '',
-  'border':'',
-  'solidIconDark':'',
-  'solidIconLight':'',
-  'colorPrimary':'',
-  'colorSecondary':'',
-  'colorSucess':'',
-  'colorAttention':'',
-  'colorDanger':'',
+  'background': Colors.white,
+  'text': Colors.grey[500],
+  'header': Colors.blue,
+  'headerText': Colors.white,
+  'headerTodayText': Colors.orange,
+  'footer': Colors.white,
+  'border': Colors.grey[400],
+  'solidIconDark':Colors.grey,
+  'solidIconLight':Colors.white,
+  'colorPrimary':Colors.blue,
+  'colorSecondary':Colors.grey,
+  'colorSuccess':Colors.green,
+  'colorAttention':Colors.orange,
+  'colorDanger':Colors.red,
 };
 
 Map redTheme = {
-  'background': '',
-  'border':'',
-  'solidIconDark':'',
-  'solidIconLight':'',
-  'colorPrimary':'',
-  'colorSecondary':'',
-  'colorSucess':'',
-  'colorAttention':'',
-  'colorDanger':'',
+  'background': Colors.white,
+  'text': Colors.grey[500],
+  'header': Colors.red,
+  'headerText': Colors.white,
+  'headerTodayText': Colors.green[200],
+  'footer': Colors.white,
+  'border': Colors.grey[400],
+  'solidIconDark':Colors.grey,
+  'solidIconLight':Colors.white,
+  'colorPrimary':Colors.red,
+  'colorSecondary':Colors.grey,
+  'colorSuccess':Colors.green,
+  'colorAttention':Colors.orange,
+  'colorDanger':Colors.red,
 };
 
 Map greenTheme = {
-  'background': '',
-  'border':'',
-  'solidIconDark':'',
-  'solidIconLight':'',
-  'colorPrimary':'',
-  'colorSecondary':'',
-  'colorSucess':'',
-  'colorAttention':'',
-  'colorDanger':'',
+  'background': Colors.white,
+  'text': Colors.grey[500],
+  'header': Colors.green,
+  'headerText': Colors.white,
+  'headerTodayText': Colors.red[200],
+  'footer': Colors.white,
+  'border': Colors.grey[400],
+  'solidIconDark':Colors.grey,
+  'solidIconLight':Colors.white,
+  'colorPrimary':Colors.green,
+  'colorSecondary':Colors.grey,
+  'colorSuccess':Colors.green,
+  'colorAttention':Colors.orange,
+  'colorDanger':Colors.red,
 };
 
 Map pinkTheme = {
-  'background': '',
-  'border':'',
-  'solidIconDark':'',
-  'solidIconLight':'',
-  'colorPrimary':'',
-  'colorSecondary':'',
-  'colorSucess':'',
-  'colorAttention':'',
-  'colorDanger':'',
+  'background': Colors.white,
+  'text': Colors.grey[500],
+  'header': Colors.pink,
+  'headerText': Colors.white,
+  'headerTodayText': Colors.green[200],
+  'footer': Colors.white,
+  'border': Colors.grey[400],
+  'solidIconDark':Colors.grey,
+  'solidIconLight':Colors.white,
+  'colorPrimary':Colors.pink,
+  'colorSecondary':Colors.grey,
+  'colorSuccess':Colors.green,
+  'colorAttention':Colors.orange,
+  'colorDanger':Colors.red,
 };
 
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState>{
 
   @override
-  ThemeState get initialState => Theme();
+  ThemeState get initialState => ThemeLoaded(lightTheme);
 
   @override
   Stream<ThemeState> mapEventToState(ThemeState currentState, ThemeEvent event) async*{
@@ -99,7 +147,27 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState>{
   }
 
   Stream<ThemeState>_mapChangeThemeToState(currentState ,event) async*{
-    yield Theme(event.theme);
+    if(event.theme == "light"){
+      yield ThemeLoaded(lightTheme);
+    }
+    else if(event.theme == "dark"){
+      yield ThemeLoaded(darkTheme);
+    }
+    else if(event.theme == "amoled"){
+      yield ThemeLoaded(amoLEDTheme);
+    }
+    else if(event.theme == "blue"){
+      yield ThemeLoaded(blueTheme);
+    }
+    else if(event.theme == "red"){
+      yield ThemeLoaded(redTheme);
+    }
+    else if(event.theme == "green"){
+      yield ThemeLoaded(greenTheme);
+    }
+    else if(event.theme == "pink"){
+      yield ThemeLoaded(pinkTheme);
+    }
   }
 
 }
@@ -110,7 +178,7 @@ abstract class ThemeEvent extends Equatable{
 }
 
 class ChangeTheme extends ThemeEvent{
-  int theme;
+  String theme;
 
 
   ChangeTheme(this.theme) : super([theme]);
@@ -125,10 +193,10 @@ abstract class ThemeState extends Equatable {
   ThemeState([List props = const []]) : super(props);
 }
 
-class Theme extends ThemeState {
+class ThemeLoaded extends ThemeState {
   final theme;
 
-  Theme([this.theme = const []]) : super([theme]);
+  ThemeLoaded([this.theme = const []]) : super([theme]);
   @override
   String toString() => 'Theme{theme: $theme}';
 }
