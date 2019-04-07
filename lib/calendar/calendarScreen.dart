@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
 import 'package:rallyapp/blocs/app/month.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/calendar/week/weekView.dart';
 import 'package:rallyapp/screens/friendEventScreen.dart';
@@ -88,20 +89,24 @@ class CalendarPageState extends State<CalendarPage> {
 
     final monthBloc = BlocProvider.of<MonthBloc>(context);
     final inviteBloc = BlocProvider.of<InviteBloc>(context);
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
 
 
 
     return Stack(
       children: <Widget>[
         Scaffold(
+          backgroundColor: theme.theme['background'],
             appBar: PreferredSize(
                 child: AppBar(
                   elevation: 0.0,
-                  backgroundColor: Colors.white,
+                  backgroundColor: theme.theme['header'],
                 ),
                 preferredSize: Size.fromHeight(1)),
             bottomNavigationBar: BottomAppBar(
                 child: Container(
+                  color: theme.theme['header'],
                   height: 55,
                   child: Row(
                     children: <Widget>[
@@ -115,8 +120,8 @@ class CalendarPageState extends State<CalendarPage> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Icon(Icons.today, color: Colors.grey,),
-                                Text('Today', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),)
+                                Icon(Icons.today, color: theme.theme['solidIconDark'],),
+                                Text('Today', style: TextStyle(fontSize: 14, color: theme.theme['text'], fontWeight: FontWeight.w500),)
                               ],
                             ),
                           )),
@@ -133,8 +138,8 @@ class CalendarPageState extends State<CalendarPage> {
                                   Center(
                                     child: Column(
                                       children: <Widget>[
-                                        Icon(Icons.group, color: Colors.grey,),
-                                        Text('Friends', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),),
+                                        Icon(Icons.group, color: theme.theme['solidIconDark'],),
+                                        Text('Friends', style: TextStyle(fontSize: 14, color: theme.theme['text'], fontWeight: FontWeight.w500),),
                                       ],
                                       mainAxisAlignment: MainAxisAlignment.center,
                                     ),
@@ -149,7 +154,7 @@ class CalendarPageState extends State<CalendarPage> {
                                               width: 15,
                                               decoration: BoxDecoration(
                                                   shape: BoxShape.circle,
-                                                  color: Colors.green
+                                                  color: theme.theme['colorSuccess']
                                               ),
                                               child: Center(
                                                 child:Text('${state.invites.length}', style:
@@ -175,7 +180,7 @@ class CalendarPageState extends State<CalendarPage> {
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => NewEvent()));
                   },
-                  backgroundColor: Colors.blue,
+                  backgroundColor: theme.theme['colorPrimary'],
                   child: Icon(Icons.add)),
             ),
             body: ListView(
@@ -189,7 +194,7 @@ class CalendarPageState extends State<CalendarPage> {
                             header: BlocBuilder(bloc: monthBloc, builder: (context, state){
                               return Container(
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: theme.theme['header'],
                                     boxShadow: [
                                       new BoxShadow(
                                         spreadRadius: MediaQuery.of(context).size.width,
@@ -207,7 +212,7 @@ class CalendarPageState extends State<CalendarPage> {
                                       child: new Text(
                                         "${calculateMonthToAbbrv(state.month)}",
                                         style: TextStyle(
-                                            color: Colors.grey,
+                                            color: theme.theme['headerText'],
                                             fontSize: 20.0),
                                       ),
                                     ),
@@ -223,7 +228,7 @@ class CalendarPageState extends State<CalendarPage> {
                                 decoration: BoxDecoration(
                                     border: Border(
                                         right: BorderSide(
-                                            color: Color(0xFFdadce0),
+                                            color: theme.theme['border'],
                                             width: 1))),
                                 child: Stack(
                                   children: <Widget>[
@@ -239,7 +244,7 @@ class CalendarPageState extends State<CalendarPage> {
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: <Widget>[
-                                                    Text('$hour', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.grey),)
+                                                    Text('$hour', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: theme.theme['text']),)
                                                   ],
                                                 )))
                                                 .toList())),
@@ -257,8 +262,7 @@ class CalendarPageState extends State<CalendarPage> {
                                                 decoration: BoxDecoration(
                                                     border: Border(
                                                         bottom: BorderSide(
-                                                            color: Color(
-                                                                0xFFdadce0),
+                                                            color: theme.theme['border'],
                                                             width:
                                                             1))),
                                                 child: Row(
@@ -278,7 +282,7 @@ class CalendarPageState extends State<CalendarPage> {
                     StickyHeader(
                         header: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: theme.theme['header'],
                             ),
                             width: maxPossibleWidth -50,
                             height: 50,
@@ -315,7 +319,7 @@ class CalendarPageState extends State<CalendarPage> {
                                         }
                                       }
                                       return Row(
-                                        children: week.map<Widget>((day) => calculateDayStyle(day, leftColumnWidth, context)).toList(),
+                                        children: week.map<Widget>((day) => calculateDayStyle(day, leftColumnWidth, context, theme)).toList(),
                                       );
                                     })
 
@@ -373,7 +377,7 @@ class CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  showConflictedEventsDetails(groupOfEvents, _eventsBloc, context, auth) {
+  showConflictedEventsDetails(groupOfEvents, _eventsBloc, context, auth, theme) {
     ///SetState for events processed on each friend card
     setState(() {
       conflictedEventsModal = LayoutBuilder(builder: (context, constraints){
@@ -404,6 +408,7 @@ class CalendarPageState extends State<CalendarPage> {
                 height: maxHeight * cardHeightMultiplier,
                 width: maxWidth * cardWidthMultiplier,
                 child: Card(
+                  color: theme.theme['background'],
                   child:ListView(
                       children: groupOfEvents.value.entries
                           .map<Widget>((event) =>
@@ -438,7 +443,7 @@ class CalendarPageState extends State<CalendarPage> {
                                           width: detailEventsCardWidth * .95,
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                            color: Colors.white,
+                                            color: theme.theme['card'],
                                           ),
                                           child: FlatButton(
                                               padding: EdgeInsets.all(0),
@@ -466,18 +471,18 @@ class CalendarPageState extends State<CalendarPage> {
                                                         children: <Widget>[
                                                           Text(
                                                             '${selectedEvent['userName']}',
-                                                            style: TextStyle(fontSize: 15),
+                                                            style: TextStyle(fontSize: 15, color: theme.theme['text']),
                                                           ),
                                                           Row(
                                                             /// RETURN TIME OF EVENT
                                                               children:
-                                                              returnTimeInPrettyFormat(selectedEvent)),
+                                                              returnTimeInPrettyFormat(selectedEvent, theme)),
                                                           Text(
                                                             '${selectedEvent['title']}',
-                                                            style: TextStyle(fontSize: 15),
+                                                            style: TextStyle(fontSize: 15, color: theme.theme['text']),
                                                           ),
 
-                                                          _joinedFriendsConflictingDetails(selectedEvent)
+                                                          _joinedFriendsConflictingDetails(selectedEvent, theme)
 
                                                         ],
                                                       )
@@ -513,12 +518,12 @@ class CalendarPageState extends State<CalendarPage> {
     return int.parse(hexColor, radix: 16);
   }
 
-  Widget _joinedFriendsConflictingDetails(event) {
+  Widget _joinedFriendsConflictingDetails(event, theme) {
     if (event['party']['friends'] != null) {
       return Row(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Text('Joined Friends: '),
+          Text('Joined Friends: ',style: TextStyle(color: theme.theme['text']),),
           Row(
               children: event['party']['friends'].entries
                   .map<Widget>((friend) => CircleAvatar(
@@ -534,7 +539,7 @@ class CalendarPageState extends State<CalendarPage> {
     }
   }
 
-  calculateDayStyle(DateTime day, width, context) {
+  calculateDayStyle(DateTime day, width, context, theme) {
     DateTime cday = DateTime.now();
     String value =
         day.year.toString() + day.month.toString() + day.day.toString();
@@ -542,10 +547,6 @@ class CalendarPageState extends State<CalendarPage> {
         cday.year.toString() + cday.month.toString() + cday.day.toString();
     if (value == today) {
       return Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color.fromARGB(255, 255, 255, 255),
-        ),
         width: (MediaQuery.of(context).size.width - leftColumnWidth)/7,
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -553,21 +554,17 @@ class CalendarPageState extends State<CalendarPage> {
           children: <Widget>[
             Text(
               "${day.day}",
-              style: TextStyle(color: Colors.blue, fontSize: 20.0),
+              style: TextStyle(color: theme.theme['headerTodayText'], fontSize: 20.0),
             ),
             Text(
               "${calculateWeekDayAbbrv(day.weekday)}",
-              style: TextStyle(color: Colors.blue, fontSize: 10.0),
+              style: TextStyle(color: theme.theme['headerTodayText'], fontSize: 10.0),
             ),
           ],),
         alignment: FractionalOffset(0.5, 0.5),
       );
     } else {
       return Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color.fromARGB(255, 255, 255, 255),
-        ),
         width: (MediaQuery.of(context).size.width - leftColumnWidth)/7,
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -575,11 +572,11 @@ class CalendarPageState extends State<CalendarPage> {
           children: <Widget>[
           Text(
             "${day.day}",
-            style: TextStyle(color: Colors.grey, fontSize: 20.0),
+            style: TextStyle(color: theme.theme['headerText'], fontSize: 20.0),
           ),
           Text(
             "${calculateWeekDayAbbrv(day.weekday)}",
-            style: TextStyle(color: Colors.grey, fontSize: 10.0),
+            style: TextStyle(color: theme.theme['headerText'], fontSize: 10.0),
           ),
         ],),
         alignment: FractionalOffset(0.5, 0.5),

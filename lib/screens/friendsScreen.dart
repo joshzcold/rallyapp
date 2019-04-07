@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,10 +50,14 @@ class FriendsScreenState extends State<FriendsScreen> {
     AuthLoaded auth =  _authBloc.currentState;
     final key = new GlobalKey<ScaffoldState>();
 
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+
     return Scaffold(
+      backgroundColor: theme.theme['background'],
       resizeToAvoidBottomPadding: false,
       key: key,
-      bottomNavigationBar: friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc),
+      bottomNavigationBar: friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc, theme),
       body: BlocBuilder(
           bloc: _friendsBloc,
           builder: (BuildContext context, state) {
@@ -84,7 +89,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                               builder: (context, auth) {
                                 /// User Card
                                 return userCard(
-                                    userCardHeight, userCardWidth, auth);
+                                    userCardHeight, userCardWidth, auth, theme);
                               }),
                           /// Spacer
                           Container(
@@ -102,7 +107,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       Container(width: 10,),
-                                      Text('Friend Invites', style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
+                                      Text('Friend Invites', style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic, color: theme.theme['text']),
                                       ),
                                     ],
                                   ),
@@ -110,6 +115,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                       children: state.invites.entries.map<Widget>((invite) =>
                                           Card(
                                             child: Container(
+                                              color: theme.theme['card'],
                                               padding: EdgeInsets.all(10),
                                               height: 80,
                                               width: friendCardWidth,
@@ -124,7 +130,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                         width: constraints.maxWidth - 110,
                                                         child: Text(
                                                           invite.value['rallyID'],
-                                                          style: TextStyle(fontSize: 20),
+                                                          style: TextStyle(fontSize: 20, color: theme.theme['textTitle']),
                                                         ),
                                                       ),
                                                       InkWell(
@@ -134,7 +140,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                         child: Container(
                                                           width: 50,
                                                           height: 30,
-                                                          decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.all(Radius.circular(8))),
+                                                          decoration: BoxDecoration(color: theme.theme['colorSuccess'], borderRadius: BorderRadius.all(Radius.circular(8))),
                                                           child:Icon(Icons.check, color: Colors.white,),
                                                         ),
                                                       ),
@@ -148,7 +154,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                         child: Container(
                                                           width: 50,
                                                           height: 30,
-                                                          decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(8))),
+                                                          decoration: BoxDecoration(color: theme.theme['colorSecondary'], borderRadius: BorderRadius.all(Radius.circular(8))),
                                                           child:Icon(Icons.clear, color: Colors.white,),
                                                         ),
                                                       )
@@ -175,7 +181,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                   Container(width: 10,),
                                   Text('Friends',
                                     style: TextStyle(
-                                        fontSize: 20, fontStyle: FontStyle.italic),
+                                        fontSize: 20, fontStyle: FontStyle.italic, color: theme.theme['text']),
                                   )
                                 ],
                               );
@@ -185,8 +191,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
-                                      const ListTile(
-                                        leading: Icon(Icons.insert_emoticon),
+                                       ListTile(
+                                        leading: Icon(Icons.insert_emoticon, color: theme.theme['solidIconLight']),
                                         title: Text('NO FRIENDS'),
                                         subtitle: Text(
                                             'Try sending your rallyID to your friends using Rally'),
@@ -196,10 +202,10 @@ class FriendsScreenState extends State<FriendsScreen> {
                                         child: ButtonBar(
                                           children: <Widget>[
                                             FlatButton(
-                                              child: const Text('ADD FRIEND'),
+                                              child:  Text('ADD FRIEND', style: theme.theme['colorPrimary'],),
                                               onPressed: () {
                                                 setState(() {
-                                                  newFriendModal = getNewFriendModal(auth);
+                                                  newFriendModal = getNewFriendModal(auth, theme);
                                                 });
                                               },
                                             ),
@@ -242,6 +248,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                             children: <Widget>[
                                               Card(
                                                   child: Container(
+                                                    color: theme.theme['card'],
                                                     width: friendCardWidth,
                                                     child: Column(
                                                       children: <Widget>[
@@ -270,8 +277,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                                     NetworkImage(
                                                                         friend.value['userPhoto']),
                                                                     backgroundColor:
-                                                                    Colors
-                                                                        .white,
+                                                                    theme.theme['card']
                                                                   ),
 
                                                                   /// Friend User Name
@@ -279,17 +285,14 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                                     friend.value[
                                                                     'userName'],
                                                                     style: TextStyle(
-                                                                        fontSize:
-                                                                        20),
+                                                                        fontSize: 20, color: theme.theme['textTitle']),
                                                                   ),
 
                                                                   /// Friend RallyID
                                                                   Text(
                                                                     friend.value[
                                                                     'rallyID'],
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                        20),
+                                                                    style: TextStyle(fontSize: 20, color: theme.theme['text']),
                                                                   )
                                                                 ],
                                                               ),
@@ -319,8 +322,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                           friendCardWidth,
                                                           child: FlatButton(
                                                               child: Center(
-                                                                child: Icon(Icons
-                                                                    .keyboard_arrow_down),
+                                                                child: Icon(Icons.keyboard_arrow_down, color: theme.theme['solidIconLight'],),
                                                               ),
                                                               onPressed: () {
                                                                 toggleFriendEventsExpand(
@@ -328,7 +330,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                                     friendCardWidth,
                                                                     eventsPassedToday,
                                                                     friendViewConstraints,
-                                                                    _eventsBloc);
+                                                                    _eventsBloc,
+                                                                theme);
                                                               }),
                                                         ),
                                                       ],
@@ -341,8 +344,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                   decoration: BoxDecoration(
                                                       shape:
                                                       BoxShape.circle,
-                                                      color: Colors
-                                                          .green[700]),
+                                                      color: theme.theme['colorSuccess']),
                                                   width: 29,
                                                   child: Text(
                                                     "${eventsPassedToday.length}",
@@ -360,7 +362,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                         } else {
                                           /// NO EVENTS IN FUTURE
                                           return noFutureEventsFriendItem(
-                                              friend, friendCardWidth);
+                                              friend, friendCardWidth, theme);
                                         }
                                       },
                                     ))
@@ -400,17 +402,17 @@ class FriendsScreenState extends State<FriendsScreen> {
         child: FloatingActionButton(
             onPressed: () {
               setState(() {
-                newFriendModal = getNewFriendModal(auth);
+                newFriendModal = getNewFriendModal(auth, theme);
               });
             },
-            backgroundColor: Colors.blue,
+            backgroundColor: theme.theme['colorPrimary'],
             child: Icon(Icons.group_add)),
       ),
     );
   }
 
   void toggleFriendEventsExpand(
-      friend, friendCardWidth, eventsPassedToday, friendViewConstraints, _eventsBloc) {
+      friend, friendCardWidth, eventsPassedToday, friendViewConstraints, _eventsBloc, theme) {
     if (expanded[friend.key]) {
       setState(() {
         friendCardHeight = 140;
@@ -457,15 +459,15 @@ class FriendsScreenState extends State<FriendsScreen> {
                   width: friendCardWidth,
                   child: FlatButton(
                       child: Center(
-                        child: Icon(Icons.keyboard_arrow_up),
+                        child: Icon(Icons.keyboard_arrow_up, color: theme.theme['solidIconLight'],),
                       ),
                       onPressed: () {
                         toggleFriendEventsExpand(friend, friendCardWidth,
-                            eventsPassedToday, friendViewConstraints, _eventsBloc);
+                            eventsPassedToday, friendViewConstraints, _eventsBloc, theme);
                       }),
                 ),
                 Container(
-                  color:Colors.grey[100],
+                  color:theme.theme['cardListBackground'],
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: eventsPassedToday.entries
@@ -497,7 +499,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                     width: friendCardWidth * .95,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                      color: Colors.white,
+                                      color: theme.theme['card'],
                                     ),
                                     child: FlatButton(
                                         padding: EdgeInsets.all(0),
@@ -511,13 +513,13 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                 Row(
                                                   /// RETURN TIME OF EVENT
                                                     children:
-                                                    returnTimeInPrettyFormat(event)),
+                                                    returnTimeInPrettyFormat(event, theme)),
                                                 Text(
                                                   '${event.value['title']}',
                                                   style: TextStyle(fontSize: 15),
                                                 ),
 
-                                                _joinedFriends(event)
+                                                _joinedFriends(event, theme)
 
                                               ],
                                             ))),
@@ -541,12 +543,12 @@ class FriendsScreenState extends State<FriendsScreen> {
   }
 
 
-  Widget _joinedFriends(event) {
+  Widget _joinedFriends(event, theme) {
     if (event.value['party']['friends'] != null) {
       return Row(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Text('Joined Friends: '),
+          Text('Joined Friends: ', style: TextStyle(color: theme.theme['text']),),
           Row(
             children: event.value['party']['friends'].entries
                 .map<Widget>((friend) => CircleAvatar(
@@ -571,8 +573,9 @@ class FriendsScreenState extends State<FriendsScreen> {
     return int.parse(hexColor, radix: 16);
   }
 
-  Widget userCard(userCardHeight, userCardWidth, auth) {
+  Widget userCard(userCardHeight, userCardWidth, auth, theme) {
     return Card(
+      color: theme.theme['card'],
         child: Container(
             height: userCardHeight,
             width: userCardWidth,
@@ -580,7 +583,7 @@ class FriendsScreenState extends State<FriendsScreen> {
               children: <Widget>[
                 Positioned(
                   child: IconButton(
-                    color: Colors.grey,
+                    color: theme.theme['solidIconDark'],
                       icon: Icon(Icons.settings),
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
@@ -597,7 +600,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                     children: <Widget>[
                       /// User Photo
                       CircleAvatar(
-                        backgroundColor: Colors.white,
+                        backgroundColor: theme.theme['card'],
                         radius: userCardHeight / 4,
                         backgroundImage: NetworkImage(auth.value['userPhoto']),
                       ),
@@ -608,6 +611,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 30,
+                          color: theme.theme['textTitle']
                         ),
                       ),
                     ],
@@ -620,7 +624,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                       child: Text(
                     'Rally ID: ${auth.value['rallyID']}',
                     style: TextStyle(
-                      color: Colors.grey[700],
+                      color: theme.theme['text'],
                       fontSize: 20,
                     ),
                   )),
@@ -631,7 +635,7 @@ class FriendsScreenState extends State<FriendsScreen> {
             )));
   }
 
-  returnTimeInPrettyFormat(event) {
+  returnTimeInPrettyFormat(event,theme) {
     var startTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
     var startDay = startTime.day.toString();
     var startMonth = startTime.month.toString();
@@ -766,17 +770,22 @@ class FriendsScreenState extends State<FriendsScreen> {
         style: TextStyle(
           fontSize: 25,
           fontWeight: FontWeight.bold,
+          color: theme.theme['textTitle']
         ),
       ),
       Container(
         width: 20,
       ),
-      Text('$startHour$startMinute$indicator - $endHour$endMinute$indicator'),
+      Text('$startHour$startMinute$indicator - $endHour$endMinute$indicator',
+      style: TextStyle(
+        color: theme.theme['text']
+      ),),
     ];
   }
 
-  Widget noFutureEventsFriendItem(friend, friendCardWidth) {
+  Widget noFutureEventsFriendItem(friend, friendCardWidth, theme) {
     return Card(
+      color: theme.theme['card'],
       child: FlatButton(
           padding: EdgeInsets.all(0),
           onPressed: () {
@@ -803,13 +812,15 @@ class FriendsScreenState extends State<FriendsScreen> {
                 /// Friend User Name
                 Text(
                   friend.value['userName'],
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 20,
+                  color: theme.theme['textTitle']),
                 ),
 
                 /// Friend RallyID
                 Text(
                   friend.value['rallyID'],
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 20,
+                  color: theme.theme['textTitle']),
                 )
               ],
             ),
@@ -817,7 +828,7 @@ class FriendsScreenState extends State<FriendsScreen> {
     );
   }
 
-  Widget getNewFriendModal(auth) {
+  Widget getNewFriendModal(auth, theme) {
     return LayoutBuilder(builder: (context, constraints){
       var maxHeight = constraints.maxHeight;
       var maxWidth = constraints.maxWidth;
@@ -843,6 +854,7 @@ class FriendsScreenState extends State<FriendsScreen> {
               height: 300,
               width: maxWidth * cardWidthMultiplier,
               child: Card(
+                color: theme.theme['card'],
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -851,7 +863,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text('New Friend', style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20
+                            fontWeight: FontWeight.bold, fontSize: 20,
+                          color: theme.theme['textTitle']
                         ),),
                       ],
                     ),
@@ -860,15 +873,20 @@ class FriendsScreenState extends State<FriendsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            border: Border.all(color: theme.theme['border']),
+                            color: theme.theme['card']
+                          ),
                           width: (maxWidth * cardWidthMultiplier) * .80,
-                          child: TextField(
+                          child: TextFormField(
+                            style: TextStyle(color: theme.theme['text']),
+                            cursorColor: theme.theme['textTitle'],
                             key: _formKey,
                             controller: newFriendTextController,
                             textAlign: TextAlign.center,
                             decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(50)),
-                              ),
+                              hintStyle: TextStyle(color: theme.theme['text']),
                               hintText: 'User Name-#####',
                             ),
                           ),
@@ -878,8 +896,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text('Your RallyID: ', style: TextStyle(color: Colors.grey),),
-                        Text('${auth.value['rallyID']}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),)
+                        Text('Your RallyID: ', style: TextStyle(color: theme.theme['text']),),
+                        Text('${auth.value['rallyID']}', style: TextStyle(fontWeight: FontWeight.bold, color: theme.theme['text']),)
                       ],
                     ),
                     Container(height: 20,),
@@ -905,7 +923,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                             child: Row(
                               children: <Widget>[
                                 Container(
-                                    decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.all(Radius.circular(8))),
+                                    decoration: BoxDecoration(color: theme.theme['colorSecondary'], borderRadius: BorderRadius.all(Radius.circular(8))),
                                     padding: EdgeInsets.all(10.0),
                                     child: Row(
                                       children: <Widget>[
@@ -926,17 +944,18 @@ class FriendsScreenState extends State<FriendsScreen> {
                                 setState(() {
                                   setState(() {
                                     newFriendErrorMessage = AlertDialog(
-                                      title: new Text("RallyID = Users RallyID"),
+                                      backgroundColor: theme.theme['card'],
+                                      title: new Text("RallyID = Users RallyID",style: TextStyle(color: theme.theme['text']),),
                                       content: new Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: <Widget>[
-                                          Text("You can't send a friend invite to yourself"),
-                                          Icon(Icons.favorite_border)
+                                          Text("You can't send a friend invite to yourself", style: TextStyle(color: theme.theme['text']),),
+                                          Icon(Icons.favorite_border, color: theme.theme['colorPrimary'],)
                                         ],) ,
                                       actions: <Widget>[
                                         // usually buttons at the bottom of the dialog
                                         new FlatButton(
-                                          child: new Text("Close"),
+                                          child: new Text("Close",style: TextStyle(color: theme.theme['text']),),
                                           onPressed: () {
                                             setState((){
                                               newFriendErrorMessage = Container();
@@ -950,12 +969,14 @@ class FriendsScreenState extends State<FriendsScreen> {
                               } else if(code == "NOT_FOUND"){
                                 setState(() {
                                   newFriendErrorMessage = AlertDialog(
-                                    title: new Text("RallyID Not Found"),
-                                    content: new Text("Rally couldn't find RallyID: ${newFriendTextController.text} in the directory, double check and try again"),
+                                    backgroundColor: theme.theme['card'],
+                                    title: new Text("RallyID Not Found",style: TextStyle(color: theme.theme['text']),),
+                                    content: new Text("Rally couldn't find RallyID: ${newFriendTextController.text} in the directory, double check and try again",
+                                      style: TextStyle(color: theme.theme['text']),),
                                     actions: <Widget>[
                                       // usually buttons at the bottom of the dialog
                                       new FlatButton(
-                                        child: new Text("Close"),
+                                        child: new Text("Close",style: TextStyle(color: theme.theme['text']),),
                                         onPressed: () {
                                           setState((){
                                             newFriendErrorMessage = Container();
@@ -968,8 +989,9 @@ class FriendsScreenState extends State<FriendsScreen> {
                               } else {
                                 setState(() {
                                   newFriendErrorMessage = AlertDialog(
-                                    title: new Text("Friend Invite Sent!"),
-                                    content: new Text("Once your friend has accepted your invite you'll be able to see their events"),
+                                    backgroundColor: theme.theme['card'],
+                                    title: new Text("Friend Invite Sent!",style: TextStyle(color: theme.theme['text']),),
+                                    content: new Text("Once your friend has accepted your invite you'll be able to see their events",style: TextStyle(color: theme.theme['text']),),
                                     actions: <Widget>[
                                       // usually buttons at the bottom of the dialog
                                       new FlatButton(
@@ -991,7 +1013,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                             child: Row(
                               children: <Widget>[
                                 Container(
-                                    decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.all(Radius.circular(8))),
+                                    decoration: BoxDecoration(color: theme.theme['colorPrimary'], borderRadius: BorderRadius.all(Radius.circular(8))),
                                     padding: EdgeInsets.all(10.0),
                                     child: Row(
                                       children: <Widget>[
@@ -1017,10 +1039,11 @@ class FriendsScreenState extends State<FriendsScreen> {
   }
 }
 
-friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc) {
+friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc, theme) {
   return BottomAppBar(
       child: Container(
         height: 55,
+        color: theme.theme['footer'],
         child: Row(
           children: <Widget>[
             FlatButton(
@@ -1033,8 +1056,8 @@ friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc) {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Icon(Icons.calendar_today, color: Colors.grey,),
-                      Text('Calendar', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),)
+                      Icon(Icons.calendar_today, color: theme.theme['solidIconDark'],),
+                      Text('Calendar', style: TextStyle(fontSize: 14, color: theme.theme['text'], fontWeight: FontWeight.w500),)
                     ],
                   ),
                 )),
@@ -1049,8 +1072,8 @@ friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc) {
                         Center(
                           child: Column(
                             children: <Widget>[
-                              Icon(Icons.group, color: Colors.blue,),
-                              Text('Friends', style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500),),
+                              Icon(Icons.group, color: theme.theme['colorPrimary'],),
+                              Text('Friends', style: TextStyle(fontSize: 14, color: theme.theme['text'], fontWeight: FontWeight.w500),),
                             ],
                             mainAxisAlignment: MainAxisAlignment.center,
                           ),
@@ -1065,7 +1088,7 @@ friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc) {
                                     width: 15,
                                     decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: Colors.green
+                                        color: theme.theme['colorSuccess']
                                     ),
                                     child: Center(
                                       child:Text('${state.invites.length}', style:

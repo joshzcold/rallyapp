@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 /// background: everything behind the grid and the main color of most pages
 /// text: Text on the background or header color
 /// header: Top row on the calendar and also appbars in other pages
+/// headerText: Normal text shown on the header color
+/// headerTodayText: Text to show which day is "today"
 /// border: border for grid on calendar and any card elements
 /// solidIconDark: Icon color for when its display with a lighter background
 /// solidIconLight: Icon color for when its displayed with a darker background
@@ -18,13 +20,16 @@ import 'package:flutter/material.dart';
 Map lightTheme = {
   'background': Colors.white,
   'text': Colors.grey[500],
+  'textTitle': Colors.black,
+  'card': Colors.white,
+  'cardListBackground': Colors.grey[200],
   'header': Colors.white,
   'headerText': Colors.grey[500],
   'headerTodayText': Colors.blue,
   'footer': Colors.white,
   'border': Colors.grey[400],
   'solidIconDark':Colors.grey,
-  'solidIconLight':Colors.white,
+  'solidIconLight':Colors.grey,
   'colorPrimary':Colors.blue,
   'colorSecondary':Colors.grey,
   'colorSuccess':Colors.green,
@@ -35,13 +40,16 @@ Map lightTheme = {
 Map darkTheme = {
   'background': Colors.grey[700],
   'text': Colors.grey[500],
+  'textTitle': Colors.white,
+  'card': Colors.grey[800],
+  'cardListBackground': Colors.grey[600],
   'header':Colors.grey[800],
   'headerText': Colors.grey[500],
   'headerTodayText': Colors.orange,
   'footer': Colors.grey[800],
   'border':Colors.grey[600],
-  'solidIconDark':Colors.orange,
-  'solidIconLight':Colors.grey[600],
+  'solidIconDark':Colors.grey[600],
+  'solidIconLight':Colors.orange,
   'colorPrimary':Colors.orange,
   'colorSecondary':Colors.grey[600],
   'colorSuccess':Colors.green,
@@ -52,6 +60,9 @@ Map darkTheme = {
 Map amoLEDTheme = {
   'background': Colors.black,
   'text': Colors.grey[500],
+  'textTitle': Colors.black,
+  'card': Colors.white,
+  'cardListBackground': Colors.grey,
   'header':Colors.black,
   'headerText': Colors.grey[500],
   'headerTodayText': Colors.white,
@@ -69,6 +80,9 @@ Map amoLEDTheme = {
 Map blueTheme = {
   'background': Colors.white,
   'text': Colors.grey[500],
+  'textTitle': Colors.black,
+  'card': Colors.white,
+  'cardListBackground': Colors.grey,
   'header': Colors.blue,
   'headerText': Colors.white,
   'headerTodayText': Colors.orange,
@@ -86,6 +100,9 @@ Map blueTheme = {
 Map redTheme = {
   'background': Colors.white,
   'text': Colors.grey[500],
+  'textTitle': Colors.black,
+  'card': Colors.white,
+  'cardListBackground': Colors.grey,
   'header': Colors.red,
   'headerText': Colors.white,
   'headerTodayText': Colors.green[200],
@@ -103,6 +120,8 @@ Map redTheme = {
 Map greenTheme = {
   'background': Colors.white,
   'text': Colors.grey[500],
+  'card': Colors.white,
+  'cardListBackground': Colors.grey,
   'header': Colors.green,
   'headerText': Colors.white,
   'headerTodayText': Colors.red[200],
@@ -120,6 +139,9 @@ Map greenTheme = {
 Map pinkTheme = {
   'background': Colors.white,
   'text': Colors.grey[500],
+  'textTitle': Colors.black,
+  'card': Colors.white,
+  'cardListBackground': Colors.grey,
   'header': Colors.pink,
   'headerText': Colors.white,
   'headerTodayText': Colors.green[200],

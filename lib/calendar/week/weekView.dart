@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/calendar/calendarScreen.dart';
@@ -51,6 +52,8 @@ class WeekView extends StatefulWidget{
 class WeekViewState extends State<WeekView>{
   @override
   Widget build(BuildContext context) {
+    ThemeBloc _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
     return LayoutBuilder(builder:
         (BuildContext context, BoxConstraints viewportConstraints) {
       // You can change up this value later to increase or decrease the height
@@ -72,7 +75,7 @@ class WeekViewState extends State<WeekView>{
                             decoration: BoxDecoration(
                                 border: Border(
                                     right: BorderSide(
-                                        color: Color(0xFFdadce0),
+                                        color: theme.theme['border'],
                                         width: 1))),
                             child: Column(
                                 children: timeHour
@@ -82,8 +85,7 @@ class WeekViewState extends State<WeekView>{
                                             decoration: BoxDecoration(
                                                 border: Border(
                                                     bottom: BorderSide(
-                                                        color: Color(
-                                                            0xFFdadce0),
+                                                        color: theme.theme['border'],
                                                         width: 1))),
                                             child: Row(
                                               children: <Widget>[
@@ -92,8 +94,8 @@ class WeekViewState extends State<WeekView>{
                                             ))))
                                     .toList()))))
                     .toList()),
-            eventCards(context, maxHeightWanted, maxPossibleWidth, this.widget.week, this.widget.conflictEventsDetailsCallBack),
-            currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, this.widget.week),
+            eventCards(context, maxHeightWanted, maxPossibleWidth, this.widget.week, this.widget.conflictEventsDetailsCallBack, theme),
+            currentTimeIndicator(context, maxHeightWanted, maxPossibleWidth, this.widget.week, theme),
           ],
         ),
       );
@@ -101,7 +103,7 @@ class WeekViewState extends State<WeekView>{
   }
 }
 
-eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack) {
+eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack, theme) {
   final _eventsBloc = BlocProvider.of<EventsBloc>(context);
   final _authBloc = BlocProvider.of<AuthBloc>(context);
  return BlocBuilder(
@@ -333,13 +335,12 @@ eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack) {
                           return InkWell(
                               onTap: () {
                                 AuthLoaded auth = _authBloc.currentState;
-                                conflictEventsDetailsCallBack(
-                                    groupOfEvents, _eventsBloc, context, auth);
+                                conflictEventsDetailsCallBack(groupOfEvents, _eventsBloc, context, auth, theme);
                               },
                               child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
-                                      border: Border.all(color: Color(0xFFdadce0), width: 1.0),
+                                    color: theme.theme['header'],
+                                      border: Border.all(color: theme.theme['border'], width: 1.0),
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
                                     boxShadow: [
                                       new BoxShadow(
@@ -359,7 +360,7 @@ eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack) {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[
-                                          Icon(Icons.library_books, color: Colors.grey,),
+                                          Icon(Icons.library_books, color: theme.theme['solidIconLight'],),
                                         ],
                                       ),
                                       Container(height: 10,),
@@ -426,7 +427,7 @@ double moveIndicatorDownBasedOfConstraints(sTime, constraints) {
 
 
 currentTimeIndicator(BuildContext context, double maxHeightWanted,
-    double maxPossibleWidth, currentWeek) {
+    double maxPossibleWidth, currentWeek, theme) {
   DateTime cday = DateTime.now();
   bool check = false;
   for (DateTime day in currentWeek) {
@@ -444,13 +445,13 @@ currentTimeIndicator(BuildContext context, double maxHeightWanted,
             child: Row(
               children: <Widget>[
                 Container(
-                  color: Colors.green,
+                  color: theme.theme['colorSuccess'],
                   width: maxPossibleWidth / 7 - 25,
                   height: 3,
                 ),
                 Icon(
                   Icons.star,
-                  color: Colors.amber,
+                  color: theme.theme['colorAttention'],
                 ),
               ],
             ),
@@ -648,7 +649,7 @@ timePrettyFormatSingle(time) {
 
 
 
-returnTimeInPrettyFormat(event) {
+returnTimeInPrettyFormat(event, theme) {
   var startTime = DateTime.fromMillisecondsSinceEpoch(event['start']);
   var startDay = startTime.day.toString();
   var startMonth = startTime.month.toString();
@@ -782,12 +783,13 @@ returnTimeInPrettyFormat(event) {
       '$startMonth/$startDay',
       style: TextStyle(
         fontWeight: FontWeight.bold,
+        color: theme.theme['text']
       ),
     ),
     Container(
       width: 10,
     ),
-    Text('$hour$startMinute$indicator - $endHour$endMinute$indicator'),
+    Text('$hour$startMinute$indicator - $endHour$endMinute$indicator', style: TextStyle(color: theme.theme['text']),),
   ];
 }
 

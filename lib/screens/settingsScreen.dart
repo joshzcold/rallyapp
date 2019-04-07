@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/widgets/themeButton.dart';
 import 'package:rallyapp/widgets/themeSelector.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 
 Widget themeSelectorModal;
 
@@ -19,8 +21,14 @@ class SettingsState extends State<Settings>{
 
   @override
   Widget build(BuildContext context) {
+    ThemeBloc _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+
     return Scaffold(
-      appBar: AppBar(title: Text('Settings'),),
+      backgroundColor: theme.theme['background'],
+      appBar: AppBar(
+        leading: IconButton(icon: Icon(Icons.arrow_back, color: theme.theme['headerText'],), onPressed: (){Navigator.pop(context);}),
+        title: Text('Settings', style: TextStyle(color: theme.theme['headerText']),), backgroundColor: theme.theme['header'],),
       body: LayoutBuilder(builder: (context, constraints){
         return Container(
           height: constraints.maxHeight,

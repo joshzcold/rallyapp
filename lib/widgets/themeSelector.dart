@@ -5,6 +5,7 @@ import 'package:rallyapp/blocs/app/theme.dart';
 
 themeSelector(context, closeThemeSelectorModal){
   ThemeBloc _themeBloc = BlocProvider.of<ThemeBloc>(context);
+  ThemeLoaded theme  = _themeBloc.currentState;
   return LayoutBuilder(builder: (context, constraints){
     var maxHeight = constraints.maxHeight;
     var maxWidth = constraints.maxWidth;
@@ -34,7 +35,7 @@ themeSelector(context, closeThemeSelectorModal){
                 offset: Offset(0.0, 0.0),
               )
             ],
-            color: Colors.white,
+            color: theme.theme['background'],
           ),
             height: maxHeight * cardHeightMultiplier,
             width: maxWidth * cardWidthMultiplier,

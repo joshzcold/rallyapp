@@ -21,8 +21,7 @@ themeButton(context, constraints, getThemeSelectorModal){
     mainAxisSize: MainAxisSize.max,
     children: <Widget>[
       Container(height: 50,),
-      Text('Theme', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
-      Text(':Light:'),
+      Text('Theme', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: theme.theme['textTitle']),),
       Container(height: 10,),
       InkWell(
         onTap: (){
@@ -142,7 +141,7 @@ themeButton(context, constraints, getThemeSelectorModal){
                             ]
                         ),
                         child: Center(
-                          child: Icon(Icons.add,color: theme.theme['solidIconLight']),
+                          child: Icon(Icons.add,color: Colors.white),
                         ),
                       )
                   )
