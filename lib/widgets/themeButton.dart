@@ -32,7 +32,7 @@ themeButton(context, constraints, getThemeSelectorModal){
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
             boxShadow: [
               new BoxShadow(
-                color: Colors.grey[500],
+                color: theme.theme['shadow'],
                 blurRadius: 5.0,
                 offset: Offset(0.0, 0.0),
               )
@@ -51,21 +51,15 @@ themeButton(context, constraints, getThemeSelectorModal){
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.vertical(top: Radius.circular(8.0)),
                         color: theme.theme['header'],
+                          boxShadow: [
+                            BoxShadow(color: theme.theme['shadow'], offset: Offset(0.0,2.0), blurRadius: 3.0)
+                          ]
                       ),
                       height: 50,
                       width: constraints.maxWidth * .90,
                       child: Row(
                           children: header.map<Widget>((column)=>
                               Container(
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    right: BorderSide(
-                                        color: theme.theme['border'],
-                                        width: 1),
-                                    bottom: BorderSide(
-                                        color: theme.theme['border'],
-                                        width: 1),),
-                                ),
                                 height: 50,
                                 width: (constraints.maxWidth *.90)/8,
                                 child: Column(
@@ -134,7 +128,7 @@ themeButton(context, constraints, getThemeSelectorModal){
                             color: theme.theme['colorPrimary'],
                             boxShadow: [
                               new BoxShadow(
-                                color: theme.theme['border'],
+                                color: theme.theme['shadow'],
                                 blurRadius: 2.0,
                                 offset: Offset(0.5, 0.0),
                               )

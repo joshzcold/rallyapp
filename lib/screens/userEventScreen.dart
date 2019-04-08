@@ -426,7 +426,7 @@ class UserEventState extends State<UserEvent> {
                       color: theme.theme['card'],
                       boxShadow: [
                         new BoxShadow(
-                          color: Colors.grey[500],
+                          color: theme.theme['shadow'],
                           blurRadius: 5.0,
                           offset: Offset(0.0, 0.0),
                         )

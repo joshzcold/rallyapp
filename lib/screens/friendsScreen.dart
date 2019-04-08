@@ -486,7 +486,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                   borderRadius: BorderRadius.all(Radius.circular(8.0)),
                                   boxShadow: [
                                     new BoxShadow(
-                                      color: Colors.grey[500],
+                                      color: theme.theme['shadow'],
                                       blurRadius: 5.0,
                                       offset: Offset(0.0, 0.0),
                                     )

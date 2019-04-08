@@ -198,7 +198,7 @@ class CalendarPageState extends State<CalendarPage> {
                                     boxShadow: [
                                       new BoxShadow(
                                         spreadRadius: MediaQuery.of(context).size.width,
-                                        color: Colors.grey[500],
+                                        color: theme.theme['shadow'],
                                         blurRadius: 5.0,
                                         offset: Offset(0.0, -MediaQuery.of(context).size.width),
                                       )
@@ -430,7 +430,7 @@ class CalendarPageState extends State<CalendarPage> {
                                         borderRadius: BorderRadius.all(Radius.circular(8.0)),
                                         boxShadow: [
                                           new BoxShadow(
-                                            color: Colors.grey[500],
+                                            color: theme.theme['shadow'],
                                             blurRadius: 5.0,
                                             offset: Offset(0.0, 0.0),
                                           )

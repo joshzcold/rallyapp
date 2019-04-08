@@ -344,7 +344,7 @@ eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack, th
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
                                     boxShadow: [
                                       new BoxShadow(
-                                        color: Colors.grey[500],
+                                        color: theme.theme['shadow'],
                                         blurRadius: 1.0,
                                         offset: Offset(-1, 0.5),
                                       )
