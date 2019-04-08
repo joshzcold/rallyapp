@@ -150,9 +150,12 @@ themeButton(context, constraints, getThemeSelectorModal){
 
               /// BOTTOM NAVIGATION IN THEME BUTTON
               Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(8.0)),
+                  color: theme.theme['footer'],
+                ),
                 height: 50,
                 width: constraints.maxWidth*.90,
-                color: theme.theme['footer'],
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[

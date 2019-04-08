@@ -63,9 +63,9 @@ Map darkTheme = {
 Map amoLEDTheme = {
   'background': Colors.black,
   'text': Colors.grey[500],
-  'textTitle': Colors.black,
-  'card': Colors.white,
-  'cardListBackground': Colors.grey,
+  'textTitle': Colors.white,
+  'card': Colors.grey[800],
+  'cardListBackground': Colors.grey[900],
   'header':Colors.black,
   'headerText': Colors.grey[500],
   'headerTodayText': Colors.white,
