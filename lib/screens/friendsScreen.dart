@@ -247,8 +247,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                                           return Stack(
                                             children: <Widget>[
                                               Card(
+                                                  color: theme.theme['card'],
                                                   child: Container(
-                                                    color: theme.theme['card'],
                                                     width: friendCardWidth,
                                                     child: Column(
                                                       children: <Widget>[
@@ -820,7 +820,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                 Text(
                   friend.value['rallyID'],
                   style: TextStyle(fontSize: 20,
-                  color: theme.theme['textTitle']),
+                  color: theme.theme['text']),
                 )
               ],
             ),
