@@ -50,6 +50,8 @@ themeSelector(context, closeThemeSelectorModal){
                   Container(height: 10,),
                   darkThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
                   Container(height: 10,),
+                  darkBlueThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
+                  Container(height: 10,),
                   amoLEDThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
                   Container(height: 10,),
                   blueThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal),
@@ -214,6 +216,84 @@ darkThemeCard(maxWidth, cardWidthMultiplier, _themeBloc, closeThemeSelectorModal
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: darkTheme['colorAttention']
+                  ),
+                ),
+              ],
+            ),
+            Container(height: 10,)
+          ],
+        ),
+      ),
+    );
+}
+
+darkBlueThemeCard(double maxWidth, double cardWidthMultiplier, ThemeBloc themeBloc, closeThemeSelectorModal) {
+  return /// DARK BLUE THEME
+    InkWell(
+      onTap: (){
+        themeBloc.dispatch(ChangeTheme("darkBlue"));
+        closeThemeSelectorModal();
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          border: Border.all(color: darkBlueTheme['header']),
+          /// Background Color
+          color: darkBlueTheme['background'],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+
+            /// Header font color, label
+            Container(
+              decoration: BoxDecoration(
+                  color: darkBlueTheme['header'],
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(8.0))
+              ),
+              height: 50,
+              width: (maxWidth * cardWidthMultiplier) - 30,
+              child: Row(
+                children: <Widget>[
+                  Container(width: 30,),
+                  Text('Dark Blue',
+                    style: TextStyle(color: darkBlueTheme['headerText'], fontSize: 20,
+                        fontWeight: FontWeight.bold),)
+                ],
+              ),
+            ),
+
+            Container(height: 10,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                ///Colored Circles
+                Container(
+                  width: 40, height: 40,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: darkBlueTheme['colorPrimary']
+                  ),
+                ),
+                Container(
+                  width: 40, height: 40,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: darkBlueTheme['colorSecondary']
+                  ),
+                ),
+                Container(
+                  width: 40, height: 40,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: darkBlueTheme['colorSuccess']
+                  ),
+                ),
+                Container(
+                  width: 40, height: 40,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: darkBlueTheme['colorAttention']
                   ),
                 ),
               ],

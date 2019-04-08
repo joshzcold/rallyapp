@@ -60,6 +60,26 @@ Map darkTheme = {
   'colorDanger':Colors.red,
 };
 
+Map darkBlueTheme = {
+  'background': Colors.blueGrey[700],
+  'text': Colors.blueGrey[200],
+  'textTitle': Colors.white,
+  'card': Colors.blueGrey[400],
+  'cardListBackground': Colors.blueGrey[600],
+  'header':Colors.blueGrey[800],
+  'headerText': Colors.blueGrey[400],
+  'headerTodayText': Colors.blueGrey[100],
+  'footer': Colors.blueGrey[800],
+  'border':Colors.blueGrey[200],
+  'solidIconDark':Colors.blueGrey[600],
+  'solidIconLight':Colors.grey[300],
+  'colorPrimary':Colors.blueGrey[300],
+  'colorSecondary':Colors.grey[600],
+  'colorSuccess':Colors.green[800],
+  'colorAttention':Colors.yellow[800],
+  'colorDanger':Colors.deepOrange,
+};
+
 Map amoLEDTheme = {
   'background': Colors.black,
   'text': Colors.grey[500],
@@ -195,6 +215,18 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState>{
         writeToConf(config);
       }
       yield ThemeLoaded(darkTheme);
+    }
+    else if(event.theme == "darkBlue"){
+      var config = await readConf();
+      if(!config.hasSection('theme')){
+        config.addSection('theme');
+        config.set('theme', 'appTheme', 'darkBlue');
+        writeToConf(config);
+      } else{
+        config.set('theme', 'appTheme', 'darkBlue');
+        writeToConf(config);
+      }
+      yield ThemeLoaded(darkBlueTheme);
     }
     else if(event.theme == "amoled"){
       var config = await readConf();
