@@ -14,7 +14,7 @@ Future<String> writeToConf(contents) async{
   }
 }
 
-Future<Config> readConf() async {
+readConf() async {
   try {
     final file = await _localFile;
 
@@ -24,7 +24,7 @@ Future<Config> readConf() async {
     return config;
 
   } catch (e) {
-    // If encountering an error, return 0
+
     return e;
   }
 }
