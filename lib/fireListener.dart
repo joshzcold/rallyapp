@@ -6,18 +6,20 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
 
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
+import 'package:rallyapp/main.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 
 
  setListeners(BuildContext context) async{
-  final friendBloc = BlocProvider.of<FriendsBloc>(context);
+   final friendBloc = BlocProvider.of<FriendsBloc>(context);
   final authBloc = BlocProvider.of<AuthBloc>(context);
   final eventBloc = BlocProvider.of<EventsBloc>(context);
   final inviteBloc = BlocProvider.of<InviteBloc>(context);
@@ -171,6 +173,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
     //////////////////////////////////////////////////////////////////////////////
   }
 
+
   void createInitialUserData(rallyID) {
     print('Creating Initial Data ====================================================');
 
@@ -205,4 +208,17 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
   database.reference().child('user/$uid/info').once().then((snapshot) {
     snapshot.value == null? getRallyID() : setUserFriendListeners();
   });
+
+}
+
+Future<void> _showNotification(title, body) async {
+  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'rallyupapp', 'rally-notification', 'notifications from rally up. Events, Invites, Alerts',
+      importance: Importance.Max, priority: Priority.High);
+  var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+  var platformChannelSpecifics = NotificationDetails(
+      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+  await flutterLocalNotificationsPlugin.show(
+      0, title, body, platformChannelSpecifics,
+      payload: 'item x');
 }
