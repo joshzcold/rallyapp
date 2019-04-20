@@ -83,6 +83,27 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
     // Setting Listener on User event CHANGE, effects the info details of that event
     database.reference().child('user/$uid/events').onChildChanged.listen((event){
+      EventsLoaded currentEvents = eventBloc.currentState;
+      var usersEventsBefore = currentEvents.events[uid];
+      var eventBefore = usersEventsBefore[event.snapshot.key];
+      var partyBefore = eventBefore['party']['friends'];
+      var partyAfter = event.snapshot.value['party']['friends'];
+      if(partyBefore == null){partyBefore = {};}
+      if(partyAfter == null){ partyAfter = {};}
+      if(partyBefore.length < partyAfter.length){
+        var foundFriend;
+        partyAfter.forEach((key, value){
+          if(!partyBefore.containsKey(key)){
+            foundFriend = value;
+          }
+        });
+        var eventTitle = event.snapshot.value['title'];
+        var startTime = DateTime.fromMillisecondsSinceEpoch(event.snapshot.value['start']);
+        var endTime = DateTime.fromMillisecondsSinceEpoch(event.snapshot.value['end']);
+
+        _showNotification('${foundFriend['userName']} has joined your event!','$eventTitle @$startTime - $endTime',"joinedFriend,"+event.snapshot.key.toString()+',$uid');
+      }
+
       print(' -- CHANGE -- user events');
       eventBloc.dispatch(ReplaceEventInfo(event.snapshot.key, event.snapshot.value, uid));
     });
@@ -151,7 +172,6 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
          var endTime = DateTime.fromMillisecondsSinceEpoch(eventValue['end']);
          var eventTitle = eventValue['title'];
          var friendPhoto = eventValue['userPhoto'];
-         var joinedFriends = eventValue['party'];
          var userID = eventValue['user'];
 
          _showNotification('New event from $friendUserName!','$eventTitle @$startTime - $endTime',"friendEvent,"+event.snapshot.key.toString()+',$userID');

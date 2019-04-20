@@ -85,16 +85,25 @@ class CalendarPageState extends State<CalendarPage> {
     var keyValuePayload = payload.split(",");
     var key = keyValuePayload[0];
     var value = keyValuePayload[1];
-    var friend = keyValuePayload[2];
+    var user = keyValuePayload[2];
 
     if(key == "friendEvent"){
       final eventBloc = BlocProvider.of<EventsBloc>(context);
       EventsLoaded eventsLoaded = eventBloc.currentState;
-      var pushedValue = eventsLoaded.events[friend][value];
+      var pushedValue = eventsLoaded.events[user][value];
       MapEntry pushedEvent = new MapEntry(value, pushedValue);
 
       Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: pushedEvent,)));
     }
+    if(key == "joinedFriend"){
+      final eventBloc = BlocProvider.of<EventsBloc>(context);
+      EventsLoaded eventsLoaded = eventBloc.currentState;
+      var pushedValue = eventsLoaded.events[user][value];
+      MapEntry pushedEvent = new MapEntry(value, pushedValue);
+
+      Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: pushedEvent,)));
+    }
+
   }
 
   @override
