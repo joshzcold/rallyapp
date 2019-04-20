@@ -2,6 +2,7 @@ import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
 import 'package:rallyapp/blocs/app/month.dart';
 import 'package:rallyapp/blocs/app/theme.dart';
@@ -52,6 +53,7 @@ PageController pageController;
 PageController horizontalHeaderScrollController;
 
 ScrollController verticalPageGridScrollController;
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 
 class CalendarPage extends StatefulWidget{
@@ -63,6 +65,37 @@ class CalendarPageState extends State<CalendarPage> {
   int currentMonth;
   int calculatedDayNumber = daysBeforeStart;
   Widget conflictedEventsModal = Container();
+
+  @override
+  initState() {
+    super.initState();
+    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+    // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
+    var initializationSettingsAndroid =
+    new AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: onSelectNotification);
+  }
+
+  Future onSelectNotification(String payload) async {
+    print('Notification selected $payload');
+    var keyValuePayload = payload.split(",");
+    var key = keyValuePayload[0];
+    var value = keyValuePayload[1];
+    var friend = keyValuePayload[2];
+
+    if(key == "friendEvent"){
+      final eventBloc = BlocProvider.of<EventsBloc>(context);
+      EventsLoaded eventsLoaded = eventBloc.currentState;
+      var pushedValue = eventsLoaded.events[friend][value];
+      MapEntry pushedEvent = new MapEntry(value, pushedValue);
+
+      Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: pushedEvent,)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,8 +124,6 @@ class CalendarPageState extends State<CalendarPage> {
     final inviteBloc = BlocProvider.of<InviteBloc>(context);
     final _themeBloc = BlocProvider.of<ThemeBloc>(context);
     ThemeLoaded theme = _themeBloc.currentState;
-
-
 
     return Stack(
       children: <Widget>[
@@ -692,3 +723,4 @@ class CardCornerClipper extends CustomClipper<Path>{
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
+

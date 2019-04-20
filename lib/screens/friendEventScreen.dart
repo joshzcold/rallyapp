@@ -9,7 +9,7 @@ import 'package:rallyapp/fireActions.dart';
 FireActions fireActions = new FireActions();
 
 class FriendEvent extends StatelessWidget {
-  final MapEntry event;
+  final event;
   FriendEvent({@required this.event});
 
   @override

@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:rallyapp/blocs/app/month.dart';
+import 'package:rallyapp/screens/friendEventScreen.dart';
 
 import 'package:rallyapp/screens/loginScreen.dart';
 import 'package:rallyapp/calendar/calendarScreen.dart';
@@ -16,15 +17,13 @@ import 'package:rallyapp/screens/settingsScreen.dart';
 import 'package:rallyapp/screens/registerScreen.dart';
 
 import 'package:rallyapp/blocs/friends/friends.dart';
-import 'package:rallyapp/blocs/events/event_bloc.dart';
+import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/app/indexBloc.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
 import 'package:rallyapp/blocs/app/theme.dart';
 
 import 'package:rallyapp/utility/config.dart';
-
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 void main() async{
   var themeValue;
@@ -37,18 +36,25 @@ void main() async{
   } else{
     themeValue = "light";
   }
-
-  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  // NOTE: if you want to find out if the app was launched via notification then you could use the following call and then do something like
-  // change the default route of the app
-   var notificationAppLaunchDetails = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-
   runApp(Rally(themeValue));
 }
 
-class Rally extends StatelessWidget {
+class Rally extends StatefulWidget{
   final String themeValue;
   Rally(this.themeValue);
+
+  @override
+  RallyState createState() => new RallyState(themeValue);
+}
+
+class RallyState extends State<Rally> {
+  final String themeValue;
+  RallyState(this.themeValue);
+
+
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+
 
   @override
   Widget build(BuildContext context) {

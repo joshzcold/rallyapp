@@ -12,6 +12,7 @@ import 'package:rallyapp/blocs/app/invite.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
+import 'package:rallyapp/calendar/calendarScreen.dart';
 import 'package:rallyapp/main.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -140,14 +141,34 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
       });
       // Setting Listener on friend's events detail CHANGE
       subscriptions[friendID][i++] = database.reference().child('user/$friendID/events').onChildChanged.listen((event) {
+       EventsLoaded currentEvents = eventBloc.currentState;
+       var friendsEvents = currentEvents.events[friendID];
+       if(!friendsEvents.containsKey(event.snapshot.key) || friendsEvents == null){
+         print('Sending Notification Friend Event ADD');
+         var eventValue = event.snapshot.value;
+         var friendUserName = eventValue['userName'];
+         var startTime = DateTime.fromMillisecondsSinceEpoch(eventValue['start']);
+         var endTime = DateTime.fromMillisecondsSinceEpoch(eventValue['end']);
+         var eventTitle = eventValue['title'];
+         var friendPhoto = eventValue['userPhoto'];
+         var joinedFriends = eventValue['party'];
+         var userID = eventValue['user'];
+
+         _showNotification('New event from $friendUserName!','$eventTitle @$startTime - $endTime',"friendEvent,"+event.snapshot.key.toString()+',$userID');
+       }
         print(' -- CHANGED -- friend event');
         eventBloc.dispatch(ReplaceEventInfo(event.snapshot.key, event.snapshot.value, friendID));
       });
-      // Setting Listener on friend's events ADD
-      subscriptions[friendID][i++] = database.reference().child('user/$friendID/events').onChildAdded.listen((event){
+//       Grabbing friend event data
+      database.reference().child('user/$friendID/events').once().then((snapshot){
         print(' -- ADD -- friend event');
-        eventBloc.dispatch(AddEvents(friendID, event.snapshot.key, event.snapshot.value));
+        if(snapshot.value != null){
+          snapshot.value.forEach((key, value){
+            eventBloc.dispatch(AddEvents(friendID, key, value));
+          });
+        }
       });
+
       // Setting Listener on friend's event REMOVE
       subscriptions[friendID][i++] = database.reference().child('user/$friendID/events').onChildRemoved.listen((event) {
         print(' -- REMOVE -- friend event');
@@ -211,7 +232,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
 }
 
-Future<void> _showNotification(title, body) async {
+Future<void> _showNotification(title, body, payload) async {
   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'rallyupapp', 'rally-notification', 'notifications from rally up. Events, Invites, Alerts',
       importance: Importance.Max, priority: Priority.High);
@@ -220,5 +241,5 @@ Future<void> _showNotification(title, body) async {
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
   await flutterLocalNotificationsPlugin.show(
       0, title, body, platformChannelSpecifics,
-      payload: 'item x');
+      payload: payload);
 }
