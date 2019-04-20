@@ -101,7 +101,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
         var startTime = DateTime.fromMillisecondsSinceEpoch(event.snapshot.value['start']);
         var endTime = DateTime.fromMillisecondsSinceEpoch(event.snapshot.value['end']);
 
-        _showNotification('${foundFriend['userName']} has joined your event!','$eventTitle @$startTime - $endTime',"joinedFriend,"+event.snapshot.key.toString()+',$uid');
+        _showNotification('${foundFriend['userName']} has joined your event! @$startTime - $endTime','$eventTitle',"joinedFriend,"+event.snapshot.key.toString()+',$uid');
       }
 
       print(' -- CHANGE -- user events');
@@ -121,6 +121,9 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
     });
 
     database.reference().child('user/$uid/invites').onChildAdded.listen((Event event){
+      var inviteUser = event.snapshot.value;
+
+      _showNotification('Friend invite from ${inviteUser['userName']}','Rally ID: ${inviteUser['rallyID']}',"friendInvite,"+event.snapshot.key.toString()+',$uid');
       print(' -- ADD -- user invite');
       inviteBloc.dispatch(AddInvite(event.snapshot.key, event.snapshot.value));
     });
@@ -174,7 +177,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
          var friendPhoto = eventValue['userPhoto'];
          var userID = eventValue['user'];
 
-         _showNotification('New event from $friendUserName!','$eventTitle @$startTime - $endTime',"friendEvent,"+event.snapshot.key.toString()+',$userID');
+         _showNotification('New event from $friendUserName! @$startTime - $endTime','$eventTitle',"friendEvent,"+event.snapshot.key.toString()+',$userID');
        }
         print(' -- CHANGED -- friend event');
         eventBloc.dispatch(ReplaceEventInfo(event.snapshot.key, event.snapshot.value, friendID));

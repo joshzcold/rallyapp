@@ -103,6 +103,9 @@ class CalendarPageState extends State<CalendarPage> {
 
       Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: pushedEvent,)));
     }
+    if(key == "friendInvite"){
+      Navigator.push(context, MyCustomRoute(builder: (context) => FriendsScreen()));
+    }
 
   }
 
