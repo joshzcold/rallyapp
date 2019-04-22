@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
+import 'package:rallyapp/fireActions.dart';
 import 'package:rallyapp/widgets/themeButton.dart';
 import 'package:rallyapp/widgets/themeSelector.dart';
 import 'package:rallyapp/blocs/app/theme.dart';
@@ -13,12 +14,15 @@ import 'package:rallyapp/widgets/uploadPhotoButton.dart';
 Widget themeSelectorModal;
 Widget photoUploadModal;
 
+
 class Settings extends StatefulWidget{
   @override
   SettingsState createState() => SettingsState();
 }
 
 class SettingsState extends State<Settings>{
+  FireActions fireAction = new FireActions();
+
 
   @override
   void initState(){
@@ -32,6 +36,7 @@ class SettingsState extends State<Settings>{
     ThemeLoaded theme = _themeBloc.currentState;
 
     AuthBloc _authBloc = BlocProvider.of<AuthBloc>(context);
+
 
     return Scaffold(
       backgroundColor: theme.theme['background'],
@@ -195,6 +200,7 @@ class SettingsState extends State<Settings>{
         toolbarWidgetColor: theme.theme['text'],
     );
     print('cropped Photo');
+    fireAction.uploadUserPhoto(croppedFile);
   }
 
   void openGallery(theme) async{
@@ -214,6 +220,6 @@ class SettingsState extends State<Settings>{
       toolbarWidgetColor: theme.theme['text']
     );
     print('cropped Gallery');
-
+    fireAction.uploadUserPhoto(croppedFile);
   }
 }

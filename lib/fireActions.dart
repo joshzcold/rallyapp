@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:bloc/bloc.dart';
@@ -177,7 +178,24 @@ class FireActions {
     });
     return code;
   }
+
+  uploadUserPhoto(photo) async{
+    var user = await getFireBaseUser();
+    FirebaseStorage storage = await getFireBaseStorageInstance();
+
+    final StorageReference ref =
+    storage.ref().child('photos').child('${user.uid}');
+    final StorageUploadTask uploadTask = ref.putFile(
+      photo,
+      StorageMetadata(
+        contentLanguage: 'en',
+        customMetadata: <String, String>{'activity': 'test'},
+      ),
+    );
+  }
 }
+
+
 
 getFireBaseUser() async{
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -199,9 +217,31 @@ getFireBaseInstance() async{
       googleAppID: '1:871930822313:android:4f038984403403c9',
       apiKey: 'AIzaSyAa-7LsEyLudV4qbOrKk_lKE65nAybmDNw ',
       databaseURL: 'https://rallydev-40f78.firebaseio.com/',
+      storageBucket: 'gs://rallydev-40f78.appspot.com'
     ),
   );
 
   var database = FirebaseDatabase(app:app);
   return database;
+}
+
+getFireBaseStorageInstance() async{
+  final FirebaseApp app = await FirebaseApp.configure(
+    name: 'rallydev',
+    // TODO get actual settings for IOS here
+    options: Platform.isIOS
+        ? const FirebaseOptions(
+      googleAppID: 'NULL',
+      gcmSenderID: 'NULL',
+      databaseURL: 'NULL',
+    )
+        : const FirebaseOptions(
+        googleAppID: '1:871930822313:android:4f038984403403c9',
+        apiKey: 'AIzaSyAa-7LsEyLudV4qbOrKk_lKE65nAybmDNw ',
+        databaseURL: 'https://rallydev-40f78.firebaseio.com/',
+    ),
+  );
+
+  var storage = FirebaseStorage(app:app, storageBucket: 'gs://rallydev-40f78.appspot.com');
+  return storage;
 }
