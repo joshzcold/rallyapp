@@ -135,7 +135,14 @@ eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack, th
           newDict.forEach((loopKey, loopValue){
             var lVStart = loopValue['start'];
             var lVEnd = loopValue['end'];
-            if(cVStart < lVStart && lVStart < cVEnd || lVEnd > cVStart && lVEnd < cVEnd){
+            if(cVStart < lVStart && lVStart < cVEnd
+                || lVEnd > cVStart && lVEnd < cVEnd
+                || cVStart < lVStart && cVEnd > lVEnd
+                || cVStart > lVStart  && cVEnd < lVEnd
+                || cVStart == lVStart && cVEnd < lVEnd
+                || cVEnd == lVEnd && cVStart < lVStart
+                || cVEnd == lVEnd && cVStart > lVStart
+            ){
               var key = loopKey;
               if(conflictingEvents.containsKey(key)){
                 conflictingEvents[key].addAll({loopKey: loopValue});
