@@ -232,7 +232,8 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
       database.reference().child('user/$uid/friends').onChildRemoved.listen((event){
         print(' -- REMOVE -- friend ');
         var friendID = event.snapshot.key;
-        friendBloc.dispatch(RemoveFriends(event.snapshot.key));
+        friendBloc.dispatch(RemoveFriends(friendID));
+        eventBloc.dispatch(RemoveAllEventsFromFriend(friendID));
 
         // Turning off listeners for removed friend...
         var data = subscriptions[friendID];

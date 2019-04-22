@@ -15,6 +15,8 @@ class EventsBloc extends Bloc<EventsEvent, EventsState>{
       yield* _mapRemoveEventsToState(currentState, event);
     } else if(event is ReplaceEventInfo){
       yield* _mapReplaceEventToState(currentState, event);
+    } else if (event is RemoveAllEventsFromFriend){
+      yield* _mapRemoveAllEventsFromFriends(currentState, event);
     }
   }
 
@@ -30,6 +32,12 @@ class EventsBloc extends Bloc<EventsEvent, EventsState>{
   Stream<EventsState>_mapRemoveEventsToState(currentState ,event) async*{
     final updatedEvents = Map.of(currentState.events);
     updatedEvents[event.uid].remove(event.key);
+    yield EventsLoaded(updatedEvents);
+  }
+
+  Stream<EventsState>_mapRemoveAllEventsFromFriends(currentState ,event) async*{
+    final updatedEvents = Map.of(currentState.events);
+    updatedEvents.remove(event.uid);
     yield EventsLoaded(updatedEvents);
   }
 

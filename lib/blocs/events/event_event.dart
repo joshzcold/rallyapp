@@ -25,6 +25,15 @@ class RemoveEvents extends EventsEvent{
   String toString() => 'RemoveEvents { uid: $uid, key: $key}';
 }
 
+class RemoveAllEventsFromFriend extends EventsEvent{
+  final String uid;
+
+  RemoveAllEventsFromFriend(this.uid) : super([uid]);
+
+  @override
+  String toString() => 'RemoveAllEventsFromFriend { uid: $uid}';
+}
+
 class ReplaceEventInfo extends EventsEvent{
   final String key;
   final Map value;
