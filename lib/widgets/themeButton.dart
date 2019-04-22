@@ -20,7 +20,7 @@ themeButton(context, constraints, getThemeSelectorModal){
   return Column(
     mainAxisSize: MainAxisSize.max,
     children: <Widget>[
-      Container(height: 50,),
+      Container(height: 20,),
       Text('Theme', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: theme.theme['textTitle']),),
       Container(height: 10,),
       InkWell(

@@ -23,7 +23,7 @@ import 'package:ini/ini.dart';
 Map lightTheme = {
   'background': Colors.white,
   'text': Colors.grey[500],
-  'textTitle': Colors.black,
+  'textTitle': Colors.grey[700],
   'card': Colors.white,
   'cardListBackground': Colors.grey[200],
   'header': Colors.white,
