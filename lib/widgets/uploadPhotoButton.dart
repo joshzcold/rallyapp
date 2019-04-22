@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 
-uploadPhotoButton(theme, auth){
+uploadPhotoButton(theme, auth, getUploadPhotoModal){
   return Column(
     mainAxisSize: MainAxisSize.max,
     children: <Widget>[
       Container(height: 20,),
       InkWell(
-        onTap: (){
-
+        onTap: () async{
+           getUploadPhotoModal(theme);
         },
         child: Stack(
             children: <Widget>[
@@ -20,7 +21,6 @@ uploadPhotoButton(theme, auth){
                   backgroundImage: NetworkImage(auth.value['userPhoto']),
                 ),
               ),
-              
               Positioned(
                   bottom: 0,
                   right: 0,

@@ -10,7 +10,6 @@ import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/fireActions.dart';
 import 'package:rallyapp/screens/friendEventScreen.dart';
 import 'package:rallyapp/screens/friendDetailsScreen.dart';
-import 'package:rallyapp/screens/newFriendScreen.dart';
 import 'package:rallyapp/screens/settingsScreen.dart';
 
 TextEditingController newFriendTextController;
@@ -807,15 +806,18 @@ class FriendsScreenState extends State<FriendsScreen> {
                   width: 10,
                 ),
                 /// Friend User Name
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Text(
-                    friend.value[
-                    'userName'],
-                    style: TextStyle(
-                        fontSize: 20, color: theme.theme['textTitle']),
+                Flexible(
+                  child: new Container(
+                    padding: new EdgeInsets.only(right: 13.0),
+                    child: new Text(
+                      friend.value[
+                      'userName'],
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 20, color: theme.theme['textTitle']),
+                    ),
                   ),
-                )
+                ),
               ],
             ),
           )),
