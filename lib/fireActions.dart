@@ -138,6 +138,24 @@ class FireActions {
     });
   }
 
+  removeFriend(friend) async{
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+
+    database.reference().child('/user/${user.uid}/friends/$friend').remove();
+    database.reference().child('/user/$friend/friends/${user.uid}').remove();
+
+  }
+
+  updateNotifyOnFriend(friend, notifyKey, notifyValue) async{
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+
+    database.reference().child('/user/${user.uid}/friends/$friend').update({
+      notifyKey:notifyValue
+    });
+  }
+
   checkForRallyID(rallyID, context) async{
     final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
     AuthLoaded auth =  authBloc.currentState;

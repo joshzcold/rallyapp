@@ -32,7 +32,8 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState>{
 
   Stream<FriendsState>_mapReplaceFriendDetailToState(currentState ,event) async*{
     final updatedFriends = Map.of(currentState.friends);
-    updatedFriends[event.uid].update(event.key, (dynamic val) => event.value);
+    updatedFriends[event.uid].remove(event.key);
+    updatedFriends[event.uid].addAll({event.key: event.value});
     yield FriendsLoaded(updatedFriends);
   }
 

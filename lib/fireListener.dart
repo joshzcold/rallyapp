@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
+import 'package:rallyapp/blocs/app/notifyBloc.dart';
 
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
@@ -24,6 +25,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
   final authBloc = BlocProvider.of<AuthBloc>(context);
   final eventBloc = BlocProvider.of<EventsBloc>(context);
   final inviteBloc = BlocProvider.of<InviteBloc>(context);
+  final notifyBloc = BlocProvider.of<NotifyBloc>(context);
 
   final FirebaseUser user = await _auth.currentUser();
   var uid = user.uid;
@@ -81,8 +83,21 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
       authBloc.dispatch(ReplaceAuthInfo(uid, event.snapshot.key, event.snapshot.value));
     });
 
+    // Setting Listener on Users Friends List CHANGE
+    database.reference().child('user/$uid/friends').onChildChanged.listen((event){
+      print(' -- CHANGE -- friend list item notify');
+      notifyBloc.dispatch(ChangeNotify(event.snapshot.key, event.snapshot.value));
+    });
+
+    // Setting Listener on Users Friends List CHANGE
+    database.reference().child('user/$uid/friends').onChildAdded.listen((event){
+      print(' -- ADD -- friend list item notify');
+      notifyBloc.dispatch(AddNotify(event.snapshot.key, event.snapshot.value));
+    });
+
     // Setting Listener on User event CHANGE, effects the info details of that event
     database.reference().child('user/$uid/events').onChildChanged.listen((event){
+      NotifysLoaded currentNotify = notifyBloc.currentState;
       EventsLoaded currentEvents = eventBloc.currentState;
       var usersEventsBefore = currentEvents.events[uid];
       var eventBefore = usersEventsBefore[event.snapshot.key];
@@ -101,7 +116,11 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
         var startTime = DateTime.fromMillisecondsSinceEpoch(event.snapshot.value['start']);
         var endTime = DateTime.fromMillisecondsSinceEpoch(event.snapshot.value['end']);
 
-        _showNotification('${foundFriend['userName']} has joined your event! @$startTime - $endTime','$eventTitle',"joinedFriend,"+event.snapshot.key.toString()+',$uid');
+        var friendNotifyStatus = currentNotify.notify[foundFriend['id']];
+
+        if(friendNotifyStatus['notifyJoined'] == true || friendNotifyStatus['notifyJoined'] == null){
+          _showNotification('${foundFriend['userName']} has joined your event! @$startTime - $endTime','$eventTitle',"joinedFriend,"+event.snapshot.key.toString()+',$uid');
+        }
       }
 
       print(' -- CHANGE -- user events');
@@ -163,9 +182,11 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
         print(' -- CHANGED -- friend info');
         friendBloc.dispatch(ReplaceFriendInfo(event.snapshot.key, event.snapshot.value, friendID));
       });
+
       // Setting Listener on friend's events detail CHANGE
       subscriptions[friendID][i++] = database.reference().child('user/$friendID/events').onChildChanged.listen((event) {
-       EventsLoaded currentEvents = eventBloc.currentState;
+        NotifysLoaded currentNotify = notifyBloc.currentState;
+        EventsLoaded currentEvents = eventBloc.currentState;
        var friendsEvents = currentEvents.events[friendID];
        if(!friendsEvents.containsKey(event.snapshot.key) || friendsEvents == null){
          print('Sending Notification Friend Event ADD');
@@ -177,7 +198,15 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
          var friendPhoto = eventValue['userPhoto'];
          var userID = eventValue['user'];
 
-         _showNotification('New event from $friendUserName! @$startTime - $endTime','$eventTitle',"friendEvent,"+event.snapshot.key.toString()+',$userID');
+
+         var friendNotifyStatus = currentNotify.notify[friendID];
+
+         if(friendNotifyStatus['notifyEvent'] == true || friendNotifyStatus['notifyEvent'] == null) {
+           _showNotification(
+               'New event from $friendUserName! @$startTime - $endTime',
+               '$eventTitle',
+               "friendEvent," + event.snapshot.key.toString() + ',$userID');
+         }
        }
         print(' -- CHANGED -- friend event');
         eventBloc.dispatch(ReplaceEventInfo(event.snapshot.key, event.snapshot.value, friendID));

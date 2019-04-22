@@ -54,7 +54,7 @@ class AddInvite extends InviteEvent{
   AddInvite(this.key, this.value) : super([key, value]);
 
   @override
-  String toString() => 'AddInvite { key: $key, value: value}';
+  String toString() => 'AddInvite { key: $key, value: $value}';
 }
 
 class RemoveInvite extends InviteEvent{

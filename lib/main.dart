@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:rallyapp/blocs/app/month.dart';
+import 'package:rallyapp/blocs/app/notifyBloc.dart';
 import 'package:rallyapp/screens/friendEventScreen.dart';
 
 import 'package:rallyapp/screens/loginScreen.dart';
@@ -67,6 +68,7 @@ class RallyState extends State<Rally> {
         BlocProvider<MonthBloc>(bloc: MonthBloc()),
         BlocProvider<InviteBloc>(bloc: InviteBloc()),
         BlocProvider<ThemeBloc>(bloc: ThemeBloc()),
+        BlocProvider<NotifyBloc>(bloc: NotifyBloc()),
       ],
         child: Builder(builder: (context){
           ThemeBloc _themeBloc = BlocProvider.of<ThemeBloc>(context);

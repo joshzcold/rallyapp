@@ -252,11 +252,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                     width: friendCardWidth,
                                                     child: Column(
                                                       children: <Widget>[
-                                                        FlatButton(
-                                                            padding:
-                                                            EdgeInsets.all(
-                                                                0),
-                                                            onPressed: () {
+                                                        InkWell(
+                                                            onTap: () {
                                                               Navigator.push(context, MaterialPageRoute(builder: (context) => FriendDetails(friend: friend,)));
                                                             },
                                                             child: Container(
@@ -267,7 +264,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                               child: Row(
                                                                 mainAxisAlignment:
                                                                 MainAxisAlignment
-                                                                    .spaceBetween,
+                                                                    .start,
                                                                 children: <
                                                                     Widget>[
                                                                   /// This Container is the Friend Images
@@ -280,20 +277,22 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                                     theme.theme['card']
                                                                   ),
 
-                                                                  /// Friend User Name
-                                                                  Text(
-                                                                    friend.value[
-                                                                    'userName'],
-                                                                    style: TextStyle(
-                                                                        fontSize: 20, color: theme.theme['textTitle']),
+                                                                  Container(
+                                                                    width: 10,
                                                                   ),
-
-                                                                  /// Friend RallyID
-                                                                  Text(
-                                                                    friend.value[
-                                                                    'rallyID'],
-                                                                    style: TextStyle(fontSize: 20, color: theme.theme['text']),
-                                                                  )
+                                                                  /// Friend User Name
+                                                                  Flexible(
+                                                                    child: new Container(
+                                                                      padding: new EdgeInsets.only(right: 13.0),
+                                                                      child: new Text(
+                                                                        friend.value[
+                                                                        'userName'],
+                                                                        overflow: TextOverflow.ellipsis,
+                                                                        style: TextStyle(
+                                                                            fontSize: 20, color: theme.theme['textTitle']),
+                                                                      ),
+                                                                    ),
+                                                                  ),
                                                                 ],
                                                               ),
                                                             )),
@@ -516,7 +515,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                     returnTimeInPrettyFormat(event, theme)),
                                                 Text(
                                                   '${event.value['title']}',
-                                                  style: TextStyle(fontSize: 15),
+                                                  style: TextStyle(fontSize: 15, color: theme.theme['text']),
                                                 ),
 
                                                 _joinedFriends(event, theme)
@@ -796,31 +795,26 @@ class FriendsScreenState extends State<FriendsScreen> {
             height: 80,
             width: friendCardWidth,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 /// This Container is the Friend Images
-                Container(
-                    width: 60.0,
-                    height: 60.0,
-                    decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: new DecorationImage(
-                            fit: BoxFit.fill,
-                            image:
-                                new NetworkImage(friend.value['userPhoto'])))),
-
-                /// Friend User Name
-                Text(
-                  friend.value['userName'],
-                  style: TextStyle(fontSize: 20,
-                  color: theme.theme['textTitle']),
+                CircleAvatar(
+                  backgroundColor: theme.theme['card'],
+                  radius: 30,
+                  backgroundImage: NetworkImage(friend.value['userPhoto']),
                 ),
-
-                /// Friend RallyID
-                Text(
-                  friend.value['rallyID'],
-                  style: TextStyle(fontSize: 20,
-                  color: theme.theme['text']),
+                Container(
+                  width: 10,
+                ),
+                /// Friend User Name
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text(
+                    friend.value[
+                    'userName'],
+                    style: TextStyle(
+                        fontSize: 20, color: theme.theme['textTitle']),
+                  ),
                 )
               ],
             ),
