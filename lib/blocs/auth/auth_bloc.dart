@@ -27,26 +27,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
     yield AuthLoaded("",{});
   }
 
-  // TODO remove Internal Linked Hash Map from this update statement
   Stream<AuthState> _mapReplaceAuthInfoToState(currentState,  event) async*{
-    var updatedAuth = Map.of(currentState);
-    yield AuthLoaded(event.key, event.value);
+    var updatedAuth = Map.of(currentState.value);
+    updatedAuth[event.key] = event.value;
+
+    yield AuthLoaded(currentState.key, updatedAuth);
   }
 }
-
-
-//  void setUser(user){
-//    userRally = user;
-//    print('user has been set to $userRally');
-//  }
-//
-//  void clearUser(){
-//    userRally.clear();
-//    print('user has been cleared');
-//  }
-//
-//  void replaceValue(key, value){
-//    userRally.update(key, (dynamic val) => value);
-//    print('change this info in user: $key : $value');
-//    print('what is user? : $userRally');
-//  }

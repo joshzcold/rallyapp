@@ -21,10 +21,9 @@ class FriendDetails extends StatelessWidget{
 
     return Scaffold(
       backgroundColor: theme.theme['background'],
-      appBar: AppBar(
-        backgroundColor: theme.theme['header'],
-        title: Text('Friend Details'),
-      ),
+      appBar:  AppBar(
+        leading: IconButton(icon: Icon(Icons.arrow_back, color: theme.theme['headerText'],), onPressed: (){Navigator.pop(context);}),
+        title: Text('Friend Details', style: TextStyle(color: theme.theme['headerText']),), backgroundColor: theme.theme['header'],),
       body: BlocBuilder(
         bloc: _notifyBloc,
         builder: (context,notify){

@@ -179,20 +179,44 @@ class FireActions {
     return code;
   }
 
-  uploadUserPhoto(photo) async{
+  uploadUserPhoto(photo, context) async{
     var user = await getFireBaseUser();
     FirebaseStorage storage = await getFireBaseStorageInstance();
+    FirebaseDatabase database = await getFireBaseInstance();
+    final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
 
-    final StorageReference ref =
-    storage.ref().child('photos').child('${user.uid}');
-    final StorageUploadTask uploadTask = ref.putFile(
+    storage.ref().child('photos').child('${user.uid}').putFile(
       photo,
       StorageMetadata(
         contentLanguage: 'en',
-        customMetadata: <String, String>{'activity': 'test'},
       ),
     );
+
+    var url = await storage.ref().child('photos/${user.uid}').getDownloadURL();
+
+    await database.reference().child('/user/${user.uid}/info').update({
+      "userPhoto":url
+    });
+
+    await database.reference().child('/user/${user.uid}/events').once().then((snapshot){
+      Map items = snapshot.value;
+      items.forEach((key, value){
+         database.reference().child('/user/${user.uid}/events/$key').update({
+          "userPhoto":url
+        });
+      });
+    });
+
+    authBloc.dispatch(ReplaceAuthInfo("userPhoto", url));
   }
+
+  getUserPhotoURL() async{
+    var user = await getFireBaseUser();
+    FirebaseStorage storage = await getFireBaseStorageInstance();
+    var url = await storage.ref().child('photos').child('${user.uid}').getDownloadURL();
+    return url;
+  }
+
 }
 
 

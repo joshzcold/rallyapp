@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -47,8 +48,10 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
   );
 
   final FirebaseDatabase database = FirebaseDatabase(app:app);
+  final FirebaseStorage storage = FirebaseStorage(app:app, storageBucket: 'gs://rallydev-40f78.appspot.com/');
 
-  generateRallyID(){
+
+   generateRallyID(){
     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     String randomString(int strlen) {
@@ -72,8 +75,9 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
     //////////////////////////////////////////////////////////////////////////////
 
     // Grabbing user data
-    database.reference().child('user/$uid/info').once().then((snapshot) =>{
-      authBloc.dispatch(AddAuth(uid,snapshot.value)),
+    database.reference().child('user/$uid/info').once().then((snapshot) async{
+      var userPhoto = await storage.ref().child('photos/$uid').getDownloadURL();
+      authBloc.dispatch(AddAuth(uid,snapshot.value));
     });
 
     // Setting Listener on User Info CHANGE

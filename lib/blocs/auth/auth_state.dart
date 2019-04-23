@@ -14,7 +14,7 @@ class AuthLoaded extends AuthState{
   final Map value;
   final String key;
 
-  AuthLoaded(this.key, this.value);
+  AuthLoaded(this.key, this.value) : super([key,value]);
 
   @override
   String toString() => 'AuthLoaded{key: $key, value: $value}';

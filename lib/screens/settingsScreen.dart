@@ -54,8 +54,12 @@ class SettingsState extends State<Settings>{
         toolbarWidgetColor: theme.theme['text'],
       );
       print('cropped Photo');
-      fireAction.uploadUserPhoto(croppedFile);
-      _authBloc.dispatch(ReplaceAuthInfo("userPhoto", croppedFile));
+      try{
+        fireAction.uploadUserPhoto(croppedFile, context);
+      } catch(e){
+        print(e);
+      }
+
     }
 
     void openGallery() async{
@@ -75,8 +79,12 @@ class SettingsState extends State<Settings>{
           toolbarWidgetColor: theme.theme['text']
       );
       print('cropped Gallery');
-      fireAction.uploadUserPhoto(croppedFile);
-      _authBloc.dispatch(ReplaceAuthInfo("userPhoto", croppedFile));
+      try{
+        fireAction.uploadUserPhoto(croppedFile, context);
+      } catch(e){
+        print(e);
+      }
+
     }
 
     getUploadPhotoModal(theme){
@@ -127,8 +135,8 @@ class SettingsState extends State<Settings>{
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
-                              Icon(Icons.photo, color: theme.theme['solidIconDark'],),
-                              Text('Gallery', style: TextStyle(color: theme.theme['text']),)
+                              Icon(Icons.photo, color: theme.theme['colorPrimary'],),
+                              Text('Gallery', style: TextStyle(color: theme.theme['textTitle']),)
                             ],
                           ),
                         ),
@@ -139,8 +147,8 @@ class SettingsState extends State<Settings>{
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
-                              Icon(Icons.photo_camera, color: theme.theme['solidIconDark'],),
-                              Text('Camera', style: TextStyle(color: theme.theme['text']),)
+                              Icon(Icons.photo_camera, color: theme.theme['colorPrimary'],),
+                              Text('Camera', style: TextStyle(color: theme.theme['textTitle']),)
                             ],
                           ),
                         )
