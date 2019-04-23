@@ -500,6 +500,7 @@ class CalendarPageState extends State<CalendarPage> {
                                               child: Container(
                                                   padding: EdgeInsets.all(10),
                                                   child: Row(
+                                                    mainAxisSize: MainAxisSize.min,
                                                     children: <Widget>[
                                                       Column(
                                                         children: <Widget>[
@@ -509,25 +510,28 @@ class CalendarPageState extends State<CalendarPage> {
                                                         ],
                                                       ),
                                                       Container(width: 20,),
-                                                      Column(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            '${selectedEvent['userName']}',
-                                                            style: TextStyle(fontSize: 15, color: theme.theme['text']),
-                                                          ),
-                                                          Row(
-                                                            /// RETURN TIME OF EVENT
-                                                              children:
-                                                              returnTimeInPrettyFormat(selectedEvent, theme)),
-                                                          Text(
-                                                            '${selectedEvent['title']}',
-                                                            style: TextStyle(fontSize: 15, color: theme.theme['text']),
-                                                          ),
-
-                                                          _joinedFriendsConflictingDetails(selectedEvent, theme)
-
-                                                        ],
+                                                      Flexible(
+                                                        child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: <Widget>[
+                                                            Text(
+                                                              '${selectedEvent['userName']}',
+                                                              style: TextStyle(fontSize: 15, color: theme.theme['text']),
+                                                              overflow: TextOverflow.ellipsis,
+                                                            ),
+                                                            Row(
+                                                              /// RETURN TIME OF EVENT
+                                                                children:
+                                                                returnTimeInPrettyFormat(selectedEvent, theme)),
+                                                            Text(
+                                                                '${selectedEvent['title']}',
+                                                                style: TextStyle(fontSize: 15, color: theme.theme['text']),
+                                                                overflow: TextOverflow.ellipsis,
+                                                              ),
+                                                            _joinedFriendsConflictingDetails(selectedEvent, theme)
+                                                          ],
+                                                        )
                                                       )
                                                     ],
                                                   )

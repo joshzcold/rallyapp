@@ -184,30 +184,32 @@ class FireActions {
     FirebaseStorage storage = await getFireBaseStorageInstance();
     FirebaseDatabase database = await getFireBaseInstance();
     final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    var metaDataUUID = uuid.v4();
 
-    storage.ref().child('photos').child('${user.uid}').putFile(
+    var storageTask = storage.ref().child('photos').child('${user.uid}').putFile(
       photo,
       StorageMetadata(
         contentLanguage: 'en',
+        customMetadata: <String, String>{'photo-uid': metaDataUUID},
       ),
-    );
+    ).onComplete.then((value) async{
+      var url = await storage.ref().child('photos/${user.uid}').getDownloadURL();
 
-    var url = await storage.ref().child('photos/${user.uid}').getDownloadURL();
+      await database.reference().child('/user/${user.uid}/info').update({
+        "userPhoto":url
+      });
 
-    await database.reference().child('/user/${user.uid}/info').update({
-      "userPhoto":url
-    });
-
-    await database.reference().child('/user/${user.uid}/events').once().then((snapshot){
-      Map items = snapshot.value;
-      items.forEach((key, value){
-         database.reference().child('/user/${user.uid}/events/$key').update({
-          "userPhoto":url
+      await database.reference().child('/user/${user.uid}/events').once().then((snapshot){
+        Map items = snapshot.value;
+        items.forEach((key, value){
+          database.reference().child('/user/${user.uid}/events/$key').update({
+            "userPhoto":url
+          });
         });
       });
-    });
 
-    authBloc.dispatch(ReplaceAuthInfo("userPhoto", url));
+      authBloc.dispatch(ReplaceAuthInfo("userPhoto", url));
+    });
   }
 
   getUserPhotoURL() async{
