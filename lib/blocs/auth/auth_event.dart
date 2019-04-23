@@ -22,11 +22,10 @@ class RemoveAuth extends AuthEvent{
 
 class ReplaceAuthInfo extends AuthEvent{
   final String key;
-  final String uid;
-  final String value;
+  final value;
 
-  ReplaceAuthInfo(this.uid, this.key, this.value) : super([uid, key, value]);
+  ReplaceAuthInfo(this.key, this.value) : super([key, value]);
 
   @override
-  String toString() => 'ReplaceAuthInfo { uid: $uid ,key: $key, value: $value}';
+  String toString() => 'ReplaceAuthInfo {key: $key, value: $value}';
 }

@@ -20,30 +20,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState>{
   }
 
   Stream<AuthState> _mapAddAuthToState(currentState,event) async*{
-    if(currentState is AuthLoading){
-      currentState = {};
-    } else if(currentState is AuthLoaded){
-      currentState = currentState;
-    }
-    var updatedAuth = {event.key:event.value};
     yield AuthLoaded(event.key, event.value);
   }
 
   Stream<AuthState> _mapRemoveAuthToState( currentState,  event) async*{
-    if(currentState is AuthLoading){
-      currentState = {};
-    } else if(currentState is AuthLoaded){
-      currentState = currentState.user;
-    }
-    final updatedAuth = Map.of(currentState);
-    updatedAuth.remove(event.key);
-    yield AuthLoading();
+    yield AuthLoaded("",{});
   }
 
   // TODO remove Internal Linked Hash Map from this update statement
-  Stream<AuthState> _mapReplaceAuthInfoToState( currentState,  event) async*{
-    var updatedAuth = currentState;
-    updatedAuth.value['${event.key}'] = event.value;
+  Stream<AuthState> _mapReplaceAuthInfoToState(currentState,  event) async*{
+    var updatedAuth = Map.of(currentState);
     yield AuthLoaded(event.key, event.value);
   }
 }

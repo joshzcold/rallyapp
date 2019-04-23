@@ -187,21 +187,22 @@ class FriendsScreenState extends State<FriendsScreen> {
                             } else{
                               return Center(
                                 child: Card(
+                                  color: theme.theme['card'],
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                        ListTile(
                                         leading: Icon(Icons.insert_emoticon, color: theme.theme['solidIconLight']),
-                                        title: Text('NO FRIENDS'),
+                                        title: Text('NO FRIENDS', style: TextStyle(color: theme.theme['text']),),
                                         subtitle: Text(
-                                            'Try sending your rallyID to your friends using Rally'),
+                                            'Try sending your rallyID to your friends using Rally', style: TextStyle(color: theme.theme['text']),),
                                       ),
                                       ButtonTheme.bar(
                                         // make buttons use the appropriate styles for cards
                                         child: ButtonBar(
                                           children: <Widget>[
                                             FlatButton(
-                                              child:  Text('ADD FRIEND', style: theme.theme['colorPrimary'],),
+                                              child:  Text('ADD FRIEND', style: TextStyle(color: theme.theme['colorPrimary']),),
                                               onPressed: () {
                                                 setState(() {
                                                   newFriendModal = getNewFriendModal(auth, theme);

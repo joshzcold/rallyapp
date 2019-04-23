@@ -80,7 +80,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
     database.reference().child('user/$uid/info').onChildChanged.listen((event){
       print(' -- CHANGE -- user info');
       print('user info changed: ${event.snapshot.key} ${event.snapshot.value}');
-      authBloc.dispatch(ReplaceAuthInfo(uid, event.snapshot.key, event.snapshot.value));
+      authBloc.dispatch(ReplaceAuthInfo(event.snapshot.key, event.snapshot.value));
     });
 
     // Setting Listener on Users Friends List CHANGE

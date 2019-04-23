@@ -37,6 +37,123 @@ class SettingsState extends State<Settings>{
 
     AuthBloc _authBloc = BlocProvider.of<AuthBloc>(context);
 
+    void openCamera() async{
+      closeUploadPhotoModal();
+      File picture = await ImagePicker.pickImage(
+        source: ImageSource.camera,
+      );
+      File croppedFile = await ImageCropper.cropImage(
+        sourcePath: picture.path,
+        ratioX: 1.0,
+        ratioY: 1.0,
+        maxWidth: 512,
+        maxHeight: 512,
+        circleShape: true,
+        toolbarColor: theme.theme['background'],
+        statusBarColor: theme.theme['header'],
+        toolbarWidgetColor: theme.theme['text'],
+      );
+      print('cropped Photo');
+      fireAction.uploadUserPhoto(croppedFile);
+      _authBloc.dispatch(ReplaceAuthInfo("userPhoto", croppedFile));
+    }
+
+    void openGallery() async{
+      closeUploadPhotoModal();
+      var picture = await ImagePicker.pickImage(
+        source: ImageSource.gallery,
+      );
+      File croppedFile = await ImageCropper.cropImage(
+          sourcePath: picture.path,
+          ratioX: 1.0,
+          ratioY: 1.0,
+          maxWidth: 512,
+          maxHeight: 512,
+          circleShape: true,
+          toolbarColor: theme.theme['background'],
+          statusBarColor: theme.theme['header'],
+          toolbarWidgetColor: theme.theme['text']
+      );
+      print('cropped Gallery');
+      fireAction.uploadUserPhoto(croppedFile);
+      _authBloc.dispatch(ReplaceAuthInfo("userPhoto", croppedFile));
+    }
+
+    getUploadPhotoModal(theme){
+      setState(() {
+        photoUploadModal = LayoutBuilder(builder: (context, constraints){
+          var maxHeight = constraints.maxHeight;
+          var maxWidth = constraints.maxWidth;
+          var cardHeightMultiplier = 0.20;
+          var cardWidthMultiplier = 0.50;
+
+          if(maxWidth > maxHeight){
+            cardHeightMultiplier = 0.80;
+            cardWidthMultiplier = 0.70;
+          }
+          return InkWell(
+            onTap: (){
+              closeUploadPhotoModal();
+            },
+            child: Container(
+              height: maxHeight,
+              width: maxWidth,
+              decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+              alignment: Alignment.center,
+              child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    boxShadow: [
+                      new BoxShadow(
+                        color: theme.theme['shadow'],
+                        blurRadius: 5.0,
+                        offset: Offset(0.0, 0.0),
+                      )
+                    ],
+                    color: theme.theme['background'],
+                  ),
+                  height: maxHeight * cardHeightMultiplier,
+                  width: maxWidth * cardWidthMultiplier,
+                  alignment: Alignment.center,
+                  child: Container(
+                    width: (maxWidth * cardWidthMultiplier) - 30,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        InkWell(
+                          onTap: (){
+                            openGallery();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Icon(Icons.photo, color: theme.theme['solidIconDark'],),
+                              Text('Gallery', style: TextStyle(color: theme.theme['text']),)
+                            ],
+                          ),
+                        ),
+                        InkWell(
+                          onTap: (){
+                            openCamera();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Icon(Icons.photo_camera, color: theme.theme['solidIconDark'],),
+                              Text('Camera', style: TextStyle(color: theme.theme['text']),)
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+              ),
+            ),
+          );
+        });
+      });
+    }
+
 
     return Scaffold(
       backgroundColor: theme.theme['background'],
@@ -105,121 +222,5 @@ class SettingsState extends State<Settings>{
     setState(() {
       photoUploadModal = Container();
     });
-  }
-
-
-  getUploadPhotoModal(theme){
-    setState(() {
-      photoUploadModal = LayoutBuilder(builder: (context, constraints){
-        var maxHeight = constraints.maxHeight;
-        var maxWidth = constraints.maxWidth;
-        var cardHeightMultiplier = 0.20;
-        var cardWidthMultiplier = 0.50;
-
-        if(maxWidth > maxHeight){
-          cardHeightMultiplier = 0.80;
-          cardWidthMultiplier = 0.70;
-        }
-        return InkWell(
-          onTap: (){
-            closeUploadPhotoModal();
-          },
-          child: Container(
-            height: maxHeight,
-            width: maxWidth,
-            decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-            alignment: Alignment.center,
-            child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  boxShadow: [
-                    new BoxShadow(
-                      color: theme.theme['shadow'],
-                      blurRadius: 5.0,
-                      offset: Offset(0.0, 0.0),
-                    )
-                  ],
-                  color: theme.theme['background'],
-                ),
-                height: maxHeight * cardHeightMultiplier,
-                width: maxWidth * cardWidthMultiplier,
-                alignment: Alignment.center,
-                child: Container(
-                  width: (maxWidth * cardWidthMultiplier) - 30,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      InkWell(
-                        onTap: (){
-                          openGallery(theme);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Icon(Icons.photo, color: theme.theme['solidIconDark'],),
-                            Text('Gallery', style: TextStyle(color: theme.theme['text']),)
-                          ],
-                        ),
-                      ),
-                      InkWell(
-                        onTap: (){
-                          openCamera(theme);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Icon(Icons.photo_camera, color: theme.theme['solidIconDark'],),
-                            Text('Camera', style: TextStyle(color: theme.theme['text']),)
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                )
-            ),
-          ),
-        );
-      });
-    });
-  }
-
-  void openCamera(theme) async{
-    closeUploadPhotoModal();
-    File picture = await ImagePicker.pickImage(
-      source: ImageSource.camera,
-    );
-    File croppedFile = await ImageCropper.cropImage(
-      sourcePath: picture.path,
-      ratioX: 1.0,
-      ratioY: 1.0,
-      maxWidth: 512,
-      maxHeight: 512,
-      circleShape: true,
-        toolbarColor: theme.theme['background'],
-        statusBarColor: theme.theme['header'],
-        toolbarWidgetColor: theme.theme['text'],
-    );
-    print('cropped Photo');
-    fireAction.uploadUserPhoto(croppedFile);
-  }
-
-  void openGallery(theme) async{
-    closeUploadPhotoModal();
-    var picture = await ImagePicker.pickImage(
-      source: ImageSource.gallery,
-    );
-    File croppedFile = await ImageCropper.cropImage(
-      sourcePath: picture.path,
-      ratioX: 1.0,
-      ratioY: 1.0,
-      maxWidth: 512,
-      maxHeight: 512,
-      circleShape: true,
-      toolbarColor: theme.theme['background'],
-      statusBarColor: theme.theme['header'],
-      toolbarWidgetColor: theme.theme['text']
-    );
-    print('cropped Gallery');
-    fireAction.uploadUserPhoto(croppedFile);
   }
 }
