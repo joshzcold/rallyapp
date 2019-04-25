@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/fireActions.dart';
+import 'package:after_layout/after_layout.dart';
+import 'package:rallyapp/widgets/durationPicker.dart';
+import 'package:rallyapp/widgets/durationPicker.dart' as prefix0;
+import 'package:rallyapp/widgets/timePicker.dart';
 
 class NewEvent extends StatefulWidget {
   @override
@@ -18,7 +22,7 @@ var colorLemon = '#a6a124';
 var colorGround = '#703f17';
 var colorAutumn = '#964500';
 
-class NewEventState extends State<NewEvent> {
+class NewEventState extends State<NewEvent>  with AfterLayoutMixin<NewEvent> {
 
   var colorSelection = colorAqua;
 
@@ -33,7 +37,13 @@ class NewEventState extends State<NewEvent> {
   var endTimeText = '$twoHours';
   var endTime = DateTime.now().add(Duration(hours: 2));
 
+  var selectedDate;
+  var selectedStartTime;
+  var selectedDuration;
+
   Widget colorWheel = Container();
+  Widget currentDataHandler = Container();
+
   @override
   Widget build(BuildContext context) {
     final _themeBloc = BlocProvider.of<ThemeBloc>(context);
@@ -77,150 +87,14 @@ class NewEventState extends State<NewEvent> {
             ),
           ],
         ),
-        body: ListView(
+        body: Stack(
           children: <Widget>[
-            Container(
-                child: Stack(
-                  children: <Widget>[
+            ListView(
+              children: <Widget>[
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Column(
-                          children: <Widget>[
-                            Container(
-                              height: 30,
-                            ),
-                            Text(
-                              'Start Time',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle']),
-                            ),
-                            FlatButton(
-                                padding: EdgeInsets.all(0),
-                                onPressed: () {
-                                  DateTime date;
-                                  Future<DateTime> selectedDate = showDatePicker(
-                                    context: context,
-                                    initialDate: startTime,
-                                    firstDate:
-                                    DateTime.now().subtract(Duration(days: 365)),
-                                    lastDate: DateTime.now().add(Duration(days: 365 * 2)),
-                                    builder: (BuildContext context, Widget child) {
-                                      return Theme(
-                                        data: ThemeData.dark(),
-                                        child: child,
-                                      );
-                                    },
-                                  ).then((pickedDate) {
-                                    date = new DateTime(pickedDate.year, pickedDate.month,
-                                        pickedDate.day);
-                                    Future<TimeOfDay> selectedTime = showTimePicker(
-                                      initialTime: TimeOfDay(
-                                          hour: startTime.hour, minute: startTime.minute),
-                                      context: context,
-                                      builder: (BuildContext context, Widget child) {
-                                        return Theme(
-                                          data: ThemeData.dark(),
-                                          child: child,
-                                        );
-                                      },
-                                    ).then((pickedTime) {
-                                      var minutes =
-                                          pickedTime.minute + pickedTime.hour * 60;
-                                      var selectedDateTimeValues =
-                                      date.add(Duration(minutes: minutes));
-                                      print('$selectedDateTimeValues');
-                                      setState(() {
-                                        startTimeText = '$selectedDateTimeValues';
-                                        startTime = selectedDateTimeValues;
-                                      });
-                                    });
-                                  });
-                                },
-                                child: Container(
-                                  height: 30,
-                                  width: maxWidth * .80,
-                                  decoration: BoxDecoration(
-                                    border:
-                                    Border.all(color: Color(0xFFdadce0), width: 1),
-                                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                  ),
-                                  child: Text(
-                                    '$startTimeText',
-                                    style: TextStyle(
-                                        fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                )),
-                            Container(
-                              height: 20,
-                            ),
-                            Text('End Time',
-                                style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
-                            FlatButton(
-                                padding: EdgeInsets.all(0),
-                                onPressed: () {
-                                  DateTime date;
-                                  Future<DateTime> selectedDate = showDatePicker(
-                                    context: context,
-                                    initialDate: endTime,
-                                    firstDate:
-                                    DateTime.now().subtract(Duration(days: 365)),
-                                    lastDate: DateTime.now().add(Duration(days: 365 * 2)),
-                                    builder: (BuildContext context, Widget child) {
-                                      return Theme(
-                                        data: ThemeData.dark(),
-                                        child: child,
-                                      );
-                                    },
-                                  ).then((pickedDate) {
-                                    date = new DateTime(pickedDate.year, pickedDate.month,
-                                        pickedDate.day);
-                                    Future<TimeOfDay> selectedTime = showTimePicker(
-                                      initialTime: TimeOfDay(
-                                          hour: endTime.hour, minute: endTime.minute),
-                                      context: context,
-                                      builder: (BuildContext context, Widget child) {
-                                        return Theme(
-                                          data: ThemeData.dark(),
-                                          child: child,
-                                        );
-                                      },
-                                    ).then((pickedTime) {
-                                      var minutes =
-                                          pickedTime.minute + pickedTime.hour * 60;
-                                      var selectedDateTimeValues =
-                                      date.add(Duration(minutes: minutes));
-                                      print('$selectedDateTimeValues');
-                                      setState(() {
-                                        endTimeText =
-                                        '$selectedDateTimeValues';
-                                        endTime = selectedDateTimeValues;
-                                      });
-                                    });
-                                  });
-                                },
-                                child: Container(
-                                  height: 30,
-                                  width: maxWidth * .80,
-                                  decoration: BoxDecoration(
-                                    border:
-                                    Border.all(color: Color(0xFFdadce0), width: 1),
-                                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                  ),
-                                  child: Text(
-                                    '$endTimeText',
-                                    style: TextStyle(
-                                        fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                )),
-                            Container(
-                              height: 20,
-                            ),
-                          ],
-                        ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -272,24 +146,24 @@ class NewEventState extends State<NewEvent> {
                               width: maxWidth/1.5,
                             ),
                             FlatButton(
-                              onPressed: (){
-                                _changeColorButton(maxHeight, maxWidth, theme);
-                              },
-                              padding: EdgeInsets.all(0),
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(Icons.brush, size: 30, color: theme.theme['solidIconDark'],),
-                                  Container(width: 10,),
-                                  Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                      color: Color(_getColorFromHex(colorSelection)),
-                                      shape: BoxShape.circle,
+                                onPressed: (){
+                                  _changeColorButton(maxHeight, maxWidth, theme);
+                                },
+                                padding: EdgeInsets.all(0),
+                                child: Row(
+                                  children: <Widget>[
+                                    Icon(Icons.brush, size: 30, color: theme.theme['solidIconDark'],),
+                                    Container(width: 10,),
+                                    Container(
+                                      height: 50,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                        color: Color(_getColorFromHex(colorSelection)),
+                                        shape: BoxShape.circle,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              )
+                                  ],
+                                )
                             ),
                           ],
                         ),
@@ -298,29 +172,115 @@ class NewEventState extends State<NewEvent> {
                         ),
                       ],
                     ),
-                    Positioned(
-                      top: 0,
-                      child: AnimatedSwitcher(
-                        // the duration can be adjusted to expand the friend events
-                        // faster or slower.
-                        duration: Duration(milliseconds: 100),
-                        transitionBuilder:
-                            (Widget child, Animation<double> animation) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        },
-                        child: colorWheel,
-                      ),
-                    )
-                  ],
-                )
-            )
+              ],
+            ),
+            AnimatedSwitcher(
+                // the duration can be adjusted to expand the friend events
+                // faster or slower.
+                duration: Duration(milliseconds: 100),
+                transitionBuilder:
+                    (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+                child: colorWheel,
+              ),
+            AnimatedSwitcher(
+                // the duration can be adjusted to expand the friend events
+                // faster or slower.
+                duration: Duration(milliseconds: 100),
+                transitionBuilder:
+                    (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+                child: currentDataHandler,
+              ),
           ],
         )
-
         );
+  }
+
+  @override
+  void afterFirstLayout(BuildContext context) async{
+    // Calling the same function "after layout" to resolve the issue.
+    var date = await getDateFromDatePicker();
+    print('selectedDate = $date');
+    setState(() {
+      selectedDate = date;
+      currentDataHandler = TimePicker();
+    });
+
+  }
+
+  switchToDurationFromTimePicker(startTime, context){
+    print('selectedStartTime = $startTime');
+    setState(() {
+      selectedStartTime = startTime;
+      currentDataHandler = returnDurationPicker(context, closeDataHandlerCallBack);
+    });
+  }
+
+  closeDataHandlerCallBack(duration, context){
+    print('selectedDuration = $duration');
+    setState(() {
+      selectedDuration = duration;
+      currentDataHandler = Container();
+    });
+  }
+
+  getDateFromDatePicker() {
+    Future<DateTime> selectedDate = showDatePicker(
+      context: context,
+      initialDate: startTime,
+      firstDate:
+      DateTime.now().subtract(Duration(days: 365)),
+      lastDate: DateTime.now().add(Duration(days: 365 * 2)),
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.dark(),
+          child: child,
+        );
+      },
+    );
+    return selectedDate;
+  }
+
+  getTimeFromTimePicker() {
+    Future<DateTime> selectedDate = showDatePicker(
+      context: context,
+      initialDate: startTime,
+      firstDate:
+      DateTime.now().subtract(Duration(days: 365)),
+      lastDate: DateTime.now().add(Duration(days: 365 * 2)),
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.dark(),
+          child: child,
+        );
+      },
+    );
+    return selectedDate;
+  }
+  getDurationFromPicker() {
+    Future<DateTime> selectedDate = showDatePicker(
+      context: context,
+      initialDate: startTime,
+      firstDate:
+      DateTime.now().subtract(Duration(days: 365)),
+      lastDate: DateTime.now().add(Duration(days: 365 * 2)),
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.dark(),
+          child: child,
+        );
+      },
+    );
+    return selectedDate;
   }
 
      _changeColorButton(maxHeight, maxWidth, theme){
