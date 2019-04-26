@@ -83,7 +83,23 @@ class TimePickerState extends State<TimePicker>{
                               children: timeInc.map<Widget>((item){
                                 return InkWell(
                                   onTap: (){
-                                    widget.callback(time[index]+item+amPm[index], context);
+                                    if(amPm[index] == 'PM'){
+                                      int a = int.parse(time[index]);
+                                      if(a == 12){
+                                        widget.callback(a,item, amPm[index], context);
+                                      } else{
+                                        int value = a + 12;
+                                        widget.callback(value,item, amPm[index], context);
+                                      }
+                                    } else{
+                                      int a = int.parse(time[index]);
+                                      if(a == 12){
+                                        widget.callback(0,item, amPm[index], context);
+                                      } else {
+                                        int value = int.parse(time[index]);
+                                        widget.callback(value,item, amPm[index], context);
+                                      }
+                                    }
                                   },
                                   child: Container(
                                       decoration: BoxDecoration(color: theme.theme['colorPrimary'], borderRadius: BorderRadius.all(Radius.circular(8))),
