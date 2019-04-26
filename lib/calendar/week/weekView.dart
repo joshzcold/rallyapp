@@ -112,18 +112,33 @@ eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack, th
         Map<dynamic, dynamic> newDict = {};
         state.events.entries.forEach((item) => {
         item.value.forEach((key, value) {
-          int sTime = value['start'];
-          DateTime startWeek =
-          week.first.subtract(Duration(hours: 6));
-          DateTime endWeek = week.last
-              .add(Duration(hours: 18))
-              .subtract(Duration(minutes: 1));
-          if (sTime >= startWeek.millisecondsSinceEpoch &&
-              sTime <= endWeek.millisecondsSinceEpoch) {
-            newDict.addAll({key: value});
+          DateTime sTime = DateTime.fromMillisecondsSinceEpoch(value['start']);
+          DateTime eTime = DateTime.fromMillisecondsSinceEpoch(value['end']);
+          DateTime startWeek = week.first.subtract(Duration(hours: 6));
+          DateTime endWeek = week.last.add(Duration(hours: 18)).subtract(Duration(minutes: 1));
+          if (sTime.isAfter(startWeek)  && sTime.isBefore(endWeek)) {
+            if(sTime.day != eTime.day){
+              // Splitting up events that overlap midnight
+              for(var i = 0; i <= 1; i++){
+                if(i == 0){
+                  DateTime midnight = new DateTime(sTime.year, sTime.month, sTime.day, 23, 59, 59, 999);
+                  var event = Map.of(value);
+                  var milli = midnight.millisecondsSinceEpoch;
+                  event['end'] = milli;
+                  newDict.addAll({key+',1': event});
+                } else{
+                  DateTime midnight = new DateTime(eTime.year, eTime.month, eTime.day, 00, 00, 00);
+                  var event = Map.of(value);
+                  var milli = midnight.millisecondsSinceEpoch;
+                  event['start'] = milli;
+                  newDict.addAll({key+',2': event});
+                }
+              }
+            } else{
+              newDict.addAll({key: value});
+            }
           }
-        }),
-        });
+        })});
         Map conflictingEvents = {};
         Map nonConflictingEvents = Map.from(newDict);
 
@@ -284,9 +299,11 @@ eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack, th
                               padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
                               onPressed: () {
                                 if(auth.key == event.value['user']){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
+                                  List key = event.key.toString().split(',');
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: event.value,)));
                                 } else{
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                                  List key = event.key.toString().split(',');
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(eventKey: key[0], eventValue: event.value,)));
                                 }
                               },
                               child: ListView(

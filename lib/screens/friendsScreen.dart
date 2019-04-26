@@ -503,7 +503,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                                     child: FlatButton(
                                         padding: EdgeInsets.all(0),
                                         onPressed: () {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                                          List key = event.key.toString().split(',');
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(eventKey: key[0], eventValue: event.value,)));
                                         },
                                         child: Container(
                                             padding: EdgeInsets.all(10),

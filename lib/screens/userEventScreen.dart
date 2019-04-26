@@ -7,12 +7,16 @@ import 'package:rallyapp/fireActions.dart';
 
 
 class UserEvent extends StatefulWidget {
-  final MapEntry event;
+  final String eventKey;
+  final Map eventValue;
 
-  UserEvent({@required this.event});
+  const UserEvent({
+    @required this.eventKey,
+    @required this.eventValue,
+  });
 
   @override
-  UserEventState createState() => UserEventState(event: event);
+  UserEventState createState() => UserEventState();
 
 }
 FireActions fireActions = new FireActions();
@@ -38,20 +42,18 @@ enum MenuChoices { delete }
 
 
 class UserEventState extends State<UserEvent> {
-  MapEntry event;
-  UserEventState({@required this.event});
-
+  
   @override
   void initState() {
     super.initState();
-    party = event.value['party'];
-    _gameTitleController = TextEditingController(text: event.value['title'].toString());
+    party = widget.eventValue['party'];
+    _gameTitleController = TextEditingController(text: widget.eventValue['title'].toString());
     _partyLimitController = TextEditingController(text: party['partyLimit'].toString());
-    startTimeText = '${DateTime.fromMillisecondsSinceEpoch(event.value['start'])}';
-    startTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
-    endTimeText = '${DateTime.fromMillisecondsSinceEpoch(event.value['end'])}';
-    endTime = DateTime.fromMillisecondsSinceEpoch(event.value['end']);
-    colorSelection = event.value['color'];
+    startTimeText = '${DateTime.fromMillisecondsSinceEpoch(widget.eventValue['start'])}';
+    startTime = DateTime.fromMillisecondsSinceEpoch(widget.eventValue['start']);
+    endTimeText = '${DateTime.fromMillisecondsSinceEpoch(widget.eventValue['end'])}';
+    endTime = DateTime.fromMillisecondsSinceEpoch(widget.eventValue['end']);
+    colorSelection = widget.eventValue['color'];
   }
 
   static DateTime currentTime = DateTime.now();
@@ -77,7 +79,7 @@ class UserEventState extends State<UserEvent> {
                     final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
                     AuthLoaded auth =  authBloc.currentState;
                     var selectedEvents = events.events['${auth.key}'];
-                    var selectedEvent = selectedEvents['${event.key}'];
+                    var selectedEvent = selectedEvents['${widget.eventKey}'];
                     var party = selectedEvent['party'];
                     var friends = party['friends'];
 
@@ -87,7 +89,7 @@ class UserEventState extends State<UserEvent> {
                         _partyLimitController.text,
                         friends,
                         _gameTitleController.text,
-                        event.key,
+                        widget.eventKey,
                         context
                     );
                     Navigator.pop(context);
@@ -119,7 +121,7 @@ class UserEventState extends State<UserEvent> {
                 child: PopupMenuButton<MenuChoices>(
                   onSelected: (MenuChoices result) {
                     if(result == MenuChoices.delete){
-                      fireActions.deleteEvent(event.key, context);
+                      fireActions.deleteEvent(widget.eventKey, context);
                       Navigator.pop(context);
                     }
                   },
@@ -366,7 +368,7 @@ class UserEventState extends State<UserEvent> {
                           Container(
                             height: 30,
                           ),
-                          calculateJoinedFriendsWidget(context, event.key, theme)
+                          calculateJoinedFriendsWidget(context, widget.eventKey, theme)
                         ],
                       ),
                       Positioned(

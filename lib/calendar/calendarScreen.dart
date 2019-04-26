@@ -93,7 +93,8 @@ class CalendarPageState extends State<CalendarPage> {
       var pushedValue = eventsLoaded.events[user][value];
       MapEntry pushedEvent = new MapEntry(value, pushedValue);
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: pushedEvent,)));
+      List key = pushedEvent.key.toString().split(',');
+      Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(eventKey: key[0], eventValue: pushedEvent.value,)));
     }
     if(key == "joinedFriend"){
       final eventBloc = BlocProvider.of<EventsBloc>(context);
@@ -101,7 +102,8 @@ class CalendarPageState extends State<CalendarPage> {
       var pushedValue = eventsLoaded.events[user][value];
       MapEntry pushedEvent = new MapEntry(value, pushedValue);
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: pushedEvent,)));
+      List key = pushedEvent.key.toString().split(',');
+      Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: pushedEvent.value,)));
     }
     if(key == "friendInvite"){
       Navigator.push(context, MyCustomRoute(builder: (context) => FriendsScreen()));
@@ -492,9 +494,11 @@ class CalendarPageState extends State<CalendarPage> {
                                               padding: EdgeInsets.all(0),
                                               onPressed: () {
                                                 if(auth.key == event.value['user']){
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(event: event,)));
+                                                  List key = event.key.toString().split(',');
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: event.value,)));
                                                 } else{
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(event: event,)));
+                                                  List key = event.key.toString().split(',');
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(eventKey: key[0], eventValue: event.value,)));
                                                 }
                                               },
                                               child: Container(

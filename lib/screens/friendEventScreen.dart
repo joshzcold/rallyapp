@@ -9,12 +9,18 @@ import 'package:rallyapp/fireActions.dart';
 FireActions fireActions = new FireActions();
 
 class FriendEvent extends StatelessWidget {
-  final event;
-  FriendEvent({@required this.event});
+  final String eventKey;
+  final Map eventValue;
+
+  const FriendEvent({
+    @required this.eventKey,
+    @required this.eventValue,
+  });
+
 
   @override
   Widget build(BuildContext context) {
-    var party = event.value['party'];
+    var party = eventValue['party'];
     var partyLimit = party['partyLimit'];
     final _themeBloc = BlocProvider.of<ThemeBloc>(context);
     ThemeLoaded theme = _themeBloc.currentState;
@@ -24,8 +30,8 @@ class FriendEvent extends StatelessWidget {
       backgroundColor: theme.theme['background'],
         appBar: AppBar(
           centerTitle: true,
-          title:Text(event.value['userName'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          backgroundColor: Color(_getColorFromHex(event.value['color'])),
+          title:Text(eventValue['userName'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          backgroundColor: Color(_getColorFromHex(eventValue['color'])),
         ),
         body: ListView(
           children: <Widget>[
@@ -42,10 +48,9 @@ class FriendEvent extends StatelessWidget {
                               height: 30,
                             ),
                             CircleAvatar(
-                              backgroundColor: Color(_getColorFromHex(event.value['color'])),
+                              backgroundColor: Color(_getColorFromHex(eventValue['color'])),
                               radius: 30,
-                              backgroundImage: NetworkImage(event
-                                  .value['userPhoto']),
+                              backgroundImage: NetworkImage(eventValue['userPhoto']),
                             ),
                             Container(
                               height: 20,
@@ -63,7 +68,7 @@ class FriendEvent extends StatelessWidget {
                                     borderRadius: BorderRadius.all(Radius.circular(8.0)),
                                   ),
                                   child: Text(
-                                    '${DateTime.fromMillisecondsSinceEpoch(event.value['start'])}',
+                                    '${DateTime.fromMillisecondsSinceEpoch(eventValue['start'])}',
                                     style: TextStyle(
                                         fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
                                     textAlign: TextAlign.center,
@@ -84,7 +89,7 @@ class FriendEvent extends StatelessWidget {
                                     borderRadius: BorderRadius.all(Radius.circular(8.0)),
                                   ),
                                   child: Text(
-                                    '${DateTime.fromMillisecondsSinceEpoch(event.value['end'])}',
+                                    '${DateTime.fromMillisecondsSinceEpoch(eventValue['end'])}',
                                     style: TextStyle(
                                         fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
                                     textAlign: TextAlign.center,
@@ -124,7 +129,7 @@ class FriendEvent extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Text(event.value['title'], style: TextStyle(color: theme.theme['text']),),
+                                  Text(eventValue['title'], style: TextStyle(color: theme.theme['text']),),
                                 ],
                               ),
                             ),
@@ -161,7 +166,7 @@ class FriendEvent extends StatelessWidget {
                         Container(
                           height: 20,
                         ),
-                        calculateJoinedFriendsWidget(context, event, theme)
+                        calculateJoinedFriendsWidget(context, eventValue, theme)
                       ],
                     ),
                   ],
@@ -182,8 +187,8 @@ class FriendEvent extends StatelessWidget {
   calculateJoinedFriendsWidget(context, event, theme) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(bloc: _eventsBloc, builder: (context, state){
-        var selectedEvents = state.events['${event.value['user']}'];
-        var selectedEvent = selectedEvents['${event.key}'];
+        var selectedEvents = state.events['${eventValue['user']}'];
+        var selectedEvent = selectedEvents['${eventKey}'];
         var party = selectedEvent['party'];
         var friends = party['friends'];
         if(friends == null){
@@ -237,8 +242,8 @@ class FriendEvent extends StatelessWidget {
   joinLeaveButton(context, theme) {
     final _eventsBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(bloc: _eventsBloc, builder: (context, state){
-      var selectedEvents = state.events['${event.value['user']}'];
-      var selectedEvent = selectedEvents['${event.key}'];
+      var selectedEvents = state.events['${eventValue['user']}'];
+      var selectedEvent = selectedEvents['$eventKey'];
       var party = selectedEvent['party'];
       var friends = party['friends'];
       final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
@@ -246,7 +251,7 @@ class FriendEvent extends StatelessWidget {
       if(friends == null){
         return FlatButton(
             onPressed: (){
-              fireActions.joinEvent(event.key, event.value['user'], context);
+              fireActions.joinEvent(eventKey, eventValue['user'], context);
             },
             padding: EdgeInsets.all(0),
             child: Row(
@@ -271,7 +276,7 @@ class FriendEvent extends StatelessWidget {
         if(friends[auth.key] != null){
           return FlatButton(
               onPressed: (){
-                fireActions.leaveEvent(event.key, event.value['user'], context);
+                fireActions.leaveEvent(eventKey, eventValue['user'], context);
               },
               padding: EdgeInsets.all(0),
               child: Row(
@@ -295,7 +300,7 @@ class FriendEvent extends StatelessWidget {
         } else{
           return FlatButton(
               onPressed: (){
-                fireActions.joinEvent(event.key, event.value['user'], context);
+                fireActions.joinEvent(eventKey, eventValue['user'], context);
               },
               padding: EdgeInsets.all(0),
               child: Row(
