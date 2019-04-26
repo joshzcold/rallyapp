@@ -213,20 +213,24 @@ class FriendEvent extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             /// This Container is the Friend Images
-                            Container(
-                                width: 60.0,
-                                height: 60.0,
-                                decoration: new BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: new DecorationImage(
-                                        fit: BoxFit.fill,
-                                        image:
-                                        new NetworkImage(friend.value['userPhoto'])))),
-
+                            CircleAvatar(
+                              backgroundColor: theme.theme['card'],
+                              radius: 30,
+                              backgroundImage: NetworkImage(friend.value['userPhoto']),
+                            ),
+                            Container(width: 5,),
                             /// Friend User Name
-                            Text(
-                              friend.value['userName'],
-                              style: TextStyle(fontSize: 20, color: theme.theme['text']),
+                            Flexible(
+                              child: new Container(
+                                padding: new EdgeInsets.only(right: 13.0),
+                                child: new Text(
+                                  friend.value[
+                                  'userName'],
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 20, color: theme.theme['textTitle']),
+                                ),
+                              ),
                             ),
                           ],
                         ),

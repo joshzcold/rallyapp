@@ -660,15 +660,11 @@ class UserEventState extends State<UserEvent> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             /// This Container is the Friend Images
-                            Container(
-                                width: 60.0,
-                                height: 60.0,
-                                decoration: new BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: new DecorationImage(
-                                        fit: BoxFit.fill,
-                                        image:
-                                        new NetworkImage(friend.value['userPhoto'])))),
+                            CircleAvatar(
+                              backgroundColor: theme.theme['card'],
+                              radius: 30,
+                              backgroundImage: NetworkImage(friend.value['userPhoto']),
+                            ),
 
                             /// Friend User Name
                             Flexible(
