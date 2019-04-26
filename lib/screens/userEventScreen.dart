@@ -72,8 +72,6 @@ class UserEventState extends State<UserEvent> {
   static var selectedDuration = '';
   static var selectedDurationInc = '';
 
-  String eventTimeText = '';
-
   Widget colorWheel = Container();
   Widget currentDataHandler = Container();
 
@@ -159,7 +157,7 @@ class UserEventState extends State<UserEvent> {
                                       children: <Widget>[
                                         Icon(Icons.timelapse, color: Colors.white,),
                                         Container(width: 5,),
-                                        Text(eventTimeText, style: TextStyle(color: Colors.white, fontSize: 15),),
+                                        Text(grabSelectedTimeText(), style: TextStyle(color: Colors.white, fontSize: 15),),
                                       ],
                                     )
                                 ),
@@ -369,7 +367,6 @@ class UserEventState extends State<UserEvent> {
     int start = selectedStartTime;
     String minutes = selectedMinutes;
     String duration = selectedDuration;
-    String startTimeTextValue;
 
     if(duration == '30'){duration = '.5';}
 
@@ -382,18 +379,9 @@ class UserEventState extends State<UserEvent> {
     var begin = new DateTime(date.year, date.month, date.day, start, minuteValue);
     var end = begin.add(Duration(minutes: minutesToAdd));
 
-    if(selectedStartTimeInc == "PM"){
-      if(start == 12){
-        startTimeTextValue = "12";
-      } else{
-        startTimeTextValue = (start - 12).toString();
-      }
-    } else{startTimeTextValue = start.toString();}
-
     setState(() {
       startTime = begin;
       endTime = end;
-      eventTimeText = '${startTime.month}/${startTime.day}  $startTimeTextValue$minutes $selectedStartTimeInc for $selectedDuration $selectedDurationInc';
     });
 
   }
@@ -693,6 +681,45 @@ class UserEventState extends State<UserEvent> {
           );
         }
       },);
+  }
+
+  String grabSelectedTimeText() {
+    DateTime start = startTime;
+    DateTime end  = endTime;
+    String startTimeTextValue;
+    String minuteTextValue;
+    String amPm;
+    String durationInc = 'hrs';
+    String duration = '';
+    var difference = end.difference(start).inMinutes/60;
+
+    if(difference < 1){
+      duration = (difference*60).toString();
+      durationInc = 'mins';
+    } else{
+      duration = difference.toString();
+      durationInc = 'hrs';
+    }
+
+    if(start.hour == 12){
+        startTimeTextValue = "12";
+    } else{
+        startTimeTextValue = (start.hour - 12).toString();
+    }
+
+    if(start.minute == 0){
+      minuteTextValue = "00";
+    } else{
+      minuteTextValue = start.minute.toString()
+    }
+
+    if(start.hour >= 12){
+      amPm = 'PM';
+    } else{
+      amPm = 'AM';
+    }
+
+    return '${start.month}/${start.day} $startTimeTextValue:$minuteTextValue $amPm for $duration $durationInc';
   }
 }
 

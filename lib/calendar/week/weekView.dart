@@ -585,7 +585,8 @@ double moveJoinedFriendsRightBasedOfConstraints(event, constraints) {
   }
 
   List<Widget> _joinedFriends(event) {
-    if (event.value['party']['friends'] != null) {
+  var a = event.value['party'];
+    if (a['friends'] != null) {
       return event.value['party']['friends'].entries
           .map<Widget>((friend) => CircleAvatar(
         radius: 15,

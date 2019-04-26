@@ -105,25 +105,28 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
       EventsLoaded currentEvents = eventBloc.currentState;
       var usersEventsBefore = currentEvents.events[uid];
       var eventBefore = usersEventsBefore[event.snapshot.key];
-      var partyBefore = eventBefore['party']['friends'];
-      var partyAfter = event.snapshot.value['party']['friends'];
-      if(partyBefore == null){partyBefore = {};}
-      if(partyAfter == null){ partyAfter = {};}
-      if(partyBefore.length < partyAfter.length){
-        var foundFriend;
-        partyAfter.forEach((key, value){
-          if(!partyBefore.containsKey(key)){
-            foundFriend = value;
+      var a = eventBefore['party'];
+      if( a != null){
+        var partyBefore = eventBefore['party']['friends'];
+        var partyAfter = event.snapshot.value['party']['friends'];
+        if(partyBefore == null){partyBefore = {};}
+        if(partyAfter == null){ partyAfter = {};}
+        if(partyBefore.length < partyAfter.length){
+          var foundFriend;
+          partyAfter.forEach((key, value){
+            if(!partyBefore.containsKey(key)){
+              foundFriend = value;
+            }
+          });
+          var eventTitle = event.snapshot.value['title'];
+          var startTime = DateTime.fromMillisecondsSinceEpoch(event.snapshot.value['start']);
+          var endTime = DateTime.fromMillisecondsSinceEpoch(event.snapshot.value['end']);
+
+          var friendNotifyStatus = currentNotify.notify[foundFriend['id']];
+
+          if(friendNotifyStatus['notifyJoined'] == true || friendNotifyStatus['notifyJoined'] == null){
+            _showNotification('${foundFriend['userName']} has joined your event! @$startTime - $endTime','$eventTitle',"joinedFriend,"+event.snapshot.key.toString()+',$uid');
           }
-        });
-        var eventTitle = event.snapshot.value['title'];
-        var startTime = DateTime.fromMillisecondsSinceEpoch(event.snapshot.value['start']);
-        var endTime = DateTime.fromMillisecondsSinceEpoch(event.snapshot.value['end']);
-
-        var friendNotifyStatus = currentNotify.notify[foundFriend['id']];
-
-        if(friendNotifyStatus['notifyJoined'] == true || friendNotifyStatus['notifyJoined'] == null){
-          _showNotification('${foundFriend['userName']} has joined your event! @$startTime - $endTime','$eventTitle',"joinedFriend,"+event.snapshot.key.toString()+',$uid');
         }
       }
 
