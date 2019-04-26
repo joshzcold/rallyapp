@@ -3,14 +3,14 @@ import 'package:flutter/physics.dart';
 
 class SwipeButton extends StatefulWidget {
   const SwipeButton({
-    this.leftContent,
-    this.rightContent,
-    this.height,
+    @required this.leftContent,
+    @required this.rightContent,
+    this.height = 52.0,
   });
 
   final leftContent;
   final rightContent;
-  final height;
+  final double height;
 
   @override
   SwipeButtonState createState() => SwipeButtonState();
@@ -46,12 +46,12 @@ class SwipeButtonState extends State<SwipeButton>{
                 _controller.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.easeOut);
           },
           child: Container(
-              height: 53,
+              height: widget.height,
               child: PageView(
                 controller: _controller,
                 children: <Widget>[
-                  Text('fdsafdsafdsa'),
-                  Text('kjhgklujgkug')
+                  widget.leftContent,
+                  widget.rightContent
                 ],
               )
           )

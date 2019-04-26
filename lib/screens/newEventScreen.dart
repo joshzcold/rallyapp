@@ -212,7 +212,7 @@ class NewEventState extends State<NewEvent>  with AfterLayoutMixin<NewEvent> {
     print('selectedDate = $date');
     setState(() {
       selectedDate = date;
-      currentDataHandler = TimePicker();
+      currentDataHandler = TimePicker( callback: switchToDurationFromTimePicker,);
     });
 
   }
