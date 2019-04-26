@@ -878,6 +878,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                           ),
                           width: (maxWidth * cardWidthMultiplier) * .80,
                           child: TextFormField(
+                            autocorrect: false,
+                            autovalidate: false,
                             style: TextStyle(color: theme.theme['text']),
                             cursorColor: theme.theme['textTitle'],
                             key: _formKey,
@@ -938,74 +940,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                             onPressed: () async{
                               var code = await fireActions.checkForRallyID(newFriendTextController.text, context);
                               print(code);
-                              if(code == "USER_RAL"){
-                                setState(() {
-                                  setState(() {
-                                    newFriendErrorMessage = AlertDialog(
-                                      backgroundColor: theme.theme['card'],
-                                      title: new Text("RallyID = Users RallyID",style: TextStyle(color: theme.theme['text']),),
-                                      content: new Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                          Text("You can't send a friend invite to yourself", style: TextStyle(color: theme.theme['text']),),
-                                          Icon(Icons.favorite_border, color: theme.theme['colorPrimary'],)
-                                        ],) ,
-                                      actions: <Widget>[
-                                        // usually buttons at the bottom of the dialog
-                                        new FlatButton(
-                                          child: new Text("Close",style: TextStyle(color: theme.theme['text']),),
-                                          onPressed: () {
-                                            setState((){
-                                              newFriendErrorMessage = Container();
-                                            });
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  });
-                                });
-                              } else if(code == "NOT_FOUND"){
-                                setState(() {
-                                  newFriendErrorMessage = AlertDialog(
-                                    backgroundColor: theme.theme['card'],
-                                    title: new Text("RallyID Not Found",style: TextStyle(color: theme.theme['text']),),
-                                    content: new Text("Rally couldn't find RallyID: ${newFriendTextController.text} in the directory, double check and try again",
-                                      style: TextStyle(color: theme.theme['text']),),
-                                    actions: <Widget>[
-                                      // usually buttons at the bottom of the dialog
-                                      new FlatButton(
-                                        child: new Text("Close",style: TextStyle(color: theme.theme['text']),),
-                                        onPressed: () {
-                                          setState((){
-                                            newFriendErrorMessage = Container();
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                });
-                              } else {
-                                setState(() {
-                                  newFriendErrorMessage = AlertDialog(
-                                    backgroundColor: theme.theme['card'],
-                                    title: new Text("Friend Invite Sent!",style: TextStyle(color: theme.theme['text']),),
-                                    content: new Text("Once your friend has accepted your invite you'll be able to see their events",style: TextStyle(color: theme.theme['text']),),
-                                    actions: <Widget>[
-                                      // usually buttons at the bottom of the dialog
-                                      new FlatButton(
-                                        child: new Text("Close"),
-                                        onPressed: () {
-                                          setState((){
-                                            newFriendErrorMessage = Container();
-//                                            newFriendModal = Container();
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                });
-                                fireActions.sendInvite(code, context);
-                              }
+                              getAlertFromCode(code, theme);
                             },
                             padding: EdgeInsets.all(0),
                             child: Row(
@@ -1034,6 +969,78 @@ class FriendsScreenState extends State<FriendsScreen> {
         ),
       );
     });
+  }
+
+  void getAlertFromCode(code, theme) {
+    if(code == "USER_RAL"){
+      showDialog(
+          context: context,
+          builder: (context){
+            return  AlertDialog(
+              backgroundColor: theme.theme['card'],
+              title: new Text("RallyID = Users RallyID",style: TextStyle(color: theme.theme['text']),),
+              content: new Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text("You can't send a friend invite to yourself", style: TextStyle(color: theme.theme['text']),),
+                  Icon(Icons.favorite_border, color: theme.theme['colorPrimary'],)
+                ],) ,
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close",style: TextStyle(color: theme.theme['text']),),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    } else if(code == "NOT_FOUND"){
+      showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              backgroundColor: theme.theme['card'],
+              title: new Text("RallyID Not Found",style: TextStyle(color: theme.theme['text']),),
+              content: new Text("Rally couldn't find RallyID: ${newFriendTextController.text} in the directory, double check and try again",
+                style: TextStyle(color: theme.theme['text']),),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close",style: TextStyle(color: theme.theme['text']),),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    } else {
+      fireActions.sendInvite(code, context);
+      showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              backgroundColor: theme.theme['card'],
+              title: new Text("Friend Invite Sent!",style: TextStyle(color: theme.theme['text']),),
+              content: new Text("Once your friend has accepted your invite you'll be able to see their events",style: TextStyle(color: theme.theme['text']),),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    setState((){
+                      newFriendModal = Container();
+                      Navigator.of(context).pop();
+                    });
+                  },
+                ),
+              ],
+            );
+          }
+      );
+    }
   }
 }
 
