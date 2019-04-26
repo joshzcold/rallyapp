@@ -459,7 +459,8 @@ class CalendarPageState extends State<CalendarPage> {
                           .map<Widget>((event) =>
                           BlocBuilder(bloc: _eventsBloc, builder: (context, state){
                             var selectedUserEvents = state.events[event.value['user']];
-                            var selectedEvent = selectedUserEvents[event.key];
+                            var key = event.key.toString().split(',');
+                            var selectedEvent = selectedUserEvents[key[0]];
                             if(selectedEvent == null){
                               return Container();
                             } else{
