@@ -43,6 +43,7 @@ class EventsBloc extends Bloc<EventsEvent, EventsState>{
 
   Stream<EventsState>_mapReplaceEventToState(currentState ,event) async*{
     final updatedEvents = Map.of(currentState.events);
+    if(updatedEvents[event.uid] == null){updatedEvents[event.uid] = {};}
     updatedEvents[event.uid].remove(event.key);
     updatedEvents[event.uid].addAll({event.key: event.value});
     yield EventsLoaded(updatedEvents);
