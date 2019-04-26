@@ -74,6 +74,8 @@ class UserEventState extends State<UserEvent> {
 
   Widget colorWheel = Container();
   Widget currentDataHandler = Container();
+  Widget evenHeightSpacer =  Container(height: 30,);
+
 
   @override
   Widget build(BuildContext context) {
@@ -127,37 +129,164 @@ class UserEventState extends State<UserEvent> {
           ),
           body: Stack(
             children: <Widget>[
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-
-                  Row(children: <Widget>[
-                    Container(width: 50,),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                  evenHeightSpacer,
+                    Row(children: <Widget>[
+                      Container(width: 50,),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Date and Time',
+                              style:
+                              TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
+                          Container(height: 10,),
+                          InkWell(
+                              onTap: (){
+                                switchToDatePicker(context);
+                              },
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                      decoration: BoxDecoration(
+                                          color: theme.theme['colorSecondary'],
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0))
+                                      ),
+                                      padding: EdgeInsets.all(10.0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(Icons.timelapse, color: Colors.white,),
+                                          Container(width: 5,),
+                                          Text(grabSelectedTimeText(), style: TextStyle(color: Colors.white, fontSize: 15),),
+                                        ],
+                                      )
+                                  ),
+                                ],
+                              )
+                          ),
+                        ],
+                      ),
+                    ],),
+                evenHeightSpacer,
+                    Row(children: <Widget>[
+                      Container(width: 50,),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Event Title',
+                              style:
+                              TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
+                          Container(
+                            width: maxWidth * .70,
+                            child: TextFormField(
+                              style: TextStyle(color: theme.theme['text']),
+                              textAlign: TextAlign.start,
+                              controller: _gameTitleController,
+                              decoration: InputDecoration(
+                                icon: Icon(Icons.videogame_asset, color: theme.theme['solidIconDark'],),
+                                hintStyle: TextStyle(color: theme.theme['text']),
+                                hintText: 'Playing Halo with some Bros, chilling.',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],),
+                evenHeightSpacer,
+                    Row(
                       children: <Widget>[
-                        Text('Date and Time',
-                            style:
-                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
-                        Container(height: 10,),
+                        Container(width: 50,),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('Party Limit',
+                                style:
+                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
+                            Container(
+                              width: maxWidth * .20,
+                              child: TextFormField(
+                                style: TextStyle(color: theme.theme['text']),
+                                textAlign: TextAlign.center,
+                                controller: _partyLimitController,
+                                decoration: new InputDecoration(
+                                  icon: Icon(Icons.group, color: theme.theme['solidIconDark'],),
+                                  hintStyle: TextStyle(color: theme.theme['text']),
+                                  hintText: '0',
+                                ),
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  evenHeightSpacer,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        FlatButton(
+                            onPressed: (){
+                              _changeColorButton(maxHeight, maxWidth, theme);
+                            },
+                            padding: EdgeInsets.all(0),
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.brush, size: 30, color: theme.theme['solidIconDark'],),
+                                Container(width: 10,),
+                                Container(
+                                  height: 50,
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                    color: Color(_getColorFromHex(colorSelection)),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ],
+                            )
+                        ),
+                        Container(width: 50,)
+                      ],
+                    ),
+                  evenHeightSpacer,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
                         InkWell(
                             onTap: (){
-                              switchToDatePicker(context);
+                              final _eventsBloc = BlocProvider.of<EventsBloc>(context);
+                              EventsLoaded events = _eventsBloc.currentState;
+                              final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+                              AuthLoaded auth =  authBloc.currentState;
+                              var selectedEvents = events.events['${auth.key}'];
+                              var selectedEvent = selectedEvents['${widget.eventKey}'];
+                              var party = selectedEvent['party'];
+                              var friends = party['friends'];
+
+                              fireActions.changeEventToDatabase(
+                                  startTime.millisecondsSinceEpoch, endTime.millisecondsSinceEpoch,
+                                  colorSelection,
+                                  _partyLimitController.text,
+                                  friends,
+                                  _gameTitleController.text,
+                                  widget.eventKey,
+                                  context
+                              );
+                              Navigator.pop(context);
                             },
                             child: Row(
                               children: <Widget>[
                                 Container(
                                     decoration: BoxDecoration(
-                                        color: theme.theme['colorSecondary'],
+                                        color: theme.theme['colorPrimary'],
                                         borderRadius: BorderRadius.all(Radius.circular(5.0))
                                     ),
                                     padding: EdgeInsets.all(10.0),
                                     child: Row(
                                       children: <Widget>[
-                                        Icon(Icons.timelapse, color: Colors.white,),
+                                        Icon(Icons.save, color: Colors.white,),
                                         Container(width: 5,),
-                                        Text(grabSelectedTimeText(), style: TextStyle(color: Colors.white, fontSize: 15),),
+                                        Text('Save', style: TextStyle(color: Colors.white, fontSize: 15),),
                                       ],
                                     )
                                 ),
@@ -166,136 +295,13 @@ class UserEventState extends State<UserEvent> {
                         ),
                       ],
                     ),
-                  ],),
-
-                  Row(children: <Widget>[
-                    Container(width: 50,),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Event Title',
-                            style:
-                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
-                        Container(
-                          width: maxWidth * .70,
-                          child: TextFormField(
-                            style: TextStyle(color: theme.theme['text']),
-                            textAlign: TextAlign.start,
-                            controller: _gameTitleController,
-                            decoration: InputDecoration(
-                              icon: Icon(Icons.videogame_asset, color: theme.theme['solidIconDark'],),
-                              hintStyle: TextStyle(color: theme.theme['text']),
-                              hintText: 'Playing Halo with some Bros, chilling.',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],),
-
-                  Row(
-                    children: <Widget>[
-                      Container(width: 50,),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text('Party Limit',
-                              style:
-                              TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
-                          Container(
-                            width: maxWidth * .20,
-                            child: TextFormField(
-                              style: TextStyle(color: theme.theme['text']),
-                              textAlign: TextAlign.center,
-                              controller: _partyLimitController,
-                              decoration: new InputDecoration(
-                                icon: Icon(Icons.group, color: theme.theme['solidIconDark'],),
-                                hintStyle: TextStyle(color: theme.theme['text']),
-                                hintText: '0',
-                              ),
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      FlatButton(
-                          onPressed: (){
-                            _changeColorButton(maxHeight, maxWidth, theme);
-                          },
-                          padding: EdgeInsets.all(0),
-                          child: Row(
-                            children: <Widget>[
-                              Icon(Icons.brush, size: 30, color: theme.theme['solidIconDark'],),
-                              Container(width: 10,),
-                              Container(
-                                height: 50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                  color: Color(_getColorFromHex(colorSelection)),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ],
-                          )
-                      ),
-                      Container(width: 50,)
-                    ],
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      InkWell(
-                          onTap: (){
-                            final _eventsBloc = BlocProvider.of<EventsBloc>(context);
-                            EventsLoaded events = _eventsBloc.currentState;
-                            final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
-                            AuthLoaded auth =  authBloc.currentState;
-                            var selectedEvents = events.events['${auth.key}'];
-                            var selectedEvent = selectedEvents['${widget.eventKey}'];
-                            var party = selectedEvent['party'];
-                            var friends = party['friends'];
-
-                            fireActions.changeEventToDatabase(
-                                startTime.millisecondsSinceEpoch, endTime.millisecondsSinceEpoch,
-                                colorSelection,
-                                _partyLimitController.text,
-                                friends,
-                                _gameTitleController.text,
-                                widget.eventKey,
-                                context
-                            );
-                            Navigator.pop(context);
-                          },
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                  decoration: BoxDecoration(
-                                      color: theme.theme['colorPrimary'],
-                                      borderRadius: BorderRadius.all(Radius.circular(5.0))
-                                  ),
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Icon(Icons.save, color: Colors.white,),
-                                      Container(width: 5,),
-                                      Text('Save', style: TextStyle(color: Colors.white, fontSize: 15),),
-                                    ],
-                                  )
-                              ),
-                            ],
-                          )
-                      ),
-                    ],
-                  )
-                ],
+                    evenHeightSpacer,
+                    calculateJoinedFriendsWidget(context, widget.eventKey, theme),
+                  ],
+                ),
               ),
+
+
               AnimatedSwitcher(
                 // the duration can be adjusted to expand the friend events
                 // faster or slower.
@@ -665,9 +671,17 @@ class UserEventState extends State<UserEvent> {
                                         new NetworkImage(friend.value['userPhoto'])))),
 
                             /// Friend User Name
-                            Text(
-                              friend.value['userName'],
-                              style: TextStyle(fontSize: 20, color: theme.theme['text']),
+                            Flexible(
+                              child: new Container(
+                                padding: new EdgeInsets.only(right: 13.0),
+                                child: new Text(
+                                  friend.value[
+                                  'userName'],
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 20, color: theme.theme['textTitle']),
+                                ),
+                              ),
                             ),
                             IconButton(icon: Icon(Icons.cancel, color: theme.theme['solidIconDark'],), onPressed: (){
                               fireActions.removeJoinedFriend(eventKey, friend.key, context);
@@ -710,7 +724,7 @@ class UserEventState extends State<UserEvent> {
     if(start.minute == 0){
       minuteTextValue = "00";
     } else{
-      minuteTextValue = start.minute.toString()
+      minuteTextValue = start.minute.toString();
     }
 
     if(start.hour >= 12){
