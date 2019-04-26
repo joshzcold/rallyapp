@@ -103,7 +103,7 @@ class CalendarPageState extends State<CalendarPage> {
       MapEntry pushedEvent = new MapEntry(value, pushedValue);
 
       List key = pushedEvent.key.toString().split(',');
-      Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: pushedEvent.value,)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: pushedEvent.value, blocEvents: eventsLoaded.events,)));
     }
     if(key == "friendInvite"){
       Navigator.push(context, MyCustomRoute(builder: (context) => FriendsScreen()));
@@ -496,7 +496,7 @@ class CalendarPageState extends State<CalendarPage> {
                                               onPressed: () {
                                                 if(auth.key == event.value['user']){
                                                   List key = event.key.toString().split(',');
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: event.value,)));
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: event.value, blocEvents: state.events,)));
                                                 } else{
                                                   List key = event.key.toString().split(',');
                                                   Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(eventKey: key[0], eventValue: event.value,)));

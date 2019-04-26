@@ -300,7 +300,7 @@ eventCards(context, maxHeight, maxWidth, week ,conflictEventsDetailsCallBack, th
                               onPressed: () {
                                 if(auth.key == event.value['user']){
                                   List key = event.key.toString().split(',');
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: event.value,)));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: event.value, blocEvents: state.events,)));
                                 } else{
                                   List key = event.key.toString().split(',');
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(eventKey: key[0], eventValue: event.value,)));
