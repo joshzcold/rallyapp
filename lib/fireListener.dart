@@ -48,10 +48,8 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
   );
 
   final FirebaseDatabase database = FirebaseDatabase(app:app);
-  final FirebaseStorage storage = FirebaseStorage(app:app, storageBucket: 'gs://rallydev-40f78.appspot.com/');
 
-
-   generateRallyID(){
+  generateRallyID(){
     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     String randomString(int strlen) {
@@ -63,11 +61,13 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
       return result;
     }
 
-    var rallyID = '${user.displayName == null? "RallyUser": user.displayName}-${randomString(5)}';
+    var rallyID = '${user.email == null? "RallyUser": user.email.split('@')[0]}-${randomString(5)}';
 
     return rallyID;
   }
 
+  /// This will get executed by the conditional check at the bottom to make sure the user exists
+   /// before setting listeners.
   setUserFriendListeners() async{
     print('Setting Listeners ======================================================');
     //////////////////////////////////////////////////////////////////////////////
@@ -288,7 +288,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
      });
   }
 
-  // BIG OLE Check to make sure the user has data before setting listeners
+  /// BIG OLE Check to make sure the user has data before setting listeners
   database.reference().child('user/$uid/info').once().then((snapshot) {
     snapshot.value == null? getRallyID() : setUserFriendListeners();
   });
