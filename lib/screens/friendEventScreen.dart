@@ -56,44 +56,22 @@ class FriendEvent extends StatelessWidget {
                               height: 20,
                             ),
                             Text(
-                              'Start Time',
+                              'Event Time',
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle']),
                             ),
+                              Container(height: 10,),
                               Container(
-                                  height: 30,
-                                  width: maxWidth * .80,
+                                padding: EdgeInsets.all(10.0),
                                   decoration: BoxDecoration(
                                     border:
-                                    Border.all(color: Color(0xFFdadce0), width: 1),
-                                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                    Border.all(color: theme.theme['border'], width: 1),
+                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                    color: theme.theme['card']
                                   ),
-                                  child: Text(
-                                    '${DateTime.fromMillisecondsSinceEpoch(eventValue['start'])}',
-                                    style: TextStyle(
-                                        fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                            Container(
-                              height: 20,
-                            ),
-                            Text('End Time',
-                                style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
-                            Container(
-                                  height: 30,
-                                  width: maxWidth * .80,
-                                  decoration: BoxDecoration(
-                                    border:
-                                    Border.all(color: Color(0xFFdadce0), width: 1),
-                                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                  ),
-                                  child: Text(
-                                    '${DateTime.fromMillisecondsSinceEpoch(eventValue['end'])}',
-                                    style: TextStyle(
-                                        fontSize: 20, fontWeight: FontWeight.bold, color: theme.theme['text']),
-                                    textAlign: TextAlign.center,
-                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: returnTimeInPrettyFormat(eventValue, theme)
+                                  )
                                 ),
                             Container(
                               height: 20,
@@ -111,17 +89,18 @@ class FriendEvent extends StatelessWidget {
                                     Text('Event Title',
                                         style:
                                         TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: theme.theme['textTitle'])),
-
                                   ],
                                 )
                               ],
                             ),
                             Container(height: 10,),
                             Container(
+                              padding: EdgeInsets.all(10.0),
                               decoration: BoxDecoration(
+                                color: theme.theme['card'],
                                   borderRadius: BorderRadius.all(Radius.circular(8)),
                                   border: Border.all(
-                                      color: Color(0xFFdadce0),
+                                      color: theme.theme['border'],
                                       width: 1)
                               ),
                               width: maxWidth/1.2,
@@ -176,6 +155,103 @@ class FriendEvent extends StatelessWidget {
         )
     );
   }
+
+  returnTimeInPrettyFormat(event,theme) {
+    var sTime = DateTime.fromMillisecondsSinceEpoch(event['start']);
+    var startTimeText = sTime.hour.toString();
+
+    var eTime = DateTime.fromMillisecondsSinceEpoch(event['end']);
+    var endTimeText = eTime.hour.toString();
+
+    var sTimeInc;
+    var eTimeInc;
+
+    var sTimeMinuteText = sTime.minute.toString();
+    var eTimeMinuteText = eTime.minute.toString();
+
+    if(sTime.minute <10){
+      sTimeMinuteText = "0"+(sTime.minute).toString();
+    }
+
+    if(eTime.minute <10){
+      eTimeMinuteText = "0"+(eTime.minute).toString();
+    }
+
+    if(sTime.hour >= 12){
+      sTimeInc = "PM";
+      if(sTime.hour == 12){
+        startTimeText = "12";
+      } else{
+        startTimeText = (sTime.hour - 12).toString();
+      }
+    } else{
+      if(sTime.hour == 0){
+        startTimeText = "12";
+      }
+      sTimeInc = "AM";
+    }
+
+    if(eTime.hour >= 12){
+      eTimeInc = "PM";
+      if(eTime.hour == 12){
+        endTimeText = "12";
+      } else{
+        endTimeText = (eTime.hour - 12).toString();
+      }
+    } else{
+      if(eTime.hour == 0){
+        endTimeText = "12";
+      }
+      eTimeInc = "AM";
+    }
+
+    return [
+      Icon(Icons.access_time, color: theme.theme['solidIconDark'],),
+      Container(
+        width: 10,
+      ),
+      Text(
+        '${calculateWeekDayAbbrv(sTime.weekday)}  ${sTime.month}/${sTime.day}',
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: theme.theme['text'],
+        ),
+      ),
+      Container(
+        width: 10,
+      ),
+      Text('$startTimeText:$sTimeMinuteText $sTimeInc- $endTimeText:$eTimeMinuteText $eTimeInc', style: TextStyle(color: theme.theme['text']),),
+    ];
+  }
+
+  calculateWeekDayAbbrv(int weekday) {
+    var result = "";
+    switch (weekday) {
+      case 1:
+        result = "M";
+        break;
+      case 2:
+        result = "T";
+        break;
+      case 3:
+        result = "W";
+        break;
+      case 4:
+        result = "T";
+        break;
+      case 5:
+        result = "F";
+        break;
+      case 6:
+        result = "S";
+        break;
+      case 7:
+        result = "S";
+        break;
+    }
+    return result;
+  }
+
   int _getColorFromHex(String hexColor) {
     hexColor = hexColor.toUpperCase().replaceAll("#", "");
     if (hexColor.length == 6) {
