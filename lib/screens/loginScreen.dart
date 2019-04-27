@@ -56,21 +56,109 @@ class SignInPage extends StatelessWidget{
   }
 
   void _showAlert(title,text, context) {
-    // TODO process title for erro codes then make the title and message for friendly
-    // flutter defined function
+    if(title == "ERROR_INVALID_EMAIL"){
+      title = "Email Formatting Error";
+      text = "It looks like you made a typo in your email "
+          "make sure it has the format *****@***.***";
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text(title),
+            content: new Text(text),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else if(title == "ERROR_WRONG_PASSWORD" || title == "ERROR_USER_NOT_FOUND"){
+      title = "Incorrect Username or Password";
+      text = "Please try again or try the forgotten password feature to "
+      "recover your account";
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text(title),
+            content: new Text(text),
+            actions: <Widget>[
+
+              FlatButton(
+                child: Text("Forgotten Password"),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  forgottenPasswordDialog(context);
+                },
+              ),
+
+               FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text(title),
+            content: new Text(text),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void forgottenPasswordDialog(context, ){
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text(title),
-          content: new Text(text),
+          title: new Text("Forgotten Password"),
+          content: Text(_emailController.text),
           actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
+            FlatButton(
               child: new Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text("Send Reset Email"),
+              onPressed: () async {
+                  await _auth.sendPasswordResetEmail(email: _emailController.text).catchError((error){
+                    _showAlert(error.code, error.message, context);
+                  }).then((_){
+                    Navigator.of(context).pop();
+                    _showAlert('Reset email sent', "You should recieve an email soon if you do not recieve an email "
+                        "please try again or contact the developers for assistance, thank you.", context);
+                  });
               },
             ),
           ],
