@@ -642,150 +642,67 @@ class FriendsScreenState extends State<FriendsScreen> {
   }
 
   returnTimeInPrettyFormat(event,theme) {
-    var startTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
-    var startDay = startTime.day.toString();
-    var startMonth = startTime.month.toString();
-    var startHour = startTime.hour.toString();
-    var startMinute = ':' + startTime.minute.toString();
+    var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
+    var startTimeText = sTime.hour.toString();
 
-    var endTime = DateTime.fromMillisecondsSinceEpoch(event.value['end']);
-//    var endMonth = endTime.month.toString();
-    var endHour = endTime.hour.toString();
-    var endMinute = ':' + endTime.minute.toString();
-    var indicator = "AM";
-    if (startTime.hour * 60 + startTime.minute > 720) {
-      indicator = "PM";
+    var eTime = DateTime.fromMillisecondsSinceEpoch(event.value['end']);
+    var endTimeText = eTime.hour.toString();
+
+    var sTimeInc;
+    var eTimeInc;
+
+    var sTimeMinuteText = sTime.minute.toString();
+    var eTimeMinuteText = eTime.minute.toString();
+
+    if(sTime.minute <10){
+      sTimeMinuteText = "0"+(sTime.minute).toString();
     }
 
-    switch (startHour) {
-      case "0":
-        startHour = "12";
-        indicator = "AM";
-        break;
-      case "13":
-        startHour = "1";
-        indicator = "PM";
-        break;
-      case "14":
-        startHour = "2";
-        indicator = "PM";
-        break;
-      case "15":
-        startHour = "3";
-        indicator = "PM";
-        break;
-      case "16":
-        startHour = "4";
-        indicator = "PM";
-        break;
-      case "17":
-        startHour = "5";
-        indicator = "PM";
-        break;
-      case "18":
-        startHour = "6";
-        indicator = "PM";
-        break;
-      case "19":
-        startHour = "7";
-        indicator = "PM";
-        break;
-      case "20":
-        startHour = "8";
-        indicator = "PM";
-        break;
-      case "21":
-        startHour = "9";
-        indicator = "PM";
-        break;
-      case "22":
-        startHour = "10";
-        indicator = "PM";
-        break;
-      case "23":
-        startHour = "11";
-        indicator = "PM";
-        break;
-      case "24":
-        startHour = "12";
-        indicator = "AM";
-        break;
+    if(eTime.minute <10){
+      eTimeMinuteText = "0"+(eTime.minute).toString();
     }
 
-    switch (endHour) {
-      case "13":
-        endHour = "1";
-        indicator = "PM";
-        break;
-      case "14":
-        endHour = "2";
-        indicator = "PM";
-        break;
-      case "15":
-        endHour = "3";
-        indicator = "PM";
-        break;
-      case "16":
-        endHour = "4";
-        indicator = "PM";
-        break;
-      case "17":
-        endHour = "5";
-        indicator = "PM";
-        break;
-      case "18":
-        endHour = "6";
-        indicator = "PM";
-        break;
-      case "19":
-        endHour = "7";
-        indicator = "PM";
-        break;
-      case "20":
-        endHour = "8";
-        indicator = "PM";
-        break;
-      case "21":
-        endHour = "9";
-        indicator = "PM";
-        break;
-      case "22":
-        endHour = "10";
-        indicator = "PM";
-        break;
-      case "23":
-        endHour = "11";
-        indicator = "PM";
-        break;
-      case "24":
-        endHour = "12";
-        indicator = "PM";
-        break;
+    if(sTime.hour >= 12){
+      sTimeInc = "PM";
+      if(sTime.hour == 12){
+        startTimeText = "12";
+      } else{
+        startTimeText = (sTime.hour - 12).toString();
+      }
+    } else{
+      if(sTime.hour == 0){
+        startTimeText = "12";
+      }
+      sTimeInc = "AM";
     }
 
-    if (startMinute == ":0") {
-      startMinute = "";
-    }
-    if (endMinute == ":0") {
-      endMinute = "";
+    if(eTime.hour >= 12){
+      eTimeInc = "PM";
+      if(eTime.hour == 12){
+        endTimeText = "12";
+      } else{
+        endTimeText = (eTime.hour - 12).toString();
+      }
+    } else{
+      if(eTime.hour == 0){
+        endTimeText = "12";
+      }
+      eTimeInc = "AM";
     }
 
     return [
       Text(
-        '$startMonth/$startDay',
+        '${sTime.month}/${sTime.day}',
         style: TextStyle(
-          fontSize: 25,
-          fontWeight: FontWeight.bold,
-          color: theme.theme['textTitle']
+            fontWeight: FontWeight.bold,
+            color: theme.theme['text'],
+          fontSize: 25
         ),
       ),
       Container(
-        width: 20,
+        width: 10,
       ),
-      Text('$startHour$startMinute$indicator - $endHour$endMinute$indicator',
-      style: TextStyle(
-        color: theme.theme['text']
-      ),),
+      Text('$startTimeText:$sTimeMinuteText $sTimeInc- $endTimeText:$eTimeMinuteText $eTimeInc', style: TextStyle(color: theme.theme['text']),),
     ];
   }
 
