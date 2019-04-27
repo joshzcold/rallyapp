@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/fireActions.dart';
+import 'package:rallyapp/widgets/changeUsername.dart';
 import 'package:rallyapp/widgets/themeButton.dart';
 import 'package:rallyapp/widgets/themeSelector.dart';
 import 'package:rallyapp/blocs/app/theme.dart';
@@ -205,10 +206,27 @@ class SettingsState extends State<Settings>{
     }
 
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       backgroundColor: theme.theme['background'],
       appBar: AppBar(
         leading: IconButton(icon: Icon(Icons.arrow_back, color: theme.theme['headerText'],), onPressed: (){Navigator.pop(context);}),
-        title: Text('Settings', style: TextStyle(color: theme.theme['headerText']),), backgroundColor: theme.theme['header'],),
+        title: Text('Settings', style: TextStyle(color: theme.theme['headerText']),), backgroundColor: theme.theme['header'],
+      actions: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.monetization_on, color: theme.theme['solidIconDark'],),
+            Container(width: 5,),
+            InkWell(
+              onTap: (){
+
+              },
+              child: Text('Donate', style: TextStyle(color: theme.theme['text'], fontWeight: FontWeight.bold),),
+            ),
+            Container(width: 30,)
+          ],
+        )
+      ],),
       body: BlocBuilder(
         bloc: _authBloc,
         builder: (context, auth){
@@ -220,9 +238,23 @@ class SettingsState extends State<Settings>{
                 children: <Widget>[
                   ListView(
                     children: <Widget>[
-                      uploadPhotoButton(auth),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          uploadPhotoButton(auth),
+                          FlatButton(
+                            color: theme.theme['colorSecondary'],
+                            onPressed: (){
+                              setState(() {
+                                modal = changeUsername(context, closeThemeSelectorModal);
+                              });
+                            },
+                            child: Text('Change Username', style: TextStyle(color: Colors.white),),
+                          )
+                        ],
+                      ),
                       themeButton(context, constraints, getThemeSelectorModal),
-
                     ],
                   ),
                   AnimatedSwitcher(

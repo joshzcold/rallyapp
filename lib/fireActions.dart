@@ -2,6 +2,7 @@
 
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -159,6 +160,60 @@ class FireActions {
 
     // Remove invite from list
     database.reference().child('/user/${user.uid}/invites/${invite.key}').remove();
+  }
+
+  newUserName(username, context) async{
+    FirebaseDatabase database = await getFireBaseInstance();
+    var rallyID = generateRallyID(username);
+    var items;
+    await database.reference().child('rally/').once().then((snapshot) =>{
+    items = snapshot.value
+    }).then((something) async{
+      // check if the generated RallyID is found within the snapshot of the rally
+      // directory. Not the best way to check but since flutter doesn't currently
+      // have a function like .exists() this is what works for now...
+      items.containsKey(rallyID)? newUserName(username, context): await executeNewUserName(rallyID, username, context);
+    });
+  }
+
+  executeNewUserName(rallyID, username, context) async {
+    final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    AuthLoaded auth =  authBloc.currentState;
+
+    var previousRallyID = auth.value['rallyID'];
+
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+
+    database.reference().child('rally/$rallyID').update({
+      "userID": user.uid
+    });
+
+    database.reference().child('user/${user.uid}/info').update({
+      "rallyID":rallyID,
+      "userName": username,
+    });
+
+    database.reference().child('rally/$previousRallyID').remove();
+
+    return rallyID;
+  }
+
+  generateRallyID(username){
+    var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    String randomString(int strlen) {
+      Random rnd = new Random(new DateTime.now().millisecondsSinceEpoch);
+      String result = "";
+      for (var i = 0; i < strlen; i++) {
+        result += chars[rnd.nextInt(chars.length)];
+      }
+      return result;
+    }
+
+    var rallyID = '$username-${randomString(5)}';
+
+    return rallyID;
   }
 
   declineInvite(invite, context,) async{
