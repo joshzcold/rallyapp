@@ -675,137 +675,57 @@ timePrettyFormatSingle(time) {
 
 
 returnTimeInPrettyFormat(event, theme) {
-  var startTime = DateTime.fromMillisecondsSinceEpoch(event['start']);
-  var startDay = startTime.day.toString();
-  var startMonth = startTime.month.toString();
-  var hour = startTime.hour.toString();
-  var startMinute = ':' + startTime.minute.toString();
+  var sTime = DateTime.fromMillisecondsSinceEpoch(event['start']);
+  var startTimeText = sTime.hour.toString();
 
-  var endTime = DateTime.fromMillisecondsSinceEpoch(event['end']);
-//    var endMonth = endTime.month.toString();
-  var endHour = endTime.hour.toString();
-  var endMinute = ':' + endTime.minute.toString();
-  var indicator = "AM";
-  if (startTime.hour * 60 + startTime.minute > 720) {
-    indicator = "PM";
+  var eTime = DateTime.fromMillisecondsSinceEpoch(event['end']);
+  var endTimeText = eTime.hour.toString();
+
+  var sTimeInc;
+  var eTimeInc;
+
+  var sTimeMinuteText = sTime.minute.toString();
+  var eTimeMinuteText = eTime.minute.toString();
+
+  if(sTime.minute <10){
+    sTimeMinuteText = "0"+(sTime.minute).toString();
   }
 
-  switch (hour) {
-    case "0":
-      hour = "12";
-      indicator = "AM";
-      break;
-    case "13":
-      hour = "1";
-      indicator = "PM";
-      break;
-    case "14":
-      hour = "2";
-      indicator = "PM";
-      break;
-    case "15":
-      hour = "3";
-      indicator = "PM";
-      break;
-    case "16":
-      hour = "4";
-      indicator = "PM";
-      break;
-    case "17":
-      hour = "5";
-      indicator = "PM";
-      break;
-    case "18":
-      hour = "6";
-      indicator = "PM";
-      break;
-    case "19":
-      hour = "7";
-      indicator = "PM";
-      break;
-    case "20":
-      hour = "8";
-      indicator = "PM";
-      break;
-    case "21":
-      hour = "9";
-      indicator = "PM";
-      break;
-    case "22":
-      hour = "10";
-      indicator = "PM";
-      break;
-    case "23":
-      hour = "11";
-      indicator = "PM";
-      break;
-    case "24":
-      hour = "12";
-      indicator = "AM";
-      break;
+  if(eTime.minute <10){
+    eTimeMinuteText = "0"+(eTime.minute).toString();
   }
 
-  switch (endHour) {
-    case "13":
-      endHour = "1";
-      indicator = "PM";
-      break;
-    case "14":
-      endHour = "2";
-      indicator = "PM";
-      break;
-    case "15":
-      endHour = "3";
-      indicator = "PM";
-      break;
-    case "16":
-      endHour = "4";
-      indicator = "PM";
-      break;
-    case "17":
-      endHour = "5";
-      indicator = "PM";
-      break;
-    case "18":
-      endHour = "6";
-      indicator = "PM";
-      break;
-    case "19":
-      endHour = "7";
-      indicator = "PM";
-      break;
-    case "20":
-      endHour = "8";
-      indicator = "PM";
-      break;
-    case "21":
-      endHour = "9";
-      indicator = "PM";
-      break;
-    case "22":
-      endHour = "10";
-      indicator = "PM";
-      break;
-    case "23":
-      endHour = "11";
-      indicator = "PM";
-      break;
-    case "24":
-      endHour = "12";
-      indicator = "PM";
-      break;
+  if(sTime.hour >= 12){
+    sTimeInc = "PM";
+    if(sTime.hour == 12){
+      startTimeText = "12";
+    } else{
+      startTimeText = (sTime.hour - 12).toString();
+    }
+  } else{
+    if(sTime.hour == 0){
+      startTimeText = "12";
+    }
+    sTimeInc = "AM";
   }
 
-  if (startMinute == ":0") {
-    startMinute = "";
-  }
-  if (endMinute == ":0") {
-    endMinute = "";
+  if(eTime.hour >= 12){
+    eTimeInc = "PM";
+    if(eTime.hour == 12){
+      endTimeText = "12";
+    } else{
+      endTimeText = (eTime.hour - 12).toString();
+    }
+  } else{
+    if(eTime.hour == 0){
+      endTimeText = "12";
+    }
+    eTimeInc = "AM";
   }
 
   return [
     Text(
-      '$startMonth/$startDay',
+      '${sTime.month}/${sTime.day}',
       style: TextStyle(
         fontWeight: FontWeight.bold,
         color: theme.theme['text']
@@ -814,7 +734,7 @@ returnTimeInPrettyFormat(event, theme) {
     Container(
       width: 10,
     ),
-    Text('$hour$startMinute$indicator - $endHour$endMinute$indicator', style: TextStyle(color: theme.theme['text']),),
+    Text('$startTimeText:$sTimeMinuteText $sTimeInc- $endTimeText:$eTimeMinuteText $eTimeInc', style: TextStyle(color: theme.theme['text']),),
   ];
 }
 
