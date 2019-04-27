@@ -11,8 +11,8 @@ import 'package:rallyapp/widgets/themeSelector.dart';
 import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/widgets/uploadPhotoButton.dart';
 
-Widget themeSelectorModal;
-Widget photoUploadModal;
+Widget modal;
+
 bool checkImageLoad;
 
 
@@ -28,8 +28,7 @@ class SettingsState extends State<Settings>{
   @override
   void initState(){
     super.initState();
-    themeSelectorModal = Container();
-    photoUploadModal = Container();
+    modal = Container();
     checkImageLoad = true;
   }
 
@@ -92,7 +91,7 @@ class SettingsState extends State<Settings>{
 
     getUploadPhotoModal(theme){
       setState(() {
-        photoUploadModal = LayoutBuilder(builder: (context, constraints){
+        modal = LayoutBuilder(builder: (context, constraints){
           var maxHeight = constraints.maxHeight;
           var maxWidth = constraints.maxWidth;
           var cardHeightMultiplier = 0.20;
@@ -223,6 +222,7 @@ class SettingsState extends State<Settings>{
                     children: <Widget>[
                       uploadPhotoButton(auth),
                       themeButton(context, constraints, getThemeSelectorModal),
+
                     ],
                   ),
                   AnimatedSwitcher(
@@ -234,18 +234,7 @@ class SettingsState extends State<Settings>{
                           child: child,
                         );
                       },
-                      child: themeSelectorModal
-                  ),
-                  AnimatedSwitcher(
-                    // the duration can be adjusted to expand the friend events
-                    // faster or slower.
-                      duration: Duration(milliseconds: 300),
-                      transitionBuilder: (Widget child, Animation<double>animation) {
-                        return FadeTransition(opacity: animation,
-                          child: child,
-                        );
-                      },
-                      child: photoUploadModal
+                      child: modal
                   ),
                 ],
               ),
@@ -258,19 +247,19 @@ class SettingsState extends State<Settings>{
 
   getThemeSelectorModal() {
     setState(() {
-      themeSelectorModal = themeSelector(context, closeThemeSelectorModal);
+      modal = themeSelector(context, closeThemeSelectorModal);
     });
   }
 
   closeThemeSelectorModal(){
     setState(() {
-      themeSelectorModal = Container();
+      modal = Container();
     });
   }
 
   closeUploadPhotoModal(){
     setState(() {
-      photoUploadModal = Container();
+      modal = Container();
     });
   }
 }

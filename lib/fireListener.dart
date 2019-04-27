@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
 import 'package:rallyapp/blocs/app/notifyBloc.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
@@ -86,7 +87,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
       } else{
         authBloc.dispatch(AddAuth(uid,snapshot.value));
       }
-    });
+    }).catchError((error) => _showAlert("Listener Error Contact Dev", error, context));
 
     // Setting Listener on User Info CHANGE
     database.reference().child('user/$uid/info').onChildChanged.listen((event){
@@ -198,16 +199,13 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
         } else{
           friendBloc.dispatch(AddFriends(friendID, snapshot.value));
         }
-
-
-      });
+      }).catchError((error) => _showAlert("Listener Error Contact Dev", error, context));
 
       // Settings Listener on friends info CHANGE
       subscriptions[friendID][i++] = database.reference().child('user/$friendID/info').onChildChanged.listen((event){
         print(' -- CHANGED -- friend info');
         friendBloc.dispatch(ReplaceFriendInfo(event.snapshot.key, event.snapshot.value, friendID));
       });
-
 
       //       Grabbing friend event data
       database.reference().child('user/$friendID/events').once().then((snapshot){
@@ -217,7 +215,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
             eventBloc.dispatch(AddEvents(friendID, key, value));
           });
         }
-      });
+      }).catchError((error) => _showAlert("Listener Error Contact Dev", error, context));;
 
       // Setting Listener on friend's events detail CHANGE
       subscriptions[friendID][i++] = database.reference().child('user/$friendID/events').onChildChanged.listen((event) {
@@ -304,13 +302,13 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
        // directory. Not the best way to check but since flutter doesn't currently
        // have a function like .exists() this is what works for now...
       items.containsKey(rallyID)? getRallyID(): createInitialUserData(rallyID);
-     });
+     }).catchError((error) => _showAlert("Listener Error Contact Dev", error, context));
   }
 
   /// BIG OLE Check to make sure the user has data before setting listeners
   database.reference().child('user/$uid/info').once().then((snapshot) {
     snapshot.value == null? getRallyID() : setUserFriendListeners();
-  });
+  }).catchError((error) => _showAlert("Listener Error Contact Dev", error, context));
 
 }
 
@@ -324,4 +322,16 @@ Future<void> _showNotification(title, body, payload) async {
   await flutterLocalNotificationsPlugin.show(
       0, title, body, platformChannelSpecifics,
       payload: payload);
+}
+
+void _showAlert(title,text, context) async{
+  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'rallyupapp', 'rally-notification', 'notifications from rally up. Events, Invites, Alerts',
+      importance: Importance.Max, priority: Priority.High);
+  var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+  var platformChannelSpecifics = NotificationDetails(
+      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+  await flutterLocalNotificationsPlugin.show(
+      0, title, text, platformChannelSpecifics,
+      payload: "");
 }
