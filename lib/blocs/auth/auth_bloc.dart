@@ -5,7 +5,7 @@ import 'package:rallyapp/blocs/auth/auth.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState>{
 
   @override
-  AuthState get initialState => AuthLoading();
+  AuthState get initialState => AuthLoaded("",{});
 
   @override
   Stream<AuthState> mapEventToState(AuthState currentState, AuthEvent event) async*{

@@ -76,7 +76,6 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
     // Grabbing user data
     database.reference().child('user/$uid/info').once().then((snapshot) async{
-      var userPhoto = await storage.ref().child('photos/$uid').getDownloadURL();
       authBloc.dispatch(AddAuth(uid,snapshot.value));
     });
 

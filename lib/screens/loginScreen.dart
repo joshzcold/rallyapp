@@ -105,7 +105,7 @@ class SignInPage extends StatelessWidget{
                           controller: _emailController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(50)),
+                              borderRadius: BorderRadius.all(Radius.circular(8.0)),
                             ),
                             hintText: 'Email',
                             hintStyle: TextStyle(color: theme.theme['text'])
@@ -123,11 +123,12 @@ class SignInPage extends StatelessWidget{
                       Container(
                         width: maxWidth * .80,
                         child: TextFormField(
+                          obscureText: true,
                           style: TextStyle(color: theme.theme['text']),
                           controller: _passwordController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(50)),
+                              borderRadius: BorderRadius.all(Radius.circular(8.0)),
                             ),
                             hintText: 'Password',
                               hintStyle: TextStyle(color: theme.theme['text'])

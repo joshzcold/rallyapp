@@ -576,27 +576,13 @@ class FriendsScreenState extends State<FriendsScreen> {
   Widget userCard(userCardHeight, userCardWidth, auth, theme) {
     return Card(
       color: theme.theme['card'],
-        child: Container(
-            height: userCardHeight,
-            width: userCardWidth,
-            child: Stack(
+        child: Stack(
+          children: <Widget>[
+            Column(
               children: <Widget>[
-                Positioned(
-                  child: IconButton(
-                    color: theme.theme['solidIconDark'],
-                      icon: Icon(Icons.settings),
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
-                      }),
-                  top: 0,
-                  right: 0,
-                ),
-                Positioned(
-                  top: userCardHeight/5,
-                  left: userCardWidth/8,
-                  width: userCardWidth,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Container(height: 30,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       /// User Photo
                       CircleAvatar(
@@ -604,35 +590,55 @@ class FriendsScreenState extends State<FriendsScreen> {
                         radius: userCardHeight / 4,
                         backgroundImage: NetworkImage(auth.value['userPhoto']),
                       ),
-
+                      Container(width: 10,),
                       /// User Name
-                      Text(
-                        '${auth.value['userName']}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                          color: theme.theme['textTitle']
+                      Expanded(
+                        child: Text(
+                          '${auth.value['userName']}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                              color: theme.theme['textTitle']
+                          ),
                         ),
-                      ),
+                      )
                     ],
                   ),
-                ),
-
-                /// User RallyID
-                Positioned(
-                  child: Center(
-                      child: Text(
-                    'Rally ID: ${auth.value['rallyID']}',
-                    style: TextStyle(
-                      color: theme.theme['text'],
-                      fontSize: 20,
-                    ),
-                  )),
-                  bottom: 10,
-                  width: userCardWidth,
+                Container(height: 10,),
+                Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        /// User RallyID
+                        Expanded(
+                          child: Text(
+                            'Rally ID: ${auth.value['rallyID']}',
+                            style: TextStyle(
+                              color: theme.theme['text'],
+                              fontSize: 20,
+                            ),
+                          ),
+                        )
+                      ],
+                    )
                 )
+
+
               ],
-            )));
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child:IconButton(
+                  color: theme.theme['solidIconDark'],
+                  icon: Icon(Icons.settings),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
+                  }),
+            )
+          ],
+        )
+        );
   }
 
   returnTimeInPrettyFormat(event,theme) {
@@ -896,8 +902,12 @@ class FriendsScreenState extends State<FriendsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
+                        Container(width: 10,),
                         Text('Your RallyID: ', style: TextStyle(color: theme.theme['text']),),
-                        Text('${auth.value['rallyID']}', style: TextStyle(fontWeight: FontWeight.bold, color: theme.theme['text']),)
+                        Expanded(
+                          child:Text('${auth.value['rallyID']}', style: TextStyle(fontWeight: FontWeight.bold, color: theme.theme['text']),)
+                        ),
+                        Container(width: 10,),
                       ],
                     ),
                     Container(height: 20,),
@@ -910,7 +920,9 @@ class FriendsScreenState extends State<FriendsScreen> {
                               Scaffold.of(context).showSnackBar(new SnackBar(
                                   content: new Row(
                                     children: <Widget>[
-                                      Text('Copied RallyID: ${auth.value['rallyID']}'),
+                                      Expanded(
+                                        child: Text('Copied RallyID: ${auth.value['rallyID']}'),
+                                      ),
                                       Container(width: 15, height: 10,),
                                       Icon(Icons.arrow_forward),
                                       Container(width: 5, height: 10,),
