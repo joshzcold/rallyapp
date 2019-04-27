@@ -48,6 +48,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
   );
 
   final FirebaseDatabase database = FirebaseDatabase(app:app);
+  final FirebaseStorage storage = FirebaseStorage(storageBucket: "gs://rallydev-40f78.appspot.com");
 
   generateRallyID(){
     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -76,7 +77,15 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
     // Grabbing user data
     database.reference().child('user/$uid/info').once().then((snapshot) async{
-      authBloc.dispatch(AddAuth(uid,snapshot.value));
+      var check = snapshot.value['userPhoto'];
+      if( check == null){
+        var userInfo = Map.of(snapshot.value);
+        var url = await storage.ref().child('photos/default').getDownloadURL();
+        userInfo['userPhoto'] = url;
+        authBloc.dispatch(AddAuth(uid,userInfo));
+      } else{
+        authBloc.dispatch(AddAuth(uid,snapshot.value));
+      }
     });
 
     // Setting Listener on User Info CHANGE
@@ -178,9 +187,19 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
       print(' -- ADD -- friend ');
 
       // GRAB friend info
-      database.reference().child('user/$friendID/info').once().then((snapshot){
+      database.reference().child('user/$friendID/info').once().then((snapshot) async{
         print('Grabbing friend Info: ${snapshot.value}');
-        friendBloc.dispatch(AddFriends(friendID, snapshot.value));
+        var check = snapshot.value['userPhoto'];
+        if( check == null){
+          var userInfo = Map.of(snapshot.value);
+          var url = await storage.ref().child('photos/default').getDownloadURL();
+          userInfo['userPhoto'] = url;
+          friendBloc.dispatch(AddFriends(friendID, userInfo));
+        } else{
+          friendBloc.dispatch(AddFriends(friendID, snapshot.value));
+        }
+
+
       });
 
       // Settings Listener on friends info CHANGE
@@ -268,7 +287,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
      database.reference().child('user/$uid/info').set({
       "rallyID": rallyID,
       "userEmail": user.email,
-      "userName": user.displayName == null? "RallyUser" : user.displayName,
+      "userName": user.email == null? "RallyUser" : user.email.split('@')[0],
       "userPhoto": user.photoUrl,
     }).then((something) => setUserFriendListeners());
     
