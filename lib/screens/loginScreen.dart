@@ -56,6 +56,9 @@ class SignInPage extends StatelessWidget{
   }
 
   void _showAlert(title,text, context) {
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+
     if(title == "ERROR_INVALID_EMAIL"){
       title = "Email Formatting Error";
       text = "It looks like you made a typo in your email "
@@ -65,8 +68,9 @@ class SignInPage extends StatelessWidget{
         builder: (BuildContext context) {
           // return object of type Dialog
           return AlertDialog(
-            title: new Text(title),
-            content: new Text(text),
+            backgroundColor: theme.theme['card'],
+            title: new Text(title, style: TextStyle(color: theme.theme['textTitle']),),
+            content: new Text(text, style: TextStyle(color: theme.theme['text']),),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(
@@ -89,8 +93,9 @@ class SignInPage extends StatelessWidget{
         builder: (BuildContext context) {
           // return object of type Dialog
           return AlertDialog(
-            title: new Text(title),
-            content: new Text(text),
+            backgroundColor: theme.theme['card'],
+            title: new Text(title, style: TextStyle(color: theme.theme['textTitle']),),
+            content: new Text(text, style: TextStyle(color: theme.theme['text']),),
             actions: <Widget>[
 
               FlatButton(
@@ -117,8 +122,9 @@ class SignInPage extends StatelessWidget{
         builder: (BuildContext context) {
           // return object of type Dialog
           return AlertDialog(
-            title: new Text(title),
-            content: new Text(text),
+            backgroundColor: theme.theme['card'],
+            title: new Text(title, style: TextStyle(color: theme.theme['textTitle']),),
+            content: new Text(text, style: TextStyle(color: theme.theme['text']),),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(
@@ -135,16 +141,20 @@ class SignInPage extends StatelessWidget{
   }
 
   void forgottenPasswordDialog(context, ){
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Forgotten Password"),
-          content: Text(_emailController.text),
+          backgroundColor: theme.theme['card'],
+          title: new Text("Forgotten Password" , style: TextStyle(color: theme.theme['textTitle']),),
+          content: Text(_emailController.text, style: TextStyle(color: theme.theme['text']),),
           actions: <Widget>[
             FlatButton(
-              child: new Text("Close"),
+              child: new Text("Close", style: TextStyle(color: theme.theme['text']),),
               onPressed: () {
                 Navigator.of(context).pop();
               },
