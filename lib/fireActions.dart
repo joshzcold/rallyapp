@@ -9,8 +9,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
-import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:rallyapp/blocs/app/theme.dart';
 
 class FireActions {
   var uuid = Uuid();
@@ -80,12 +81,55 @@ class FireActions {
     var user = await getFireBaseUser();
     final AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
     AuthLoaded auth =  authBloc.currentState;
-    database.reference().child('/user/$friend/events/$event/party/friends/${user.uid}').update({
-      'id': user.uid,
-      'userEmail':auth.value['userEmail'],
-      'userName':auth.value['userName'],
-      'userPhoto':auth.value['userPhoto'],
+    var partyLimit = 99999;
+    var alreadyJoinedFriends = 0;
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+
+    await database.reference().child('/user/$friend/events/$event/party/').once().then((snapshot){
+      if(snapshot.value['friends'] != null){
+        alreadyJoinedFriends = snapshot.value['friends'].length;
+      }
     });
+
+    await database.reference().child('/user/$friend/events/$event/party/').once().then((snapshot){
+      if(snapshot.value['partyLimit'] == ""){
+        partyLimit = 0;
+      } else{
+        partyLimit = int.parse(snapshot.value['partyLimit']);
+      }
+    });
+
+    if(partyLimit == 0 || alreadyJoinedFriends + 1 <= partyLimit ){
+      database.reference().child('/user/$friend/events/$event/party/friends/${user.uid}').update({
+        'id': user.uid,
+        'userEmail':auth.value['userEmail'],
+        'userName':auth.value['userName'],
+        'userPhoto':auth.value['userPhoto'],
+      });
+    } else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            backgroundColor: theme.theme['card'],
+            title: new Text('Party Already Full', style: TextStyle(color: theme.theme['textTitle']),),
+            content: new Text('The party limit has already been reached and you cannot join the event, '
+                'try asking your friend if this was a mistake',style: TextStyle(color: theme.theme['text'])),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Close", style: TextStyle(color: theme.theme['colorPrimary']),),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   deleteEvent(event, context)async {
