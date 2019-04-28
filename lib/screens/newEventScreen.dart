@@ -186,15 +186,19 @@ class NewEventState extends State<NewEvent>  with AfterLayoutMixin<NewEvent> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     InkWell(
-                        onTap: (){
-                          fireActions.newEventToDatabase(
+                        onTap: () async{
+                         var result = await fireActions.newEventToDatabase(
                               startTime.millisecondsSinceEpoch, endTime.millisecondsSinceEpoch,
                               colorSelection,
                               _partyLimitController.text,
                               _gameTitleController.text,
                               context
                           );
-                          Navigator.pop(context);
+                         if( result == "SHOW_DELETE"){
+                           _showDeleteEventDialog(context);
+                         } else{
+                           Navigator.pop(context);
+                         }
                         },
                         child: Row(
                           children: <Widget>[
@@ -555,6 +559,36 @@ class NewEventState extends State<NewEvent>  with AfterLayoutMixin<NewEvent> {
       hexColor = "FF" + hexColor;
     }
     return int.parse(hexColor, radix: 16);
+  }
+
+  _showDeleteEventDialog(context) {
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          backgroundColor: theme.theme['card'],
+          title: new Text("EVENT CLEAN UP", style: TextStyle(color: theme.theme['textTitle']),),
+          content: new Text("In order to save space in the database Rally"
+              " will automatically delete your oldest event when you create more than 10 events"
+              " If you want to start over fresh use the Delete All Events button in the user settings"
+              " thank you for using rally, We will not show this alert again.",
+            style: TextStyle(color: theme.theme['text']),),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.popUntil(context, ModalRoute.withName('/main'));
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
 }
