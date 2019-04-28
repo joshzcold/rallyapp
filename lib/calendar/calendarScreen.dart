@@ -341,7 +341,8 @@ class CalendarPageState extends State<CalendarPage> {
                                     monthBloc.dispatch(ChangeMonth(date.month));
                                   }
                                 },
-                                child:ListView.builder(
+                                child:PageView.builder(
+                                  pageSnapping: false,
                                     physics: NeverScrollableScrollPhysics(),
                                     scrollDirection: Axis.horizontal,
                                     controller: horizontalHeaderScrollController,
