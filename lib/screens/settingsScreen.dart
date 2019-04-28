@@ -213,20 +213,21 @@ class SettingsState extends State<Settings>{
         leading: IconButton(icon: Icon(Icons.arrow_back, color: theme.theme['headerText'],), onPressed: (){Navigator.pop(context);}),
         title: Text('Settings', style: TextStyle(color: theme.theme['headerText']),), backgroundColor: theme.theme['header'],
       actions: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.monetization_on, color: theme.theme['solidIconDark'],),
-            Container(width: 5,),
-            InkWell(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Donate()));
-              },
-              child: Text('Donate', style: TextStyle(color: theme.theme['text'], fontWeight: FontWeight.bold),),
-            ),
-            Container(width: 30,)
-          ],
+        InkWell(
+          onTap: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Donate()));
+          },
+          child:Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(width: 15,),
+              Text('Donate', style: TextStyle(color: theme.theme['text'], fontWeight: FontWeight.bold),),
+              Container(width: 15,)
+            ],
+          ),
         ),
+
+
       ],),
       body: BlocBuilder(
         bloc: _authBloc,

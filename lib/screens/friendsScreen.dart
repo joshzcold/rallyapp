@@ -584,6 +584,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
+                      Container(width: 20,),
                       /// User Photo
                       CircleAvatar(
                         backgroundColor: theme.theme['card'],
@@ -609,6 +610,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
+                        Container(width: 20,),
                         /// User RallyID
                         Expanded(
                           child: Text(
@@ -621,9 +623,8 @@ class FriendsScreenState extends State<FriendsScreen> {
                         )
                       ],
                     )
-                )
-
-
+                ),
+                Container(height: 10,)
               ],
             ),
             Positioned(
