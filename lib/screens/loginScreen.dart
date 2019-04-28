@@ -188,7 +188,10 @@ class SignInPage extends StatelessWidget{
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Container(height: MediaQuery.of(context).size.height/4,),
+            Container(height: MediaQuery.of(context).size.height/5,),
+            Text('R A L L Y', style: TextStyle(color: theme.theme['textTitle'], fontWeight: FontWeight.bold
+            , fontSize: 42),),
+            Container(height:80,),
             Form(
               key: _formKey,
               child: Column(

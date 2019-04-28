@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/fireActions.dart';
+import 'package:rallyapp/screens/donateScreen.dart';
 import 'package:rallyapp/widgets/changeUsername.dart';
 import 'package:rallyapp/widgets/themeButton.dart';
 import 'package:rallyapp/widgets/themeSelector.dart';
@@ -219,7 +220,7 @@ class SettingsState extends State<Settings>{
             Container(width: 5,),
             InkWell(
               onTap: (){
-
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Donate()));
               },
               child: Text('Donate', style: TextStyle(color: theme.theme['text'], fontWeight: FontWeight.bold),),
             ),
