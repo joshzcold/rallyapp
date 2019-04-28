@@ -75,8 +75,6 @@ class FireActions {
     return result;
   }
 
-
-
   changeEventToDatabase(sTime, eTime, color, partyLimit, joinedFriends, title, key, context)async{
     FirebaseDatabase database = await getFireBaseInstance();
     var user = await getFireBaseUser();
@@ -176,6 +174,40 @@ class FireActions {
         '/user/${user.uid}/events/$event').remove();
   }
 
+  deleteAllEvents()async {
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+    database.reference().child(
+        '/user/${user.uid}/events/').remove();
+  }
+
+  deleteOldEvents()async{
+    FirebaseDatabase database = await getFireBaseInstance();
+    var user = await getFireBaseUser();
+    database.reference().child('/user/${user.uid}/events/').once().then((snapshot){
+      var items = snapshot.value;
+      var compareTime = DateTime.now().millisecondsSinceEpoch;
+
+      var listOfTimes = [];
+      var deletedEvents = {};
+      items.forEach((k, event) {
+        listOfTimes.add(event['end']);
+      });
+      listOfTimes..sort();
+      // after sorting, add events in order
+      for(var time in listOfTimes){
+        items.forEach((k,value){
+          if(time == value['end'] && time < compareTime){
+            print(DateTime.fromMillisecondsSinceEpoch(value['end']));
+            deletedEvents.addAll({k:value});
+          }
+        });
+      }
+      deletedEvents.forEach((key, value){
+        database.reference().child('user/${user.uid}/events/$key').remove();
+      });
+    });
+  }
   acceptInvite(invite, context,) async{
     FirebaseDatabase database = await getFireBaseInstance();
     var user = await getFireBaseUser();

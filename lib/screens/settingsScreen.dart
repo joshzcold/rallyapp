@@ -225,7 +225,7 @@ class SettingsState extends State<Settings>{
             ),
             Container(width: 30,)
           ],
-        )
+        ),
       ],),
       body: BlocBuilder(
         bloc: _authBloc,
@@ -255,6 +255,22 @@ class SettingsState extends State<Settings>{
                         ],
                       ),
                       themeButton(context, constraints, getThemeSelectorModal),
+                      Container(height: 30,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          DeleteOldEventsButton(),
+                        ],
+                      ),
+                      Container(height: 30,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          DeleteAllEventsButton()
+                        ],
+                      ),
+                      Container(height: 30,),
+
                     ],
                   ),
                   AnimatedSwitcher(
@@ -294,4 +310,170 @@ class SettingsState extends State<Settings>{
       modal = Container();
     });
   }
+}
+
+
+class DeleteOldEventsButton extends StatefulWidget {
+
+
+  @override
+  DeleteOldEventsButtonState createState() => DeleteOldEventsButtonState();
+}
+
+class DeleteOldEventsButtonState extends State<DeleteOldEventsButton>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller =
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
+    controller.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+
+    return GestureDetector(
+        onTapDown: (_) => controller.forward(),
+        onTapUp: (_) {
+          if (controller.status == AnimationStatus.forward) {
+            controller.reverse();
+          } else{
+            fireActions.deleteOldEvents();
+            _showDialog("Deleted Old Events", "Any events before the current time have been deleted", context);
+            controller.animateTo(0);
+          }
+        },
+        child: Container(
+            decoration: BoxDecoration(color: theme.theme['colorSecondary'], borderRadius: BorderRadius.all(Radius.circular(8))),
+            padding: EdgeInsets.all(10.0),
+            child:
+            Row(
+              children: <Widget>[
+                Text('Delete Old Events', style: TextStyle(color: Colors.white, fontSize: 15),),
+                Container(width: 20,),
+                Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                      value: 1.0,
+                      valueColor: AlwaysStoppedAnimation<Color>(theme.theme['colorSecondary']),
+                    ),
+                    CircularProgressIndicator(
+                      value: controller.value,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                    Icon(Icons.clear_all, color: Colors.white,)
+                  ],
+                ),
+              ],
+            )
+        )
+    );
+  }
+}
+
+
+class DeleteAllEventsButton extends StatefulWidget {
+
+
+  @override
+  DeleteAllEventsButtonState createState() => DeleteAllEventsButtonState();
+}
+
+class DeleteAllEventsButtonState extends State<DeleteAllEventsButton>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller =
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
+    controller.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+
+    return GestureDetector(
+        onTapDown: (_) => controller.forward(),
+        onTapUp: (_) {
+          if (controller.status == AnimationStatus.forward) {
+            controller.reverse();
+          } else{
+            // Things happen here
+            fireActions.deleteAllEvents();
+            _showDialog('Deleted All Events', "I sure hope that was on purpose...", context);
+            controller.animateTo(0);
+          }
+        },
+        child: Container(
+            decoration: BoxDecoration(color: theme.theme['colorDanger'], borderRadius: BorderRadius.all(Radius.circular(8))),
+            padding: EdgeInsets.all(10.0),
+            child:
+            Row(
+              children: <Widget>[
+                Text('Delete All Events', style: TextStyle(color: Colors.white, fontSize: 15),),
+                Container(width: 20,),
+                Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                      value: 1.0,
+                      valueColor: AlwaysStoppedAnimation<Color>(theme.theme['colorDanger']),
+                    ),
+                    CircularProgressIndicator(
+                      value: controller.value,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                    Icon(Icons.delete_forever, color: Colors.white,)
+                  ],
+                ),
+              ],
+            )
+        )
+    );
+  }
+}
+
+_showDialog(title,content,context) {
+  final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+  ThemeLoaded theme = _themeBloc.currentState;
+  // flutter defined function
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        backgroundColor: theme.theme['card'],
+        title: new Text(title, style: TextStyle(color: theme.theme['textTitle']),),
+        content: new Text(content,
+          style: TextStyle(color: theme.theme['text']),),
+        actions: <Widget>[
+          // usually buttons at the bottom of the dialog
+          new FlatButton(
+            child: new Text("Close"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
