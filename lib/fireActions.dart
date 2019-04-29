@@ -26,35 +26,38 @@ class FireActions {
 
     var eventID = uuid.v4();
     await database.reference().child('/user/${user.uid}/events/').once().then((snapshot) async{
-      if(snapshot.value.length > 9){
-        var items = snapshot.value;
-        var listOfTimes = [];
-        var sortedEvents = {};
-        items.forEach((k, event) {
-          listOfTimes.add(event['start']);
-        });
-        listOfTimes..sort();
-        // after sorting, add events in order
-        for(var time in listOfTimes){
-          items.forEach((k,value){
-            if(time == value['start']){
-              print(DateTime.fromMillisecondsSinceEpoch(value['start']));
-              sortedEvents.addAll({k:value});
+      var events = snapshot.value;
+      if(events != null){
+        if(snapshot.value.length > 9){
+          var items = snapshot.value;
+          var listOfTimes = [];
+          var sortedEvents = {};
+          items.forEach((k, event) {
+            listOfTimes.add(event['start']);
+          });
+          listOfTimes..sort();
+          // after sorting, add events in order
+          for(var time in listOfTimes){
+            items.forEach((k,value){
+              if(time == value['start']){
+                print(DateTime.fromMillisecondsSinceEpoch(value['start']));
+                sortedEvents.addAll({k:value});
+              }
+            });
+          }
+          List keysOfSort = sortedEvents.keys.toList();
+          var kF = keysOfSort.first;
+          await database.reference().child('user/${user.uid}/events/$kF').remove();
+          await database.reference().child('user/${user.uid}/info').once().then((snapshot){
+            var check = snapshot.value['deleteNotificationCheck'];
+            if(check == null){
+              result = "SHOW_DELETE";
+              database.reference().child('user/${user.uid}/info').update({
+                "deleteNotificationCheck":true
+              });
             }
           });
         }
-        List keysOfSort = sortedEvents.keys.toList();
-        var kF = keysOfSort.first;
-        await database.reference().child('user/${user.uid}/events/$kF').remove();
-        await database.reference().child('user/${user.uid}/info').once().then((snapshot){
-          var check = snapshot.value['deleteNotificationCheck'];
-          if(check == null){
-            result = "SHOW_DELETE";
-            database.reference().child('user/${user.uid}/info').update({
-              "deleteNotificationCheck":true
-            });
-          }
-        });
       }
     });
     await database.reference().child('/user/${user.uid}/events/').update(<String, dynamic>{
