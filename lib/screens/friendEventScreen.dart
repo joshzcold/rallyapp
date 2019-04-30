@@ -4,9 +4,12 @@ import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/fireActions.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 FireActions fireActions = new FireActions();
+enum MenuChoices { report }
+
 
 class FriendEvent extends StatelessWidget {
   final String eventKey;
@@ -32,6 +35,41 @@ class FriendEvent extends StatelessWidget {
           centerTitle: true,
           title:Text(eventValue['userName'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           backgroundColor: Color(_getColorFromHex(eventValue['color'])),
+          actions: <Widget>[
+            Theme(
+              data: Theme.of(context).copyWith(
+                  cardColor: theme.theme['card'],
+                  iconTheme: IconThemeData(color: Colors.white)
+              ),
+              child: PopupMenuButton<MenuChoices>(
+                onSelected: (MenuChoices result) {
+                  if(result == MenuChoices.report){
+                    showReportDialog(context, eventValue);
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuChoices>>[
+                  PopupMenuItem<MenuChoices>(
+                      value: MenuChoices.report,
+                      child: Row(
+                        children: <Widget>[
+                          Container(width: 10,),
+                          Container(
+                              padding: EdgeInsets.all(10.0),
+                              child: Row(
+                                children: <Widget>[
+                                  Icon(Icons.report, color: theme.theme['solidIconDark'],),
+                                  Container(width: 5,),
+                                  Text('Report Event', style: TextStyle(fontSize: 15, color: theme.theme['text']),)
+                                ],
+                              )
+                          ),
+                        ],
+                      )
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
         body: ListView(
           children: <Widget>[
@@ -153,6 +191,95 @@ class FriendEvent extends StatelessWidget {
             )
           ],
         )
+    );
+  }
+
+  _showDialog(context, title, content){
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          backgroundColor: theme.theme['card'],
+          title: new Text(title, style: TextStyle(color: theme.theme['textTitle']),),
+          content: new Text(content, style: TextStyle(color: theme.theme['textTitle']),),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close", style: TextStyle(color: theme.theme['colorSecondary']),),
+              onPressed: () {
+                Navigator.popUntil(context, ModalRoute.withName('/main'));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  showReportDialog(context, eventValue) {
+    final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+    ThemeLoaded theme = _themeBloc.currentState;
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          backgroundColor: theme.theme['card'],
+          title: new Text("Report Innapropriate Event", style: TextStyle(color: theme.theme['textTitle']),),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text("Send an email to the developers about this event. "
+                  "You should report this event if you want us to be aware of any "
+                  "illegal activity, dangerous activity, Or anything that would warrent review of this persons account",
+                style: TextStyle(color: theme.theme['text']),),
+              Container(height: 5,),
+              Text("Here are the details of the report, extra information :",
+                style: TextStyle(color: theme.theme['text']),),
+              Container(height: 5,),
+              Text("${eventValue['userName']}",
+                style: TextStyle(color: theme.theme['text']),),
+              Container(height: 5,),
+              Text("${eventValue['title']}",
+                style: TextStyle(color: theme.theme['text']),),
+              Text("${DateTime.fromMillisecondsSinceEpoch(eventValue['start'])}",
+                style: TextStyle(color: theme.theme['text']),),
+            ],
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Send Report", style: TextStyle(color: theme.theme['colorPrimary']),),
+              onPressed: () async {
+                // Send an email
+                String now = DateTime.now().toString();
+                var uid = eventValue['user'].toString().substring(0,15);
+                String body = '${eventValue['userName']} \n ${eventValue['title']} \n ${eventValue['start']} \n $uid';
+                var url = 'mailto:rallydev@rallyup.app?subject=Report-$now&body=$body';
+                if (await canLaunch(url)) {
+                await launch(url);
+                } else {
+                throw 'Could not launch $url';
+                }
+                _showDialog(context, "Report Sent", "Thank you we will take a look "
+                    "at your report and might get back to you about details, "
+                    "we appreciate your effort in making rally a safe environment");
+              },
+            ),
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close", style: TextStyle(color: theme.theme['colorSecondary']),),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
