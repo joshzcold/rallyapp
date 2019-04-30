@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rallyapp/blocs/app/theme.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Donate extends StatelessWidget{
   @override
@@ -83,8 +84,13 @@ class Donate extends StatelessWidget{
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   FlatButton(
-                      onPressed: () {
-
+                      onPressed: () async {
+                        const url = 'https://rallyup.app/donate';
+                        if (await canLaunch(url)) {
+                        await launch(url);
+                        } else {
+                        throw 'Could not launch $url';
+                        }
                       },
                       padding: EdgeInsets.all(0),
                       child: Row(
