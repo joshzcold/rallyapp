@@ -15,19 +15,22 @@ Future<String> writeToConf(contents) async{
 }
 
 readConf() async {
+  var result;
   try {
-    final file = await _localFile;
-
-    // Read the file
-    Config config = new Config.fromStrings(file.readAsLinesSync());
-
-    return config;
-
+    var file = await _localFile;
+    Config config = Config.fromStrings(file.readAsLinesSync());
+    result = config;
   } catch (e) {
-
-    return e;
+    if(e is FileSystemException){
+      writeToConf('');
+      var readFile = await _localFile;
+      Config config = new Config.fromStrings(readFile.readAsLinesSync());
+      result = config;
+    }
   }
+  return result;
 }
+
 
 Future<String> get _localPath async {
   final directory = await getApplicationDocumentsDirectory();

@@ -29,10 +29,8 @@ import 'package:rallyapp/utility/config.dart';
 void main() async{
   var themeValue;
   var config = await readConf();
-  if(config is FileSystemException){
-    writeToConf('');
-    config = await readConf();
-  } if(config.hasSection('theme')){
+
+  if(config.hasSection('theme')){
     themeValue = config.get('theme', 'appTheme');
   } else{
     themeValue = "light";
