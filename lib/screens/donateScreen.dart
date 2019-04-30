@@ -33,7 +33,7 @@ class Donate extends StatelessWidget{
                             child:  Text('If you are here on purpose I really want to thank you for considering supporting this application.'
                                 ' When creating rally we (the developers) wanted to keep rally as free as possible... meaning no ads or'
                                 ' important features behind a pay wall. I Just want to tell that your donation will only be used to support the operating '
-                                ' costs of the application and not be a paycheck for the developers. Rally was not created for a profit.', style:
+                                ' costs of the application and not be a paycheck for the developers.', style:
                             TextStyle(color: theme.theme['text']),)
                         )
                     )
