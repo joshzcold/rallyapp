@@ -22,10 +22,7 @@ readConf() async {
     result = config;
   } catch (e) {
     if(e is FileSystemException){
-      writeToConf('');
-      var readFile = await _localFile;
-      Config config = new Config.fromStrings(readFile.readAsLinesSync());
-      result = config;
+      result = Config.fromString("");
     }
   }
   return result;

@@ -33,8 +33,7 @@ class SignInPage extends StatelessWidget{
 
   void signInWithGoogle(context) async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn().catchError((error) => _showAlert(error.code, error.message, context));
-    final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
     final AuthCredential credential = GoogleAuthProvider.getCredential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
