@@ -12,6 +12,7 @@ import 'package:rallyapp/widgets/themeButton.dart';
 import 'package:rallyapp/widgets/themeSelector.dart';
 import 'package:rallyapp/blocs/app/theme.dart';
 import 'package:rallyapp/widgets/uploadPhotoButton.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Widget modal;
 
@@ -226,7 +227,27 @@ class SettingsState extends State<Settings>{
             ],
           ),
         ),
-
+        InkWell(
+          onTap: () async{
+            // Send an email
+            String now = DateTime.now().toString();
+            String body = '';
+            var url = 'mailto:rallydev@rallyup.app?subject=Contact-$now&body=$body';
+            if (await canLaunch(url)) {
+            await launch(url);
+            } else {
+            throw 'Could not launch $url';
+            }
+          },
+          child:Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(width: 15,),
+              Text('Contact Dev', style: TextStyle(color: theme.theme['text'], fontWeight: FontWeight.bold),),
+              Container(width: 15,)
+            ],
+          ),
+        ),
 
       ],),
       body: BlocBuilder(
