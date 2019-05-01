@@ -119,6 +119,7 @@ class FriendDetails extends StatelessWidget{
                           ),
                         ],
                       ),
+                      Container(height: 20,)
                     ],
                   )
               ),

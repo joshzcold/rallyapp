@@ -87,7 +87,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
       } else{
         authBloc.dispatch(AddAuth(uid,snapshot.value));
       }
-    }).catchError((error) => _showAlert("Listener Error Contact Dev", error, context));
+    }).catchError((error) => print(error));
 
     // Setting Listener on User Info CHANGE
     database.reference().child('user/$uid/info').onChildChanged.listen((event){
@@ -199,7 +199,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
         } else{
           friendBloc.dispatch(AddFriends(friendID, snapshot.value));
         }
-      }).catchError((error) => _showAlert("Listener Error Contact Dev", error, context));
+      }).catchError((error) => print(error));
 
       // Settings Listener on friends info CHANGE
       subscriptions[friendID][i++] = database.reference().child('user/$friendID/info').onChildChanged.listen((event){
@@ -215,7 +215,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
             eventBloc.dispatch(AddEvents(friendID, key, value));
           });
         }
-      }).catchError((error) => _showAlert("Listener Error Contact Dev", error, context));;
+      }).catchError((error) => print(error));;
 
       // Setting Listener on friend's events detail CHANGE
       subscriptions[friendID][i++] = database.reference().child('user/$friendID/events').onChildChanged.listen((event) {
@@ -302,13 +302,13 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
        // directory. Not the best way to check but since flutter doesn't currently
        // have a function like .exists() this is what works for now...
       items.containsKey(rallyID)? getRallyID(): createInitialUserData(rallyID);
-     }).catchError((error) => _showAlert("Listener Error Contact Dev", error, context));
+     }).catchError((error) => print(error));
   }
 
   /// BIG OLE Check to make sure the user has data before setting listeners
   database.reference().child('user/$uid/info').once().then((snapshot) {
     snapshot.value == null? getRallyID() : setUserFriendListeners();
-  }).catchError((error) => _showAlert("Listener Error Contact Dev", error, context));
+  }).catchError((error) => print(error));
 
 }
 
@@ -324,14 +324,3 @@ Future<void> _showNotification(title, body, payload) async {
       payload: payload);
 }
 
-void _showAlert(title,text, context) async{
-  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'rallyupapp', 'rally-notification', 'notifications from rally up. Events, Invites, Alerts',
-      importance: Importance.Max, priority: Priority.High);
-  var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-  var platformChannelSpecifics = NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-  await flutterLocalNotificationsPlugin.show(
-      0, title, text, platformChannelSpecifics,
-      payload: "");
-}
