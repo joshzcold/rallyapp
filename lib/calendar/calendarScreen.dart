@@ -55,8 +55,7 @@ PageController horizontalHeaderScrollController;
 ScrollController verticalPageGridScrollController;
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-
-class CalendarPage extends StatefulWidget{
+class CalendarPage extends StatefulWidget {
   @override
   CalendarPageState createState() => CalendarPageState();
 }
@@ -72,12 +71,13 @@ class CalendarPageState extends State<CalendarPage> {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
     var initializationSettingsAndroid =
-    new AndroidInitializationSettings('@mipmap/ic_launcher');
+        new AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettingsIOS = new IOSInitializationSettings();
     var initializationSettings = new InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-    flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: onSelectNotification);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: onSelectNotification);
   }
 
   Future onSelectNotification(String payload) async {
@@ -87,43 +87,54 @@ class CalendarPageState extends State<CalendarPage> {
     var value = keyValuePayload[1];
     var user = keyValuePayload[2];
 
-    if(key == "friendEvent"){
+    if (key == "friendEvent") {
       final eventBloc = BlocProvider.of<EventsBloc>(context);
       EventsLoaded eventsLoaded = eventBloc.currentState;
       var pushedValue = eventsLoaded.events[user][value];
       MapEntry pushedEvent = new MapEntry(value, pushedValue);
 
       List key = pushedEvent.key.toString().split(',');
-      Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(eventKey: key[0], eventValue: pushedEvent.value,)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => FriendEvent(
+                    eventKey: key[0],
+                    eventValue: pushedEvent.value,
+                  )));
     }
-    if(key == "joinedFriend"){
+    if (key == "joinedFriend") {
       final eventBloc = BlocProvider.of<EventsBloc>(context);
       EventsLoaded eventsLoaded = eventBloc.currentState;
       var pushedValue = eventsLoaded.events[user][value];
       MapEntry pushedEvent = new MapEntry(value, pushedValue);
 
       List key = pushedEvent.key.toString().split(',');
-      Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: pushedEvent.value, blocEvents: eventsLoaded.events,)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => UserEvent(
+                    eventKey: key[0],
+                    eventValue: pushedEvent.value,
+                    blocEvents: eventsLoaded.events,
+                  )));
     }
-    if(key == "friendInvite"){
-      Navigator.push(context, MyCustomRoute(builder: (context) => FriendsScreen()));
+    if (key == "friendInvite") {
+      Navigator.push(
+          context, MyCustomRoute(builder: (context) => FriendsScreen()));
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-    horizontalHeaderScrollController = PageController(
-        initialPage: pages
-    );
-    var maxHeightWanted =
-        MediaQuery.of(context).size.height + 800;
+    horizontalHeaderScrollController = PageController(initialPage: pages);
+    var maxHeightWanted = MediaQuery.of(context).size.height + 800;
     verticalPageGridScrollController = ScrollController(
-        initialScrollOffset: calculateInitialScrollDownByCurrentTime(maxHeightWanted)
-    );
+        initialScrollOffset:
+            calculateInitialScrollDownByCurrentTime(maxHeightWanted));
     var maxPossibleWidth = MediaQuery.of(context).size.width;
     var leftTimeColumnWidth = 50.0;
-    var calendarColumnWidths = (MediaQuery.of(context).size.width - leftColumnWidth)/7;
+    var calendarColumnWidths =
+        (MediaQuery.of(context).size.width - leftColumnWidth) / 7;
     final EventsBloc _eventsBloc = BlocProvider.of<EventsBloc>(context);
 
     var currentDay = DateTime.now();
@@ -142,7 +153,7 @@ class CalendarPageState extends State<CalendarPage> {
     return Stack(
       children: <Widget>[
         Scaffold(
-          backgroundColor: theme.theme['background'],
+            backgroundColor: theme.theme['background'],
             appBar: PreferredSize(
                 child: AppBar(
                   elevation: 0.0,
@@ -151,79 +162,105 @@ class CalendarPageState extends State<CalendarPage> {
                 preferredSize: Size.fromHeight(1)),
             bottomNavigationBar: BottomAppBar(
                 child: Container(
-                  color: theme.theme['footer'],
-                  height: 55,
-                  child: Row(
-                    children: <Widget>[
-                      FlatButton(
-                          padding: EdgeInsets.all(0),
-                          onPressed: (){
-                            pageController.animateToPage(pages, duration: Duration(seconds: 1), curve: Curves.easeOut);
-                          },
-                          child:  Container(
-                            width: maxPossibleWidth/2,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(Icons.today, color: theme.theme['solidIconDark'],),
-                                Text('Today', style: TextStyle(fontSize: 14, color: theme.theme['text'], fontWeight: FontWeight.w500),)
-                              ],
+              color: theme.theme['footer'],
+              height: 55,
+              child: Row(
+                children: <Widget>[
+                  FlatButton(
+                      padding: EdgeInsets.all(0),
+                      onPressed: () {
+                        pageController.animateToPage(pages,
+                            duration: Duration(seconds: 1),
+                            curve: Curves.easeOut);
+                      },
+                      child: Container(
+                        width: maxPossibleWidth / 2,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.today,
+                              color: theme.theme['solidIconDark'],
                             ),
-                          )),
-                      FlatButton(
-                        padding: EdgeInsets.all(0),
-                        onPressed: (){
-                          Navigator.push(context, MyCustomRoute(builder: (context) => FriendsScreen()));
-                        },
-                        child: Container(
-                            width: maxPossibleWidth/2,
-                            child: LayoutBuilder(builder: (context, constraints){
-                              return Stack(
-                                children: <Widget>[
-                                  Center(
-                                    child: Column(
-                                      children: <Widget>[
-                                        Icon(Icons.group, color: theme.theme['solidIconDark'],),
-                                        Text('Friends', style: TextStyle(fontSize: 14, color: theme.theme['text'], fontWeight: FontWeight.w500),),
-                                      ],
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                    ),
-                                  ),
-                                  BlocBuilder(bloc: inviteBloc, builder: (context, state){
-                                    if(state is InvitesLoaded && state.invites.length > 0){
-                                      return Positioned(
-                                          top: constraints.maxHeight/4 - 5,
-                                          left: constraints.maxWidth/2 + 5,
-                                          child: Container(
-                                              height: 15,
-                                              width: 15,
-                                              decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: theme.theme['colorSuccess']
-                                              ),
-                                              child: Center(
-                                                child:Text('${state.invites.length}', style:
-                                                TextStyle(color: Colors.white, fontSize: 14),),
-                                              )
-                                          ));
-                                    } else{
-                                      return Container();
-                                    }
-                                  },),
-                                ],
-                              );
-                            })
-
+                            Text(
+                              'Today',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: theme.theme['text'],
+                                  fontWeight: FontWeight.w500),
+                            )
+                          ],
                         ),
-                      )
-                    ],
-                  ),
-                )
-            ),
+                      )),
+                  FlatButton(
+                    padding: EdgeInsets.all(0),
+                    onPressed: () {
+                      Navigator.push(context,
+                          MyCustomRoute(builder: (context) => FriendsScreen()));
+                    },
+                    child: Container(
+                        width: maxPossibleWidth / 2,
+                        child: LayoutBuilder(builder: (context, constraints) {
+                          return Stack(
+                            children: <Widget>[
+                              Center(
+                                child: Column(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.group,
+                                      color: theme.theme['solidIconDark'],
+                                    ),
+                                    Text(
+                                      'Friends',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: theme.theme['text'],
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                ),
+                              ),
+                              BlocBuilder(
+                                bloc: inviteBloc,
+                                builder: (context, state) {
+                                  if (state is InvitesLoaded &&
+                                      state.invites.length > 0) {
+                                    return Positioned(
+                                        top: constraints.maxHeight / 4 - 5,
+                                        left: constraints.maxWidth / 2 + 5,
+                                        child: Container(
+                                            height: 15,
+                                            width: 15,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: theme
+                                                    .theme['colorSuccess']),
+                                            child: Center(
+                                              child: Text(
+                                                '${state.invites.length}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14),
+                                              ),
+                                            )));
+                                  } else {
+                                    return Container();
+                                  }
+                                },
+                              ),
+                            ],
+                          );
+                        })),
+                  )
+                ],
+              ),
+            )),
             floatingActionButton: Container(
               child: FloatingActionButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => NewEvent()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => NewEvent()));
                   },
                   backgroundColor: theme.theme['colorPrimary'],
                   child: Icon(Icons.add)),
@@ -235,36 +272,45 @@ class CalendarPageState extends State<CalendarPage> {
                   children: <Widget>[
                     Container(
                         width: 50,
-                        child:StickyHeader(
-                            header: BlocBuilder(bloc: monthBloc, builder: (context, state){
-                              return Container(
-                                decoration: BoxDecoration(
-                                    color: theme.theme['header'],
-                                    boxShadow: [
-                                      new BoxShadow(
-                                        spreadRadius: MediaQuery.of(context).size.width,
-                                        color: theme.theme['shadow'],
-                                        blurRadius: 5.0,
-                                        offset: Offset(0.0, -MediaQuery.of(context).size.width),
-                                      )
-                                    ]),
-                                height: 50.0,
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      alignment: Alignment.center,
-                                      width: leftTimeColumnWidth,
-                                      child: new Text(
-                                        "${calculateMonthToAbbrv(state.month)}",
-                                        style: TextStyle(
-                                            color: theme.theme['headerText'],
-                                            fontSize: 20.0),
-                                      ),
+                        child: StickyHeader(
+                            header: BlocBuilder(
+                                bloc: monthBloc,
+                                builder: (context, state) {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                        color: theme.theme['header'],
+                                        boxShadow: [
+                                          new BoxShadow(
+                                            spreadRadius: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            color: theme.theme['shadow'],
+                                            blurRadius: 5.0,
+                                            offset: Offset(
+                                                0.0,
+                                                -MediaQuery.of(context)
+                                                    .size
+                                                    .width),
+                                          )
+                                        ]),
+                                    height: 50.0,
+                                    child: Row(
+                                      children: <Widget>[
+                                        Container(
+                                          alignment: Alignment.center,
+                                          width: leftTimeColumnWidth,
+                                          child: new Text(
+                                            "${calculateMonthToAbbrv(state.month)}",
+                                            style: TextStyle(
+                                                color:
+                                                    theme.theme['headerText'],
+                                                fontSize: 20.0),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              );
-                            }),
+                                  );
+                                }),
 
                             /// This is the Column on the left displaying time information
                             content: Container(
@@ -284,14 +330,27 @@ class CalendarPageState extends State<CalendarPage> {
                                         child: Column(
                                             children: displayHour
                                                 .map((hour) => Container(
-                                                width: leftTimeColumnWidth,
-                                                height: maxHeightWanted / 24,
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: <Widget>[
-                                                    Text('$hour', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: theme.theme['text']),)
-                                                  ],
-                                                )))
+                                                    width: leftTimeColumnWidth,
+                                                    height:
+                                                        maxHeightWanted / 24,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          '$hour',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 10,
+                                                              color:
+                                                                  theme.theme[
+                                                                      'text']),
+                                                        )
+                                                      ],
+                                                    )))
                                                 .toList())),
 
                                     /// This creates the little ticks next to the Time increments
@@ -300,26 +359,24 @@ class CalendarPageState extends State<CalendarPage> {
                                         child: Column(
                                             children: timeHour
                                                 .map((hour) => Container(
-                                                width: 15,
-                                                height:
-                                                maxHeightWanted /
-                                                    24,
-                                                decoration: BoxDecoration(
-                                                    border: Border(
-                                                        bottom: BorderSide(
-                                                            color: theme.theme['border'],
-                                                            width:
-                                                            1))),
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Container()
-                                                  ],
-                                                )))
+                                                    width: 15,
+                                                    height:
+                                                        maxHeightWanted / 24,
+                                                    decoration: BoxDecoration(
+                                                        border: Border(
+                                                            bottom: BorderSide(
+                                                                color: theme
+                                                                        .theme[
+                                                                    'border'],
+                                                                width: 1))),
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Container()
+                                                      ],
+                                                    )))
                                                 .toList())),
                                   ],
-                                )))
-
-                    ),
+                                )))),
 
                     /// Horizontally scrolling set of calendar widgets
                     /// that get defined at the top of the class.
@@ -329,118 +386,137 @@ class CalendarPageState extends State<CalendarPage> {
                             decoration: BoxDecoration(
                               color: theme.theme['header'],
                             ),
-                            width: maxPossibleWidth -50,
+                            width: maxPossibleWidth - 50,
                             height: 50,
                             child: NotificationListener<ScrollNotification>(
-                                onNotification: (scrollInfo){
-                                  var value = (pageController.offset - calendarColumnWidths/2)/calendarColumnWidths;
+                                onNotification: (scrollInfo) {
+                                  var value = (pageController.offset -
+                                          calendarColumnWidths / 2) /
+                                      calendarColumnWidths;
                                   var roundedValue = value.round();
                                   Month currentMonth = monthBloc.currentState;
-                                  var date = startOfWeek.add(Duration(days: (roundedValue - daysBeforeStart)));
-                                  if(date.month > currentMonth.month || date.month < currentMonth.month){
+                                  var date = startOfWeek.add(Duration(
+                                      days: (roundedValue - daysBeforeStart)));
+                                  if (date.month > currentMonth.month ||
+                                      date.month < currentMonth.month) {
                                     monthBloc.dispatch(ChangeMonth(date.month));
                                   }
                                 },
-                                child:PageView.builder(
-                                  pageSnapping: false,
+                                child: PageView.builder(
+                                    pageSnapping: false,
                                     physics: NeverScrollableScrollPhysics(),
                                     scrollDirection: Axis.horizontal,
-                                    controller: horizontalHeaderScrollController,
-                                    itemBuilder: (context, _index){
-                                      final index =  _index - pages;
+                                    controller:
+                                        horizontalHeaderScrollController,
+                                    itemBuilder: (context, _index) {
+                                      final index = _index - pages;
                                       var week = [];
-                                      if(index == 0){
+                                      if (index == 0) {
                                         week = currentWeek;
                                         // if statement accounts for daylight savings messing with daysInRage
-                                        if(week.length == 8){
+                                        if (week.length == 8) {
                                           week.removeLast();
                                         }
-                                      } else{
-                                        var startofWeek = startOfWeek.add(Duration(days: index*7));
-                                        var endofWeek = Utils.lastDayOfWeek(startofWeek);
-                                        week = Utils.daysInRange(startofWeek, endofWeek).toList();
+                                      } else {
+                                        var startofWeek = startOfWeek
+                                            .add(Duration(days: index * 7));
+                                        var endofWeek =
+                                            Utils.lastDayOfWeek(startofWeek);
+                                        week = Utils.daysInRange(
+                                                startofWeek, endofWeek)
+                                            .toList();
                                         // if statement accounts for daylight savings messing with daysInRage
-                                        if(week.length == 8){
+                                        if (week.length == 8) {
                                           week.removeLast();
                                         }
                                       }
                                       return Row(
-                                        children: week.map<Widget>((day) => calculateDayStyle(day, leftColumnWidth, context, theme)).toList(),
+                                        children: week
+                                            .map<Widget>((day) =>
+                                                calculateDayStyle(
+                                                    day,
+                                                    leftColumnWidth,
+                                                    context,
+                                                    theme))
+                                            .toList(),
                                       );
-                                    })
-
-                            )
-                        ),
+                                    }))),
                         content: Container(
-                            width: maxPossibleWidth -50,
+                            width: maxPossibleWidth - 50,
                             height: maxHeightWanted,
                             child: NotificationListener<ScrollNotification>(
-                                onNotification: (ScrollNotification scrollInfo){
-                                  horizontalHeaderScrollController.jumpTo(pageController.offset);
+                                onNotification:
+                                    (ScrollNotification scrollInfo) {
+                                  horizontalHeaderScrollController
+                                      .jumpTo(pageController.offset);
                                 },
                                 child: PageView.builder(
                                   controller: pageController,
                                   itemBuilder: (context, _index) {
-                                    final index =  _index - pages;
+                                    final index = _index - pages;
                                     var week = [];
-                                    if(index == 0){
+                                    if (index == 0) {
                                       week = currentWeek;
                                       // if statement accounts for daylight savings messing with daysInRage
-                                      if(week.length == 8){
+                                      if (week.length == 8) {
                                         week.removeLast();
                                       }
-                                    } else{
-                                      var startofWeek = startOfWeek.add(Duration(days: index*7));
-                                      var endofWeek = Utils.lastDayOfWeek(startofWeek);
-                                      week = Utils.daysInRange(startofWeek, endofWeek).toList();
+                                    } else {
+                                      var startofWeek = startOfWeek
+                                          .add(Duration(days: index * 7));
+                                      var endofWeek =
+                                          Utils.lastDayOfWeek(startofWeek);
+                                      week = Utils.daysInRange(
+                                              startofWeek, endofWeek)
+                                          .toList();
                                       // if statement accounts for daylight savings messing with daysInRage
-                                      if(week.length == 8){
+                                      if (week.length == 8) {
                                         week.removeLast();
                                       }
                                     }
-                                    return WeekView(week:week, conflictEventsDetailsCallBack: showConflictedEventsDetails);
+                                    return WeekView(
+                                        week: week,
+                                        conflictEventsDetailsCallBack:
+                                            showConflictedEventsDetails);
                                   },
-                                ))
-                        )
-                    ),
+                                )))),
                   ],
                 ),
               ],
-            )
-        ),
+            )),
         AnimatedSwitcher(
-          // the duration can be adjusted to expand the friend events
-          // faster or slower.
+            // the duration can be adjusted to expand the friend events
+            // faster or slower.
             duration: Duration(milliseconds: 300),
-            transitionBuilder: (Widget child, Animation<double>animation) {
-              return FadeTransition(opacity: animation,
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return FadeTransition(
+                opacity: animation,
                 child: child,
               );
             },
-            child: conflictedEventsModal
-        ),
+            child: conflictedEventsModal),
       ],
     );
   }
 
-  showConflictedEventsDetails(groupOfEvents, _eventsBloc, context, auth, theme) {
+  showConflictedEventsDetails(
+      groupOfEvents, _eventsBloc, context, auth, theme) {
     ///SetState for events processed on each friend card
     setState(() {
-      conflictedEventsModal = LayoutBuilder(builder: (context, constraints){
+      conflictedEventsModal = LayoutBuilder(builder: (context, constraints) {
         var detailEventsCardWidth = constraints.maxWidth * .90;
         var maxHeight = constraints.maxHeight;
         var maxWidth = constraints.maxWidth;
         var cardHeightMultiplier = 0.35;
         var cardWidthMultiplier = 0.95;
 
-        if(maxWidth > maxHeight){
+        if (maxWidth > maxHeight) {
           cardHeightMultiplier = 0.80;
           cardWidthMultiplier = 0.70;
         }
-        return
-          FlatButton(
-            padding: EdgeInsets.all(0),
-          onPressed: (){
+        return FlatButton(
+          padding: EdgeInsets.all(0),
+          onPressed: () {
             setState(() {
               conflictedEventsModal = Container();
             });
@@ -455,107 +531,169 @@ class CalendarPageState extends State<CalendarPage> {
                 width: maxWidth * cardWidthMultiplier,
                 child: Card(
                   color: theme.theme['cardListBackground'],
-                  child:ListView(
+                  child: ListView(
                       children: groupOfEvents.value.entries
-                          .map<Widget>((event) =>
-                          BlocBuilder(bloc: _eventsBloc, builder: (context, state){
-                            var selectedUserEvents = state.events[event.value['user']];
-                            var key = event.key.toString().split(',');
-                            var selectedEvent = selectedUserEvents[key[0]];
-                            if(selectedEvent == null){
-                              return Container();
-                            } else{
-                              return Column(
-                                children: <Widget>[
-                                  // SPACER
-                                  Container(
-                                    height: 10,
-                                  ),
-                                  /// Each Event Card
-                                  Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                        boxShadow: [
-                                          new BoxShadow(
-                                            color: theme.theme['shadow'],
-                                            blurRadius: 5.0,
-                                            offset: Offset(0.0, 0.0),
-                                          )
-                                        ],
-                                        color: Color(_getColorFromHex(selectedEvent['color'])),
+                          .map<Widget>((event) => BlocBuilder(
+                              bloc: _eventsBloc,
+                              builder: (context, state) {
+                                var selectedUserEvents =
+                                    state.events[event.value['user']];
+                                var key = event.key.toString().split(',');
+                                var selectedEvent = selectedUserEvents[key[0]];
+                                if (selectedEvent == null) {
+                                  return Container();
+                                } else {
+                                  return Column(
+                                    children: <Widget>[
+                                      // SPACER
+                                      Container(
+                                        height: 10,
                                       ),
-                                      child: ClipPath(
-                                        clipper: CardCornerClipper(),
-                                        child: Container(
-                                          width: detailEventsCardWidth * .95,
+
+                                      /// Each Event Card
+                                      Container(
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                            color: theme.theme['card'],
-                                          ),
-                                          child: FlatButton(
-                                              padding: EdgeInsets.all(0),
-                                              onPressed: () {
-                                                if(auth.key == event.value['user']){
-                                                  List key = event.key.toString().split(',');
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvent(eventKey: key[0], eventValue: event.value, blocEvents: state.events,)));
-                                                } else{
-                                                  List key = event.key.toString().split(',');
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(eventKey: key[0], eventValue: event.value,)));
-                                                }
-                                              },
-                                              child: Container(
-                                                  padding: EdgeInsets.all(10),
-                                                  child: Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: <Widget>[
-                                                      Column(
-                                                        children: <Widget>[
-                                                          CircleAvatar(
-                                                            backgroundImage: NetworkImage(selectedEvent['userPhoto']),
-                                                          )
-                                                        ],
-                                                      ),
-                                                      Container(width: 20,),
-                                                      Flexible(
-                                                        child: Column(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: <Widget>[
-                                                            Text(
-                                                              '${selectedEvent['userName']}',
-                                                              style: TextStyle(fontSize: 15, color: theme.theme['text']),
-                                                              overflow: TextOverflow.ellipsis,
-                                                            ),
-                                                            Row(
-                                                              /// RETURN TIME OF EVENT
-                                                                children:
-                                                                returnTimeInPrettyFormat(selectedEvent, theme)),
-                                                            Text(
-                                                                '${selectedEvent['title']}',
-                                                                style: TextStyle(fontSize: 15, color: theme.theme['text']),
-                                                                overflow: TextOverflow.ellipsis,
-                                                              ),
-                                                            _joinedFriendsConflictingDetails(selectedEvent, theme)
-                                                          ],
-                                                        )
-                                                      )
-                                                    ],
-                                                  )
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(8.0)),
+                                            boxShadow: [
+                                              new BoxShadow(
+                                                color: theme.theme['shadow'],
+                                                blurRadius: 5.0,
+                                                offset: Offset(0.0, 0.0),
                                               )
+                                            ],
+                                            color: Color(_getColorFromHex(
+                                                selectedEvent['color'])),
                                           ),
-                                        ),
-                                      )
-                                  ),
-                                  // SPACER
-                                  Container(
-                                    height: 10,
-                                  ),
-                                ],
-                              );
-                            }
-                          })).toList()),
-                )
-            ),
+                                          child: ClipPath(
+                                            clipper: CardCornerClipper(),
+                                            child: Container(
+                                              width:
+                                                  detailEventsCardWidth * .95,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(8.0)),
+                                                color: theme.theme['card'],
+                                              ),
+                                              child: FlatButton(
+                                                  padding: EdgeInsets.all(0),
+                                                  onPressed: () {
+                                                    if (auth.key ==
+                                                        event.value['user']) {
+                                                      List key = event.key
+                                                          .toString()
+                                                          .split(',');
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      UserEvent(
+                                                                        eventKey:
+                                                                            key[0],
+                                                                        eventValue:
+                                                                            event.value,
+                                                                        blocEvents:
+                                                                            state.events,
+                                                                      )));
+                                                    } else {
+                                                      List key = event.key
+                                                          .toString()
+                                                          .split(',');
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      FriendEvent(
+                                                                        eventKey:
+                                                                            key[0],
+                                                                        eventValue:
+                                                                            event.value,
+                                                                      )));
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(10),
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: <Widget>[
+                                                          Column(
+                                                            children: <Widget>[
+                                                              CircleAvatar(
+                                                                backgroundColor:
+                                                                    theme.theme[
+                                                                        'card'],
+                                                                backgroundImage:
+                                                                    NetworkImage(
+                                                                        selectedEvent[
+                                                                            'userPhoto']),
+                                                              )
+                                                            ],
+                                                          ),
+                                                          Container(
+                                                            width: 20,
+                                                          ),
+                                                          Flexible(
+                                                              child: Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceEvenly,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: <Widget>[
+                                                              Text(
+                                                                '${selectedEvent['userName']}',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        15,
+                                                                    color: theme
+                                                                            .theme[
+                                                                        'text']),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                              Row(
+
+                                                                  /// RETURN TIME OF EVENT
+                                                                  children: returnTimeInPrettyFormat(
+                                                                      selectedEvent,
+                                                                      theme)),
+                                                              Text(
+                                                                '${selectedEvent['title']}',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        15,
+                                                                    color: theme
+                                                                            .theme[
+                                                                        'text']),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                              _joinedFriendsConflictingDetails(
+                                                                  selectedEvent,
+                                                                  theme)
+                                                            ],
+                                                          ))
+                                                        ],
+                                                      ))),
+                                            ),
+                                          )),
+                                      // SPACER
+                                      Container(
+                                        height: 10,
+                                      ),
+                                    ],
+                                  );
+                                }
+                              }))
+                          .toList()),
+                )),
           ),
         );
       });
@@ -576,15 +714,21 @@ class CalendarPageState extends State<CalendarPage> {
       return Row(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Text('Joined Friends: ',style: TextStyle(color: theme.theme['text']),),
+          Text(
+            'Joined Friends: ',
+            style: TextStyle(color: theme.theme['text']),
+          ),
           Row(
-              children: event['party']['friends'].entries
-                  .map<Widget>((friend) => CircleAvatar(
-                radius: 10,
-                backgroundImage: NetworkImage(friend
-                    .value['userPhoto']),
-              ),).toList()
-          )
+              children: event['party']['friends']
+                  .entries
+                  .map<Widget>(
+                    (friend) => CircleAvatar(
+                          radius: 10,
+                          backgroundImage:
+                              NetworkImage(friend.value['userPhoto']),
+                        ),
+                  )
+                  .toList())
         ],
       );
     } else {
@@ -600,38 +744,44 @@ class CalendarPageState extends State<CalendarPage> {
         cday.year.toString() + cday.month.toString() + cday.day.toString();
     if (value == today) {
       return Container(
-        width: (MediaQuery.of(context).size.width - leftColumnWidth)/7,
+        width: (MediaQuery.of(context).size.width - leftColumnWidth) / 7,
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
               "${day.day}",
-              style: TextStyle(color: theme.theme['headerTodayText'], fontSize: 20.0),
+              style: TextStyle(
+                  color: theme.theme['headerTodayText'], fontSize: 20.0),
             ),
             Text(
               "${calculateWeekDayAbbrv(day.weekday)}",
-              style: TextStyle(color: theme.theme['headerTodayText'], fontSize: 10.0),
+              style: TextStyle(
+                  color: theme.theme['headerTodayText'], fontSize: 10.0),
             ),
-          ],),
+          ],
+        ),
         alignment: FractionalOffset(0.5, 0.5),
       );
     } else {
       return Container(
-        width: (MediaQuery.of(context).size.width - leftColumnWidth)/7,
+        width: (MediaQuery.of(context).size.width - leftColumnWidth) / 7,
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-          Text(
-            "${day.day}",
-            style: TextStyle(color: theme.theme['headerText'], fontSize: 20.0),
-          ),
-          Text(
-            "${calculateWeekDayAbbrv(day.weekday)}",
-            style: TextStyle(color: theme.theme['headerText'], fontSize: 10.0),
-          ),
-        ],),
+            Text(
+              "${day.day}",
+              style:
+                  TextStyle(color: theme.theme['headerText'], fontSize: 20.0),
+            ),
+            Text(
+              "${calculateWeekDayAbbrv(day.weekday)}",
+              style:
+                  TextStyle(color: theme.theme['headerText'], fontSize: 10.0),
+            ),
+          ],
+        ),
         alignment: FractionalOffset(0.5, 0.5),
       );
     }
@@ -709,17 +859,16 @@ calculateWeekDayAbbrv(int weekday) {
   return result;
 }
 
-
 double calculateInitialScrollDownByCurrentTime(constraints) {
   var sTime = DateTime.now();
   double height = constraints;
   double hour = height / 24;
   var hoursFromMidnight = (sTime.hour * 60 + sTime.minute) / 60;
   double distanceDown = hoursFromMidnight * hour;
-  return distanceDown/1.5;
+  return distanceDown / 1.5;
 }
 
-class CardCornerClipper extends CustomClipper<Path>{
+class CardCornerClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();
@@ -731,7 +880,7 @@ class CardCornerClipper extends CustomClipper<Path>{
 
     path.lineTo(size.width, size.height * .40);
 
-    path.lineTo(size.width *.90, 0.0);
+    path.lineTo(size.width * .90, 0.0);
 
     // Draw a straight line from current point to the top right corner.
     path.lineTo(0.0, 0.0);
@@ -745,4 +894,3 @@ class CardCornerClipper extends CustomClipper<Path>{
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
-
