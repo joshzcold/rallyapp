@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
@@ -24,9 +23,8 @@ class FriendsScreen extends StatefulWidget {
 }
 
 class FriendsScreenState extends State<FriendsScreen> {
-
   @override
-  void initState(){
+  void initState() {
     super.initState();
     newFriendTextController = TextEditingController();
     newFriendModal = Container();
@@ -46,7 +44,7 @@ class FriendsScreenState extends State<FriendsScreen> {
     final _invitesBloc = BlocProvider.of<InviteBloc>(context);
     var maxPossibleWidth = MediaQuery.of(context).size.width;
     FireActions fireActions = new FireActions();
-    AuthLoaded auth =  _authBloc.currentState;
+    AuthLoaded auth = _authBloc.currentState;
     final key = new GlobalKey<ScaffoldState>();
 
     final _themeBloc = BlocProvider.of<ThemeBloc>(context);
@@ -56,346 +54,457 @@ class FriendsScreenState extends State<FriendsScreen> {
       backgroundColor: theme.theme['background'],
       resizeToAvoidBottomPadding: false,
       key: key,
-      bottomNavigationBar: friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc, theme),
+      bottomNavigationBar:
+          friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc, theme),
       body: BlocBuilder(
           bloc: _friendsBloc,
           builder: (BuildContext context, state) {
-              state.friends.forEach((k, friend) {
-                if (eventsSection[k] != Container()) {
-                  if (eventsSection[k] == null) {
-                    eventsSection[k] = Container();
-                    expanded[k] = false;
-                  }
+            state.friends.forEach((k, friend) {
+              if (eventsSection[k] != Container()) {
+                if (eventsSection[k] == null) {
+                  eventsSection[k] = Container();
+                  expanded[k] = false;
                 }
-              });
-              return LayoutBuilder(
-                builder: (context, constraints) {
-                  var userCardWidth = constraints.maxWidth * .80;
-                  var userCardHeight = constraints.maxHeight / 4;
-                  var friendCardWidth = constraints.maxWidth * .90;
-                  return Stack(
-                    children: <Widget>[
-                      /// EVERYTHING IN FRIENDS SCREEN
-                  Container(
-                  height: constraints.maxHeight,
-                      width: constraints.maxWidth,
+              }
+            });
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                var userCardWidth = constraints.maxWidth * .80;
+                var userCardHeight = constraints.maxHeight / 4;
+                var friendCardWidth = constraints.maxWidth * .90;
+                return Stack(
+                  children: <Widget>[
+                    /// EVERYTHING IN FRIENDS SCREEN
+                    Container(
+                        height: constraints.maxHeight,
+                        width: constraints.maxWidth,
 
-                      /// THIS MAKES THE WHOLE PAGE SCROLLABLE
-                      child: ListView(
-                        children: <Widget>[
-                          BlocBuilder(
-                              bloc: _authBloc,
-                              builder: (context, auth) {
-                                /// User Card
-                                return userCard(
-                                    userCardHeight, userCardWidth, auth, theme);
-                              }),
-                          /// Spacer
-                          Container(
-                            height: 50,
-                          ),
+                        /// THIS MAKES THE WHOLE PAGE SCROLLABLE
+                        child: ListView(
+                          children: <Widget>[
+                            BlocBuilder(
+                                bloc: _authBloc,
+                                builder: (context, auth) {
+                                  /// User Card
+                                  return userCard(userCardHeight, userCardWidth,
+                                      auth, theme);
+                                }),
 
+                            /// Spacer
+                            Container(
+                              height: 50,
+                            ),
 
-                          /// Show Invites if they exist
-                          BlocBuilder(bloc: _invitesBloc, builder: (context, state){
-                            if(state is InvitesLoaded && state.invites.length > 0){
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Container(width: 10,),
-                                      Text('Friend Invites', style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic, color: theme.theme['text']),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                      children: state.invites.entries.map<Widget>((invite) =>
-                                          Card(
-                                            child: Container(
-                                              color: theme.theme['card'],
-                                              padding: EdgeInsets.all(10),
-                                              height: 80,
-                                              width: friendCardWidth,
-                                              child: LayoutBuilder(builder: (context, constraints){
-                                                return Container(
-                                                  width: constraints.maxWidth,
-                                                  height: constraints.maxHeight,
-                                                  child: Row(
-                                                    children: <Widget>[
-                                                      /// Invite RallyID
-                                                      Container(
-                                                        width: constraints.maxWidth - 110,
-                                                        child: Text(
-                                                          invite.value['rallyID'],
-                                                          style: TextStyle(fontSize: 20, color: theme.theme['textTitle']),
-                                                        ),
-                                                      ),
-                                                      InkWell(
-                                                        onTap: (){
-                                                          fireActions.acceptInvite(invite, context);
-                                                        },
-                                                        child: Container(
-                                                          width: 50,
-                                                          height: 30,
-                                                          decoration: BoxDecoration(color: theme.theme['colorSuccess'], borderRadius: BorderRadius.all(Radius.circular(8))),
-                                                          child:Icon(Icons.check, color: Colors.white,),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        width: 10,
-                                                      ),
-                                                      InkWell(
-                                                        onTap: (){
-                                                          fireActions.declineInvite(invite, context);
-                                                        },
-                                                        child: Container(
-                                                          width: 50,
-                                                          height: 30,
-                                                          decoration: BoxDecoration(color: theme.theme['colorSecondary'], borderRadius: BorderRadius.all(Radius.circular(8))),
-                                                          child:Icon(Icons.clear, color: Colors.white,),
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                );
-                                              }),
-                                            ),
-                                          )
-                                      ).toList()
-                                  ),
-                                ],
-                              );
-                            } else{
-                              return Container();
-                            }
-                          }),
-
-                          BlocBuilder(bloc: _friendsBloc, builder: (context, friends){
-                            if(friends.friends.length > 0 ){
-                              return  Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(width: 10,),
-                                  Text('Friends',
-                                    style: TextStyle(
-                                        fontSize: 20, fontStyle: FontStyle.italic, color: theme.theme['text']),
-                                  )
-                                ],
-                              );
-                            } else{
-                              return Center(
-                                child: Card(
-                                  color: theme.theme['card'],
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                       ListTile(
-                                        leading: Icon(Icons.insert_emoticon, color: theme.theme['solidIconLight']),
-                                        title: Text('NO FRIENDS', style: TextStyle(color: theme.theme['text']),),
-                                        subtitle: Text(
-                                            'Try sending your rallyID to your friends using Rally', style: TextStyle(color: theme.theme['text']),),
-                                      ),
-                                      ButtonTheme.bar(
-                                        // make buttons use the appropriate styles for cards
-                                        child: ButtonBar(
+                            /// Show Invites if they exist
+                            BlocBuilder(
+                                bloc: _invitesBloc,
+                                builder: (context, state) {
+                                  if (state is InvitesLoaded &&
+                                      state.invites.length > 0) {
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: <Widget>[
-                                            FlatButton(
-                                              child:  Text('ADD FRIEND', style: TextStyle(color: theme.theme['colorPrimary']),),
-                                              onPressed: () {
-                                                setState(() {
-                                                  newFriendModal = getNewFriendModal(auth, theme);
-                                                });
-                                              },
+                                            Container(
+                                              width: 10,
+                                            ),
+                                            Text(
+                                              'Friend Invites',
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontStyle: FontStyle.italic,
+                                                  color: theme.theme['text']),
+                                            ),
+                                          ],
+                                        ),
+                                        Column(
+                                            children: state.invites.entries
+                                                .map<Widget>((invite) => Card(
+                                                      child: Container(
+                                                        color:
+                                                            theme.theme['card'],
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        height: 80,
+                                                        width: friendCardWidth,
+                                                        child: LayoutBuilder(
+                                                            builder: (context,
+                                                                constraints) {
+                                                          return Container(
+                                                            width: constraints
+                                                                .maxWidth,
+                                                            height: constraints
+                                                                .maxHeight,
+                                                            child: Row(
+                                                              children: <
+                                                                  Widget>[
+                                                                /// Invite RallyID
+                                                                Container(
+                                                                  width: constraints
+                                                                          .maxWidth -
+                                                                      110,
+                                                                  child: Text(
+                                                                    invite.value[
+                                                                        'rallyID'],
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        color: theme
+                                                                            .theme['textTitle']),
+                                                                  ),
+                                                                ),
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    fireActions.acceptInvite(
+                                                                        invite,
+                                                                        context);
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    width: 50,
+                                                                    height: 30,
+                                                                    decoration: BoxDecoration(
+                                                                        color: theme.theme[
+                                                                            'colorSuccess'],
+                                                                        borderRadius:
+                                                                            BorderRadius.all(Radius.circular(8))),
+                                                                    child: Icon(
+                                                                      Icons
+                                                                          .check,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                Container(
+                                                                  width: 10,
+                                                                ),
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    fireActions.declineInvite(
+                                                                        invite,
+                                                                        context);
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    width: 50,
+                                                                    height: 30,
+                                                                    decoration: BoxDecoration(
+                                                                        color: theme.theme[
+                                                                            'colorSecondary'],
+                                                                        borderRadius:
+                                                                            BorderRadius.all(Radius.circular(8))),
+                                                                    child: Icon(
+                                                                      Icons
+                                                                          .clear,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                          );
+                                                        }),
+                                                      ),
+                                                    ))
+                                                .toList()),
+                                      ],
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                }),
+
+                            BlocBuilder(
+                                bloc: _friendsBloc,
+                                builder: (context, friends) {
+                                  if (friends.friends.length > 0) {
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Container(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'Friends',
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontStyle: FontStyle.italic,
+                                              color: theme.theme['text']),
+                                        )
+                                      ],
+                                    );
+                                  } else {
+                                    return Center(
+                                      child: Card(
+                                        color: theme.theme['card'],
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            ListTile(
+                                              leading: Icon(
+                                                  Icons.insert_emoticon,
+                                                  color: theme
+                                                      .theme['solidIconLight']),
+                                              title: Text(
+                                                'NO FRIENDS',
+                                                style: TextStyle(
+                                                    color: theme.theme['text']),
+                                              ),
+                                              subtitle: Text(
+                                                'Try sending your rallyID to your friends using Rally',
+                                                style: TextStyle(
+                                                    color: theme.theme['text']),
+                                              ),
+                                            ),
+                                            ButtonTheme.bar(
+                                              // make buttons use the appropriate styles for cards
+                                              child: ButtonBar(
+                                                children: <Widget>[
+                                                  FlatButton(
+                                                    child: Text(
+                                                      'ADD FRIEND',
+                                                      style: TextStyle(
+                                                          color: theme.theme[
+                                                              'colorPrimary']),
+                                                    ),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        newFriendModal =
+                                                            getNewFriendModal(
+                                                                auth, theme);
+                                                      });
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }
-                          }),
-                          /// Friends Label and the friends list
-                          LayoutBuilder(
-                              builder: (context, friendViewConstraints) {
-                                return Column(
+                                    );
+                                  }
+                                }),
+
+                            /// Friends Label and the friends list
+                            LayoutBuilder(
+                                builder: (context, friendViewConstraints) {
+                              return Column(
+
                                   /// FRIENDS LIST BUILDER
-                                    children: state.friends.entries
-                                        .map<Widget>((friend) => BlocBuilder(
-                                      bloc: _eventsBloc,
-                                      builder: (context, state) {
-                                        var events = state.events[friend.key];
-                                        var eventsPassedToday = {};
+                                  children: state.friends.entries
+                                      .map<Widget>((friend) => BlocBuilder(
+                                            bloc: _eventsBloc,
+                                            builder: (context, state) {
+                                              var events =
+                                                  state.events[friend.key];
+                                              var eventsPassedToday = {};
 
-                                        DateTime currentTime = DateTime.now();
-                                        if (events != null) {
-                                          // forEach to find events passed today
-                                          events.forEach((k, event) {
-                                            if (event['end'] >
-                                                currentTime.millisecondsSinceEpoch) {
-                                              eventsPassedToday.addAll({k: event});
-                                            }
-                                          });
-                                          // after sorting, add events in order
-                                        }
-                                        // set those events to the sorted events.
-                                        if (eventsPassedToday.length > 0) {
-                                          /// EVENTS IN FUTURE
-                                          return Stack(
-                                            children: <Widget>[
-                                              Card(
-                                                  color: theme.theme['card'],
-                                                  child: Container(
-                                                    width: friendCardWidth,
-                                                    child: Column(
-                                                      children: <Widget>[
-                                                        InkWell(
-                                                            onTap: () {
-                                                              Navigator.push(context, MaterialPageRoute(builder: (context) => FriendDetails(friend: friend,)));
-                                                            },
-                                                            child: Container(
-                                                              padding:
-                                                              EdgeInsets
-                                                                  .all(10),
-                                                              height: 80,
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                                children: <
-                                                                    Widget>[
-                                                                  /// This Container is the Friend Images
-                                                                  CircleAvatar(
-                                                                    radius: 30,
-                                                                    backgroundImage:
-                                                                    NetworkImage(
-                                                                        friend.value['userPhoto']),
-                                                                    backgroundColor:
-                                                                    theme.theme['card']
-                                                                  ),
-
-                                                                  Container(
-                                                                    width: 10,
-                                                                  ),
-                                                                  /// Friend User Name
-                                                                  Flexible(
-                                                                    child: new Container(
-                                                                      padding: new EdgeInsets.only(right: 13.0),
-                                                                      child: new Text(
-                                                                        friend.value[
-                                                                        'userName'],
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                        style: TextStyle(
-                                                                            fontSize: 20, color: theme.theme['textTitle']),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            )),
-                                                        AnimatedSwitcher(
-                                                          // the duration can be adjusted to expand the friend events
-                                                          // faster or slower.
-                                                          duration: Duration(
-                                                              milliseconds:
-                                                              300),
-                                                          transitionBuilder:
-                                                              (Widget child,
-                                                              Animation<
-                                                                  double>
-                                                              animation) {
-                                                            return SizeTransition(
-                                                              sizeFactor:
-                                                              animation,
-                                                              child: child,
-                                                            );
-                                                          },
-                                                          child: eventsSection[friend.key],
-                                                        ),
-                                                        Container(
-                                                          height: 30,
+                                              DateTime currentTime =
+                                                  DateTime.now();
+                                              if (events != null) {
+                                                // forEach to find events passed today
+                                                events.forEach((k, event) {
+                                                  if (event['end'] >
+                                                      currentTime
+                                                          .millisecondsSinceEpoch) {
+                                                    eventsPassedToday
+                                                        .addAll({k: event});
+                                                  }
+                                                });
+                                                // after sorting, add events in order
+                                              }
+                                              // set those events to the sorted events.
+                                              if (eventsPassedToday.length >
+                                                  0) {
+                                                /// EVENTS IN FUTURE
+                                                return Stack(
+                                                  children: <Widget>[
+                                                    Card(
+                                                        color:
+                                                            theme.theme['card'],
+                                                        child: Container(
                                                           width:
-                                                          friendCardWidth,
-                                                          child: FlatButton(
-                                                              child: Center(
-                                                                child: Icon(Icons.keyboard_arrow_down, color: theme.theme['solidIconLight'],),
+                                                              friendCardWidth,
+                                                          child: Column(
+                                                            children: <Widget>[
+                                                              InkWell(
+                                                                  onTap: () {
+                                                                    Navigator.push(
+                                                                        context,
+                                                                        MaterialPageRoute(
+                                                                            builder: (context) => FriendDetails(
+                                                                                  friend: friend,
+                                                                                )));
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    padding:
+                                                                        EdgeInsets.all(
+                                                                            10),
+                                                                    height: 80,
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .start,
+                                                                      children: <
+                                                                          Widget>[
+                                                                        /// This Container is the Friend Images
+                                                                        CircleAvatar(
+                                                                          radius:
+                                                                              30,
+                                                                          backgroundImage:
+                                                                              NetworkImage(friend.value['userPhoto']),
+                                                                          backgroundColor:
+                                                                              Colors.transparent,
+                                                                        ),
+                                                                        Container(
+                                                                          width:
+                                                                              10,
+                                                                        ),
+
+                                                                        /// Friend User Name
+                                                                        Flexible(
+                                                                          child:
+                                                                              new Container(
+                                                                            padding:
+                                                                                new EdgeInsets.only(right: 13.0),
+                                                                            child:
+                                                                                new Text(
+                                                                              friend.value['userName'],
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                              style: TextStyle(fontSize: 20, color: theme.theme['textTitle']),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  )),
+                                                              AnimatedSwitcher(
+                                                                // the duration can be adjusted to expand the friend events
+                                                                // faster or slower.
+                                                                duration: Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                                transitionBuilder: (Widget
+                                                                        child,
+                                                                    Animation<
+                                                                            double>
+                                                                        animation) {
+                                                                  return SizeTransition(
+                                                                    sizeFactor:
+                                                                        animation,
+                                                                    child:
+                                                                        child,
+                                                                  );
+                                                                },
+                                                                child:
+                                                                    eventsSection[
+                                                                        friend
+                                                                            .key],
                                                               ),
-                                                              onPressed: () {
-                                                                toggleFriendEventsExpand(
-                                                                    friend,
+                                                              Container(
+                                                                height: 30,
+                                                                width:
                                                                     friendCardWidth,
-                                                                    eventsPassedToday,
-                                                                    friendViewConstraints,
-                                                                    _eventsBloc,
-                                                                theme);
-                                                              }),
+                                                                child:
+                                                                    FlatButton(
+                                                                        child:
+                                                                            Center(
+                                                                          child:
+                                                                              Icon(
+                                                                            Icons.keyboard_arrow_down,
+                                                                            color:
+                                                                                theme.theme['solidIconLight'],
+                                                                          ),
+                                                                        ),
+                                                                        onPressed:
+                                                                            () {
+                                                                          toggleFriendEventsExpand(
+                                                                              friend,
+                                                                              friendCardWidth,
+                                                                              eventsPassedToday,
+                                                                              friendViewConstraints,
+                                                                              _eventsBloc,
+                                                                              theme);
+                                                                        }),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )),
+                                                    Positioned(
+                                                      top: 4,
+                                                      right: 0,
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            color: theme.theme[
+                                                                'colorSuccess']),
+                                                        width: 29,
+                                                        child: Text(
+                                                          "${eventsPassedToday.length}",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 18.0),
                                                         ),
-                                                      ],
+                                                        alignment:
+                                                            FractionalOffset(
+                                                                0.5, 0.5),
+                                                      ),
                                                     ),
-                                                  )),
-                                              Positioned(
-                                                top: 4,
-                                                right: 0,
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                      shape:
-                                                      BoxShape.circle,
-                                                      color: theme.theme['colorSuccess']),
-                                                  width: 29,
-                                                  child: Text(
-                                                    "${eventsPassedToday.length}",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 18.0),
-                                                  ),
-                                                  alignment:
-                                                  FractionalOffset(
-                                                      0.5, 0.5),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        } else {
-                                          /// NO EVENTS IN FUTURE
-                                          return noFutureEventsFriendItem(
-                                              friend, friendCardWidth, theme);
-                                        }
-                                      },
-                                    ))
-                                        .toList());
-                              }),
-                        ],
-                      )),
-                  /// Modal that will show on top of friends screen
-                  AnimatedSwitcher(
-                    // the duration can be adjusted to expand the friend events
-                    // faster or slower.
-                      duration: Duration(milliseconds: 300),
-                      transitionBuilder: (Widget child, Animation<double>animation) {
-                        return FadeTransition(opacity: animation,
-                          child: child,
-                        );
-                      },
-                      child: newFriendModal
-                  ),
-                  AnimatedSwitcher(
-                    // the duration can be adjusted to expand the friend events
-                    // faster or slower.
-                      duration: Duration(milliseconds: 100),
-                      transitionBuilder: (Widget child, Animation<double>animation) {
-                        return FadeTransition(opacity: animation,
-                          child: child,
-                        );
-                      },
-                      child: newFriendErrorMessage
-                  ),
-                    ],
-                  );
-                },
-              );
+                                                  ],
+                                                );
+                                              } else {
+                                                /// NO EVENTS IN FUTURE
+                                                return noFutureEventsFriendItem(
+                                                    friend,
+                                                    friendCardWidth,
+                                                    theme);
+                                              }
+                                            },
+                                          ))
+                                      .toList());
+                            }),
+                          ],
+                        )),
+
+                    /// Modal that will show on top of friends screen
+                    AnimatedSwitcher(
+                        // the duration can be adjusted to expand the friend events
+                        // faster or slower.
+                        duration: Duration(milliseconds: 300),
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                        child: newFriendModal),
+                    AnimatedSwitcher(
+                        // the duration can be adjusted to expand the friend events
+                        // faster or slower.
+                        duration: Duration(milliseconds: 100),
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                        child: newFriendErrorMessage),
+                  ],
+                );
+              },
+            );
           }),
       floatingActionButton: Container(
         child: FloatingActionButton(
@@ -410,8 +519,8 @@ class FriendsScreenState extends State<FriendsScreen> {
     );
   }
 
-  void toggleFriendEventsExpand(
-      friend, friendCardWidth, eventsPassedToday, friendViewConstraints, _eventsBloc, theme) {
+  void toggleFriendEventsExpand(friend, friendCardWidth, eventsPassedToday,
+      friendViewConstraints, _eventsBloc, theme) {
     if (expanded[friend.key]) {
       setState(() {
         friendCardHeight = 140;
@@ -424,32 +533,32 @@ class FriendsScreenState extends State<FriendsScreen> {
         friendCardHeight = friendViewConstraints.maxHeight;
 
         eventsSection[friend.key] = BlocBuilder(
-          bloc: _eventsBloc, builder: (context, state){
-          var events = state.events[friend.key];
-          var eventsPassedToday = {};
-          var sortedEvents = {};
-          var listOfTimes = [];
+          bloc: _eventsBloc,
+          builder: (context, state) {
+            var events = state.events[friend.key];
+            var eventsPassedToday = {};
+            var sortedEvents = {};
+            var listOfTimes = [];
 
-          DateTime currentTime = DateTime.now();
-          if (events != null) {
-            // forEach to find events passed today
-            events.forEach((k, event) {
-              if (event['end'] >
-                  currentTime.millisecondsSinceEpoch) {
-                eventsPassedToday.addAll({k: event});
-                listOfTimes.add(event['start']);
-              }
-            });
-            listOfTimes..sort();
-            // after sorting, add events in order
-            for(var time in listOfTimes){
-              eventsPassedToday.forEach((k,value){
-                if(time == value['start']){
-                  sortedEvents.addAll({k:value});
+            DateTime currentTime = DateTime.now();
+            if (events != null) {
+              // forEach to find events passed today
+              events.forEach((k, event) {
+                if (event['end'] > currentTime.millisecondsSinceEpoch) {
+                  eventsPassedToday.addAll({k: event});
+                  listOfTimes.add(event['start']);
                 }
               });
+              listOfTimes..sort();
+              // after sorting, add events in order
+              for (var time in listOfTimes) {
+                eventsPassedToday.forEach((k, value) {
+                  if (time == value['start']) {
+                    sortedEvents.addAll({k: value});
+                  }
+                });
+              }
             }
-          }
             eventsPassedToday = sortedEvents;
             return Column(
               children: <Widget>[
@@ -458,105 +567,136 @@ class FriendsScreenState extends State<FriendsScreen> {
                   width: friendCardWidth,
                   child: FlatButton(
                       child: Center(
-                        child: Icon(Icons.keyboard_arrow_up, color: theme.theme['solidIconLight'],),
+                        child: Icon(
+                          Icons.keyboard_arrow_up,
+                          color: theme.theme['solidIconLight'],
+                        ),
                       ),
                       onPressed: () {
-                        toggleFriendEventsExpand(friend, friendCardWidth,
-                            eventsPassedToday, friendViewConstraints, _eventsBloc, theme);
+                        toggleFriendEventsExpand(
+                            friend,
+                            friendCardWidth,
+                            eventsPassedToday,
+                            friendViewConstraints,
+                            _eventsBloc,
+                            theme);
                       }),
                 ),
                 Container(
-                  color:theme.theme['cardListBackground'],
+                  color: theme.theme['cardListBackground'],
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: eventsPassedToday.entries
-                          .map<Widget>((event) =>
-                          Column(
-                            children: <Widget>[
-                              // SPACER
-                              Container(
-                                height: 10,
-                              ),
-                              /// Each Event Card
-                              ///
-
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                  boxShadow: [
-                                    new BoxShadow(
-                                      color: theme.theme['shadow'],
-                                      blurRadius: 5.0,
-                                      offset: Offset(0.0, 0.0),
-                                    )
-                                  ],
-                                  color: Color(_getColorFromHex(event.value['color'])),
-                                ),
-                                child: ClipPath(
-                                clipper: CardCornerClipper(),
-                                  child: Container(
-                                    width: friendCardWidth * .95,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                      color: theme.theme['card'],
-                                    ),
-                                    child: FlatButton(
-                                        padding: EdgeInsets.all(0),
-                                        onPressed: () {
-                                          List key = event.key.toString().split(',');
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => FriendEvent(eventKey: key[0], eventValue: event.value,)));
-                                        },
-                                        child: Container(
-                                            padding: EdgeInsets.all(10),
-                                            child: Column(
-                                              children: <Widget>[
-                                                Row(
-                                                  /// RETURN TIME OF EVENT
-                                                    children:
-                                                    returnTimeInPrettyFormat(event, theme)),
-                                                Text(
-                                                  '${event.value['title']}',
-                                                  style: TextStyle(fontSize: 15, color: theme.theme['text']),
-                                                ),
-
-                                                _joinedFriends(event, theme)
-
-                                              ],
-                                            ))),
+                          .map<Widget>((event) => Column(
+                                children: <Widget>[
+                                  // SPACER
+                                  Container(
+                                    height: 10,
                                   ),
-                                  )
-                              ),
-                              // SPACER
-                              Container(
-                                height: 10,
-                              ),
-                            ],
-                          )).toList()),
+
+                                  /// Each Event Card
+                                  ///
+
+                                  Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8.0)),
+                                        boxShadow: [
+                                          new BoxShadow(
+                                            color: theme.theme['shadow'],
+                                            blurRadius: 5.0,
+                                            offset: Offset(0.0, 0.0),
+                                          )
+                                        ],
+                                        color: Color(_getColorFromHex(
+                                            event.value['color'])),
+                                      ),
+                                      child: ClipPath(
+                                        clipper: CardCornerClipper(),
+                                        child: Container(
+                                          width: friendCardWidth * .95,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(8.0)),
+                                            color: theme.theme['card'],
+                                          ),
+                                          child: FlatButton(
+                                              padding: EdgeInsets.all(0),
+                                              onPressed: () {
+                                                List key = event.key
+                                                    .toString()
+                                                    .split(',');
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            FriendEvent(
+                                                              eventKey: key[0],
+                                                              eventValue:
+                                                                  event.value,
+                                                            )));
+                                              },
+                                              child: Container(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Column(
+                                                    children: <Widget>[
+                                                      Row(
+
+                                                          /// RETURN TIME OF EVENT
+                                                          children:
+                                                              returnTimeInPrettyFormat(
+                                                                  event,
+                                                                  theme)),
+                                                      Text(
+                                                        '${event.value['title']}',
+                                                        style: TextStyle(
+                                                            fontSize: 15,
+                                                            color: theme
+                                                                .theme['text']),
+                                                      ),
+                                                      _joinedFriends(
+                                                          event, theme)
+                                                    ],
+                                                  ))),
+                                        ),
+                                      )),
+                                  // SPACER
+                                  Container(
+                                    height: 10,
+                                  ),
+                                ],
+                              ))
+                          .toList()),
                 )
               ],
             );
-        },
+          },
         );
         expanded[friend.key] = true;
       });
     }
   }
 
-
   Widget _joinedFriends(event, theme) {
     if (event.value['party']['friends'] != null) {
       return Row(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          Text('Joined Friends: ', style: TextStyle(color: theme.theme['text']),),
+          Text(
+            'Joined Friends: ',
+            style: TextStyle(color: theme.theme['text']),
+          ),
           Row(
-            children: event.value['party']['friends'].entries
-                .map<Widget>((friend) => CircleAvatar(
-              radius: 10,
-              backgroundImage: NetworkImage(friend
-                  .value['userPhoto']),
-            ),).toList()
-          )
+              children: event.value['party']['friends'].entries
+                  .map<Widget>(
+                    (friend) => CircleAvatar(
+                          radius: 10,
+                          backgroundColor: Colors.transparent,
+                          backgroundImage:
+                              NetworkImage(friend.value['userPhoto']),
+                        ),
+                  )
+                  .toList())
         ],
       );
     } else {
@@ -575,74 +715,87 @@ class FriendsScreenState extends State<FriendsScreen> {
 
   Widget userCard(userCardHeight, userCardWidth, auth, theme) {
     return Card(
-      color: theme.theme['card'],
+        color: theme.theme['card'],
         child: Stack(
           children: <Widget>[
             Column(
               children: <Widget>[
-                Container(height: 30,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Container(width: 20,),
-                      /// User Photo
-                      CircleAvatar(
-                        backgroundColor: theme.theme['card'],
-                        radius: userCardHeight / 4,
-                        backgroundImage: NetworkImage(auth.value['userPhoto']),
+                Container(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      width: 20,
+                    ),
+
+                    /// User Photo
+                    CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: userCardHeight / 4,
+                      backgroundImage: NetworkImage(auth.value['userPhoto']),
+                    ),
+                    Container(
+                      width: 10,
+                    ),
+
+                    /// User Name
+                    Expanded(
+                      child: Text(
+                        '${auth.value['userName']}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                            color: theme.theme['textTitle']),
                       ),
-                      Container(width: 10,),
-                      /// User Name
-                      Expanded(
-                        child: Text(
-                          '${auth.value['userName']}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 30,
-                              color: theme.theme['textTitle']
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                Container(height: 10,),
+                    )
+                  ],
+                ),
+                Container(
+                  height: 10,
+                ),
                 Container(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Container(width: 20,),
-                        /// User RallyID
-                        Expanded(
-                          child: Text(
-                            'Rally ID: ${auth.value['rallyID']}',
-                            style: TextStyle(
-                              color: theme.theme['text'],
-                              fontSize: 20,
-                            ),
-                          ),
-                        )
-                      ],
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      width: 20,
+                    ),
+
+                    /// User RallyID
+                    Expanded(
+                      child: Text(
+                        'Rally ID: ${auth.value['rallyID']}',
+                        style: TextStyle(
+                          color: theme.theme['text'],
+                          fontSize: 20,
+                        ),
+                      ),
                     )
-                ),
-                Container(height: 10,)
+                  ],
+                )),
+                Container(
+                  height: 10,
+                )
               ],
             ),
             Positioned(
               top: 0,
               right: 0,
-              child:IconButton(
+              child: IconButton(
                   color: theme.theme['solidIconDark'],
                   icon: Icon(Icons.settings),
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Settings()));
                   }),
             )
           ],
-        )
-        );
+        ));
   }
 
-  returnTimeInPrettyFormat(event,theme) {
+  returnTimeInPrettyFormat(event, theme) {
     var sTime = DateTime.fromMillisecondsSinceEpoch(event.value['start']);
     var startTimeText = sTime.hour.toString();
 
@@ -655,37 +808,37 @@ class FriendsScreenState extends State<FriendsScreen> {
     var sTimeMinuteText = sTime.minute.toString();
     var eTimeMinuteText = eTime.minute.toString();
 
-    if(sTime.minute <10){
-      sTimeMinuteText = "0"+(sTime.minute).toString();
+    if (sTime.minute < 10) {
+      sTimeMinuteText = "0" + (sTime.minute).toString();
     }
 
-    if(eTime.minute <10){
-      eTimeMinuteText = "0"+(eTime.minute).toString();
+    if (eTime.minute < 10) {
+      eTimeMinuteText = "0" + (eTime.minute).toString();
     }
 
-    if(sTime.hour >= 12){
+    if (sTime.hour >= 12) {
       sTimeInc = "PM";
-      if(sTime.hour == 12){
+      if (sTime.hour == 12) {
         startTimeText = "12";
-      } else{
+      } else {
         startTimeText = (sTime.hour - 12).toString();
       }
-    } else{
-      if(sTime.hour == 0){
+    } else {
+      if (sTime.hour == 0) {
         startTimeText = "12";
       }
       sTimeInc = "AM";
     }
 
-    if(eTime.hour >= 12){
+    if (eTime.hour >= 12) {
       eTimeInc = "PM";
-      if(eTime.hour == 12){
+      if (eTime.hour == 12) {
         endTimeText = "12";
-      } else{
+      } else {
         endTimeText = (eTime.hour - 12).toString();
       }
-    } else{
-      if(eTime.hour == 0){
+    } else {
+      if (eTime.hour == 0) {
         endTimeText = "12";
       }
       eTimeInc = "AM";
@@ -697,13 +850,15 @@ class FriendsScreenState extends State<FriendsScreen> {
         style: TextStyle(
             fontWeight: FontWeight.bold,
             color: theme.theme['text'],
-          fontSize: 25
-        ),
+            fontSize: 25),
       ),
       Container(
         width: 10,
       ),
-      Text('$startTimeText:$sTimeMinuteText $sTimeInc- $endTimeText:$eTimeMinuteText $eTimeInc', style: TextStyle(color: theme.theme['text']),),
+      Text(
+        '$startTimeText:$sTimeMinuteText $sTimeInc- $endTimeText:$eTimeMinuteText $eTimeInc',
+        style: TextStyle(color: theme.theme['text']),
+      ),
     ];
   }
 
@@ -713,7 +868,12 @@ class FriendsScreenState extends State<FriendsScreen> {
       child: FlatButton(
           padding: EdgeInsets.all(0),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => FriendDetails(friend: friend,)));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => FriendDetails(
+                          friend: friend,
+                        )));
           },
           child: Container(
             padding: EdgeInsets.all(10),
@@ -724,20 +884,20 @@ class FriendsScreenState extends State<FriendsScreen> {
               children: <Widget>[
                 /// This Container is the Friend Images
                 CircleAvatar(
-                  backgroundColor: theme.theme['card'],
+                  backgroundColor: Colors.transparent,
                   radius: 30,
                   backgroundImage: NetworkImage(friend.value['userPhoto']),
                 ),
                 Container(
                   width: 10,
                 ),
+
                 /// Friend User Name
                 Flexible(
                   child: new Container(
                     padding: new EdgeInsets.only(right: 13.0),
                     child: new Text(
-                      friend.value[
-                      'userName'],
+                      friend.value['userName'],
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: 20, color: theme.theme['textTitle']),
@@ -751,18 +911,18 @@ class FriendsScreenState extends State<FriendsScreen> {
   }
 
   Widget getNewFriendModal(auth, theme) {
-    return LayoutBuilder(builder: (context, constraints){
+    return LayoutBuilder(builder: (context, constraints) {
       var maxHeight = constraints.maxHeight;
       var maxWidth = constraints.maxWidth;
       var cardHeightMultiplier = 0.35;
       var cardWidthMultiplier = 0.95;
 
-      if(maxWidth > maxHeight){
+      if (maxWidth > maxHeight) {
         cardHeightMultiplier = 0.80;
         cardWidthMultiplier = 0.70;
       }
       return InkWell(
-        onTap: (){
+        onTap: () {
           setState(() {
             newFriendModal = Container();
           });
@@ -784,10 +944,13 @@ class FriendsScreenState extends State<FriendsScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text('New Friend', style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20,
-                          color: theme.theme['textTitle']
-                        ),),
+                        Text(
+                          'New Friend',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: theme.theme['textTitle']),
+                        ),
                       ],
                     ),
                     Divider(),
@@ -796,10 +959,10 @@ class FriendsScreenState extends State<FriendsScreen> {
                       children: <Widget>[
                         Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            border: Border.all(color: theme.theme['border']),
-                            color: theme.theme['card']
-                          ),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5.0)),
+                              border: Border.all(color: theme.theme['border']),
+                              color: theme.theme['card']),
                           width: (maxWidth * cardWidthMultiplier) * .80,
                           child: TextFormField(
                             autocorrect: false,
@@ -820,55 +983,87 @@ class FriendsScreenState extends State<FriendsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Container(width: 10,),
-                        Text('Your RallyID: ', style: TextStyle(color: theme.theme['text']),),
-                        Expanded(
-                          child:Text('${auth.value['rallyID']}', style: TextStyle(fontWeight: FontWeight.bold, color: theme.theme['text']),)
+                        Container(
+                          width: 10,
                         ),
-                        Container(width: 10,),
+                        Text(
+                          'Your RallyID: ',
+                          style: TextStyle(color: theme.theme['text']),
+                        ),
+                        Expanded(
+                            child: Text(
+                          '${auth.value['rallyID']}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: theme.theme['text']),
+                        )),
+                        Container(
+                          width: 10,
+                        ),
                       ],
                     ),
-                    Container(height: 20,),
+                    Container(
+                      height: 20,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         FlatButton(
                             onPressed: () {
-                              Clipboard.setData(new ClipboardData(text:auth.value['rallyID']));
+                              Clipboard.setData(new ClipboardData(
+                                  text: auth.value['rallyID']));
                               Scaffold.of(context).showSnackBar(new SnackBar(
                                   content: new Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: Text('Copied RallyID: ${auth.value['rallyID']}'),
-                                      ),
-                                      Container(width: 15, height: 10,),
-                                      Icon(Icons.arrow_forward),
-                                      Container(width: 5, height: 10,),
-                                      Icon(Icons.content_paste),
-                                    ],
-                                  )
-                              ));
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Text(
+                                        'Copied RallyID: ${auth.value['rallyID']}'),
+                                  ),
+                                  Container(
+                                    width: 15,
+                                    height: 10,
+                                  ),
+                                  Icon(Icons.arrow_forward),
+                                  Container(
+                                    width: 5,
+                                    height: 10,
+                                  ),
+                                  Icon(Icons.content_paste),
+                                ],
+                              )));
                             },
                             padding: EdgeInsets.all(0),
                             child: Row(
                               children: <Widget>[
                                 Container(
-                                    decoration: BoxDecoration(color: theme.theme['colorSecondary'], borderRadius: BorderRadius.all(Radius.circular(8))),
+                                    decoration: BoxDecoration(
+                                        color: theme.theme['colorSecondary'],
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8))),
                                     padding: EdgeInsets.all(10.0),
                                     child: Row(
                                       children: <Widget>[
-                                        Icon(Icons.content_paste, color: Colors.white,),
-                                        Container(width: 5,),
-                                        Text('Copy RallyID', style: TextStyle(color: Colors.white, fontSize: 15),),
+                                        Icon(
+                                          Icons.content_paste,
+                                          color: Colors.white,
+                                        ),
+                                        Container(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          'Copy RallyID',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15),
+                                        ),
                                       ],
-                                    )
-                                ),
+                                    )),
                               ],
-                            )
-                        ),
+                            )),
                         FlatButton(
-                            onPressed: () async{
-                              var code = await fireActions.checkForRallyID(newFriendTextController.text, context);
+                            onPressed: () async {
+                              var code = await fireActions.checkForRallyID(
+                                  newFriendTextController.text, context);
                               print(code);
                               getAlertFromCode(code, theme);
                             },
@@ -876,49 +1071,74 @@ class FriendsScreenState extends State<FriendsScreen> {
                             child: Row(
                               children: <Widget>[
                                 Container(
-                                    decoration: BoxDecoration(color: theme.theme['colorPrimary'], borderRadius: BorderRadius.all(Radius.circular(8))),
+                                    decoration: BoxDecoration(
+                                        color: theme.theme['colorPrimary'],
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8))),
                                     padding: EdgeInsets.all(10.0),
                                     child: Row(
                                       children: <Widget>[
-                                        Icon(Icons.mail, color: Colors.white,),
-                                        Container(width: 5,),
-                                        Text('Submit', style: TextStyle(color: Colors.white, fontSize: 15),),
+                                        Icon(
+                                          Icons.mail,
+                                          color: Colors.white,
+                                        ),
+                                        Container(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          'Submit',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15),
+                                        ),
                                       ],
-                                    )
-                                ),
+                                    )),
                               ],
-                            )
-                        ),
+                            )),
                       ],
                     ),
-                    Container(height: 10,)
+                    Container(
+                      height: 10,
+                    )
                   ],
                 ),
-              )
-          ),
+              )),
         ),
       );
     });
   }
 
   void getAlertFromCode(code, theme) {
-    if(code == "USER_RAL"){
+    if (code == "USER_RAL") {
       showDialog(
           context: context,
-          builder: (context){
-            return  AlertDialog(
+          builder: (context) {
+            return AlertDialog(
               backgroundColor: theme.theme['card'],
-              title: new Text("RallyID = Users RallyID",style: TextStyle(color: theme.theme['text']),),
+              title: new Text(
+                "RallyID = Users RallyID",
+                style: TextStyle(color: theme.theme['text']),
+              ),
               content: new Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text("You can't send a friend invite to yourself", style: TextStyle(color: theme.theme['text']),),
-                  Icon(Icons.favorite_border, color: theme.theme['colorPrimary'],)
-                ],) ,
+                  Text(
+                    "You can't send a friend invite to yourself",
+                    style: TextStyle(color: theme.theme['text']),
+                  ),
+                  Icon(
+                    Icons.favorite_border,
+                    color: theme.theme['colorPrimary'],
+                  )
+                ],
+              ),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
-                  child: new Text("Close",style: TextStyle(color: theme.theme['text']),),
+                  child: new Text(
+                    "Close",
+                    style: TextStyle(color: theme.theme['text']),
+                  ),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -926,19 +1146,27 @@ class FriendsScreenState extends State<FriendsScreen> {
               ],
             );
           });
-    } else if(code == "NOT_FOUND"){
+    } else if (code == "NOT_FOUND") {
       showDialog(
           context: context,
-          builder: (context){
+          builder: (context) {
             return AlertDialog(
               backgroundColor: theme.theme['card'],
-              title: new Text("RallyID Not Found",style: TextStyle(color: theme.theme['text']),),
-              content: new Text("Rally couldn't find RallyID: ${newFriendTextController.text} in the directory, double check and try again",
-                style: TextStyle(color: theme.theme['text']),),
+              title: new Text(
+                "RallyID Not Found",
+                style: TextStyle(color: theme.theme['text']),
+              ),
+              content: new Text(
+                "Rally couldn't find RallyID: ${newFriendTextController.text} in the directory, double check and try again",
+                style: TextStyle(color: theme.theme['text']),
+              ),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
-                  child: new Text("Close",style: TextStyle(color: theme.theme['text']),),
+                  child: new Text(
+                    "Close",
+                    style: TextStyle(color: theme.theme['text']),
+                  ),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -950,17 +1178,23 @@ class FriendsScreenState extends State<FriendsScreen> {
       fireActions.sendInvite(code, context);
       showDialog(
           context: context,
-          builder: (context){
+          builder: (context) {
             return AlertDialog(
               backgroundColor: theme.theme['card'],
-              title: new Text("Friend Invite Sent!",style: TextStyle(color: theme.theme['text']),),
-              content: new Text("Once your friend has accepted your invite you'll be able to see their events",style: TextStyle(color: theme.theme['text']),),
+              title: new Text(
+                "Friend Invite Sent!",
+                style: TextStyle(color: theme.theme['text']),
+              ),
+              content: new Text(
+                "Once your friend has accepted your invite you'll be able to see their events",
+                style: TextStyle(color: theme.theme['text']),
+              ),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
                   child: new Text("Close"),
                   onPressed: () {
-                    setState((){
+                    setState(() {
                       newFriendModal = Container();
                       Navigator.of(context).pop();
                     });
@@ -968,8 +1202,7 @@ class FriendsScreenState extends State<FriendsScreen> {
                 ),
               ],
             );
-          }
-      );
+          });
     }
   }
 }
@@ -977,76 +1210,96 @@ class FriendsScreenState extends State<FriendsScreen> {
 friendsBottomAppBar(maxPossibleWidth, context, _invitesBloc, theme) {
   return BottomAppBar(
       child: Container(
-        height: 55,
-        color: theme.theme['footer'],
-        child: Row(
-          children: <Widget>[
-            FlatButton(
-                padding: EdgeInsets.all(0),
-                onPressed: (){
-                  Navigator.pop(context);
-                },
-                child:  Container(
-                  width: maxPossibleWidth/2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.calendar_today, color: theme.theme['solidIconDark'],),
-                      Text('Calendar', style: TextStyle(fontSize: 14, color: theme.theme['text'], fontWeight: FontWeight.w500),)
-                    ],
+    height: 55,
+    color: theme.theme['footer'],
+    child: Row(
+      children: <Widget>[
+        FlatButton(
+            padding: EdgeInsets.all(0),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              width: maxPossibleWidth / 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.calendar_today,
+                    color: theme.theme['solidIconDark'],
                   ),
-                )),
-            FlatButton(
-              padding: EdgeInsets.all(0),
-              onPressed: (){},
-              child: Container(
-                  width: maxPossibleWidth/2,
-                  child: LayoutBuilder(builder: (context, constraints){
-                    return Stack(
-                      children: <Widget>[
-                        Center(
-                          child: Column(
-                            children: <Widget>[
-                              Icon(Icons.group, color: theme.theme['colorPrimary'],),
-                              Text('Friends', style: TextStyle(fontSize: 14, color: theme.theme['text'], fontWeight: FontWeight.w500),),
-                            ],
-                            mainAxisAlignment: MainAxisAlignment.center,
-                          ),
-                        ),
-                        BlocBuilder(bloc: _invitesBloc, builder: (context, state){
-                          if(state is InvitesLoaded && state.invites.length > 0){
-                            return Positioned(
-                                top: constraints.maxHeight/4 - 5,
-                                left: constraints.maxWidth/2 + 5,
-                                child: Container(
-                                    height: 15,
-                                    width: 15,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: theme.theme['colorSuccess']
-                                    ),
-                                    child: Center(
-                                      child:Text('${state.invites.length}', style:
-                                      TextStyle(color: Colors.white, fontSize: 14),),
-                                    )
-                                ));
-                          } else{
-                            return Container();
-                          }
-                        },),
-                      ],
-                    );
-                  })
-
+                  Text(
+                    'Calendar',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: theme.theme['text'],
+                        fontWeight: FontWeight.w500),
+                  )
+                ],
               ),
-            )
-          ],
-        ),
-      )
-  );
+            )),
+        FlatButton(
+          padding: EdgeInsets.all(0),
+          onPressed: () {},
+          child: Container(
+              width: maxPossibleWidth / 2,
+              child: LayoutBuilder(builder: (context, constraints) {
+                return Stack(
+                  children: <Widget>[
+                    Center(
+                      child: Column(
+                        children: <Widget>[
+                          Icon(
+                            Icons.group,
+                            color: theme.theme['colorPrimary'],
+                          ),
+                          Text(
+                            'Friends',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: theme.theme['text'],
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.center,
+                      ),
+                    ),
+                    BlocBuilder(
+                      bloc: _invitesBloc,
+                      builder: (context, state) {
+                        if (state is InvitesLoaded &&
+                            state.invites.length > 0) {
+                          return Positioned(
+                              top: constraints.maxHeight / 4 - 5,
+                              left: constraints.maxWidth / 2 + 5,
+                              child: Container(
+                                  height: 15,
+                                  width: 15,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: theme.theme['colorSuccess']),
+                                  child: Center(
+                                    child: Text(
+                                      '${state.invites.length}',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 14),
+                                    ),
+                                  )));
+                        } else {
+                          return Container();
+                        }
+                      },
+                    ),
+                  ],
+                );
+              })),
+        )
+      ],
+    ),
+  ));
 }
 
-class CardCornerClipper extends CustomClipper<Path>{
+class CardCornerClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();
@@ -1058,7 +1311,7 @@ class CardCornerClipper extends CustomClipper<Path>{
 
     path.lineTo(size.width, size.height * .40);
 
-    path.lineTo(size.width *.90, 0.0);
+    path.lineTo(size.width * .90, 0.0);
 
     // Draw a straight line from current point to the top right corner.
     path.lineTo(0.0, 0.0);

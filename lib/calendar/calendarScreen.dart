@@ -624,8 +624,8 @@ class CalendarPageState extends State<CalendarPage> {
                                                             children: <Widget>[
                                                               CircleAvatar(
                                                                 backgroundColor:
-                                                                    theme.theme[
-                                                                        'card'],
+                                                                    Colors
+                                                                        .transparent,
                                                                 backgroundImage:
                                                                     NetworkImage(
                                                                         selectedEvent[
@@ -724,6 +724,7 @@ class CalendarPageState extends State<CalendarPage> {
                   .map<Widget>(
                     (friend) => CircleAvatar(
                           radius: 10,
+                          backgroundColor: Colors.transparent,
                           backgroundImage:
                               NetworkImage(friend.value['userPhoto']),
                         ),
