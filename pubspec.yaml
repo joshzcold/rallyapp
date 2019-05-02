@@ -41,8 +41,17 @@ dependencies:
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.7.0"
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path_ios: "assets/launcher/icon.png"
+  image_path_android: "assets/launcher/icon.png"
+  adaptive_icon_background: "assets/launcher/launcherIconBackground.png"
+  adaptive_icon_foreground: "assets/launcher/launcherIconForeground.png"
 
 
 # For information on the generic Dart part of this file, see the
@@ -58,8 +67,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assests/rallyflagblue.svg
-    - assests/rallyflagwhite.svg
+    - assets/rallyflagblue.svg
+    - assets/rallyflagwhite.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
