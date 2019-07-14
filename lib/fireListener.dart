@@ -34,12 +34,11 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final FirebaseApp app = await FirebaseApp.configure(
     name: 'rallydev',
-    // TODO get actual settings for IOS here
     options: Platform.isIOS
         ? const FirebaseOptions(
-      googleAppID: 'NULL',
-      gcmSenderID: 'NULL',
-      databaseURL: 'NULL',
+      googleAppID: '1:871930822313:ios:4f038984403403c9',
+      gcmSenderID: 'rallydev-40f78',
+      databaseURL: 'https://rallydev-40f78.firebaseio.com/',
     )
         : const FirebaseOptions(
       googleAppID: '1:871930822313:android:4f038984403403c9',
