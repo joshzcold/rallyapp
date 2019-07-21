@@ -37,7 +37,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
     options: Platform.isIOS
         ? const FirebaseOptions(
       googleAppID: '1:148220971719:ios:4f038984403403c9',
-      gcmSenderID: 'rallydev-40f78',
+      gcmSenderID: 'game-schedule-c9299',
       databaseURL: 'https://game-schedule-c9299.firebaseio.com/',
     )
         : const FirebaseOptions(
@@ -48,7 +48,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
   );
 
   final FirebaseDatabase database = FirebaseDatabase(app:app);
-  final FirebaseStorage storage = FirebaseStorage(storageBucket: "gs://rallydev-40f78.appspot.com");
+  final FirebaseStorage storage = FirebaseStorage(storageBucket: "gs://game-schedule-c9299.appspot.com");
 
   generateRallyID(){
     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
