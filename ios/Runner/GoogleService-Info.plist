@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>871930822313-adtn0jc37931ju3h179ae7t52t255b7j.apps.googleusercontent.com</string>
+	<string>148220971719-cnql9suc3342r221fqnru3g1jrqino7n.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.871930822313-adtn0jc37931ju3h179ae7t52t255b7j</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>871930822313-102bds4jjq84fqchc46t325au7a0e4gk.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.148220971719-cnql9suc3342r221fqnru3g1jrqino7n</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDrvoSE8mAmdoevSe65NfLDqW0bbg_aPTo</string>
+	<string>AIzaSyDLOceNxWyQJHpI8-ne1eVIvgzQBDxA4EU</string>
 	<key>GCM_SENDER_ID</key>
-	<string>871930822313</string>
+	<string>148220971719</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>rally.rallyapp</string>
 	<key>PROJECT_ID</key>
-	<string>rallydev-40f78</string>
+	<string>game-schedule-c9299</string>
 	<key>STORAGE_BUCKET</key>
-	<string>rallydev-40f78.appspot.com</string>
+	<string>game-schedule-c9299.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:871930822313:ios:4f038984403403c9</string>
+	<string>1:148220971719:ios:4f038984403403c9</string>
 	<key>DATABASE_URL</key>
-	<string>https://rallydev-40f78.firebaseio.com</string>
+	<string>https://game-schedule-c9299.firebaseio.com</string>
 </dict>
 </plist>
