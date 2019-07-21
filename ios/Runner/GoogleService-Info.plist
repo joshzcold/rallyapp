@@ -6,6 +6,8 @@
 	<string>148220971719-cnql9suc3342r221fqnru3g1jrqino7n.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
 	<string>com.googleusercontent.apps.148220971719-cnql9suc3342r221fqnru3g1jrqino7n</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>148220971719-bjfv06mb8am44fi6np8n0kmh7qkjb0s5.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDLOceNxWyQJHpI8-ne1eVIvgzQBDxA4EU</string>
 	<key>GCM_SENDER_ID</key>
@@ -19,15 +21,15 @@
 	<key>STORAGE_BUCKET</key>
 	<string>game-schedule-c9299.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:148220971719:ios:4f038984403403c9</string>
 	<key>DATABASE_URL</key>
