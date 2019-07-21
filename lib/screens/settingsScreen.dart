@@ -266,13 +266,38 @@ class SettingsState extends State<Settings> {
               onTap: () async {
                 // Send an email
                 String now = DateTime.now().toString();
-                String body = '';
-                var url =
-                    'mailto:rallydev@rallyup.app?subject=Contact-$now&body=$body';
+                String body = 'I found a bug, please fix: ';
+                var url = "mailto:rallydev@rallyup.app?subject=Contact-$now&body=$body";
                 if (await canLaunch(url)) {
                   await launch(url);
                 } else {
-                  throw 'Could not launch $url';
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                    // return object of type Dialog
+                    return AlertDialog(
+                      backgroundColor: theme.theme['card'],
+                        title: new Text(
+                          "Could not launch mail app",
+                          style: TextStyle(color: theme.theme['textTitle']),
+                        ),
+                        content: new Text(
+                          "Rally could not launch a valid mail app. "+
+                           "If you have an issue or bug please email rallydev@rallyup.app thank you.",
+                          style: TextStyle(color: theme.theme['text']),
+                        ),
+                      actions: <Widget>[
+                      // usually buttons at the bottom of the dialog
+                      new FlatButton(
+                      child: new Text("Close"),
+                      onPressed: () {
+                      Navigator.of(context).pop();
+                      },
+                      ),
+                      ],
+                      );
+        },
+      );
                 }
               },
               child: Row(
