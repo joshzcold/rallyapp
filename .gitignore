@@ -72,7 +72,7 @@ unlinked_spec.ds
 #**/android/key.properties
 #*.jks
 local.properties
-*.properties
+#*.properties
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
