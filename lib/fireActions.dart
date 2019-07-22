@@ -401,19 +401,19 @@ getFireBaseUser() async{
 
 getFireBaseInstance() async{
   final FirebaseApp app = await FirebaseApp.configure(
-    name: 'rallydev',
-    // TODO get actual settings for IOS here
+    name: 'rallypro',
     options: Platform.isIOS
         ? const FirebaseOptions(
-      googleAppID: 'NULL',
-      gcmSenderID: 'NULL',
-      databaseURL: 'NULL',
+      googleAppID: '1:148220971719:ios:4f038984403403c9',
+      gcmSenderID: 'game-schedule-c9299',
+      databaseURL: 'https://game-schedule-c9299.firebaseio.com/',
+      storageBucket: 'gs://game-schedule-c9299.appspot.com'
     )
         : const FirebaseOptions(
-      googleAppID: '1:871930822313:android:4f038984403403c9',
-      apiKey: 'AIzaSyAa-7LsEyLudV4qbOrKk_lKE65nAybmDNw ',
-      databaseURL: 'https://rallydev-40f78.firebaseio.com/',
-      storageBucket: 'gs://rallydev-40f78.appspot.com'
+      googleAppID: '1:148220971719:android:4f038984403403c9',
+      apiKey: 'AIzaSyBu9GIgBQdPS3CJ87ou_pA9MxWl8Q4Mgt8',
+      databaseURL: 'https://game-schedule-c9299.firebaseio.com/',
+      storageBucket: 'gs://game-schedule-c9299.appspot.com'
     ),
   );
 
@@ -423,21 +423,21 @@ getFireBaseInstance() async{
 
 getFireBaseStorageInstance() async{
   final FirebaseApp app = await FirebaseApp.configure(
-    name: 'rallydev',
+    name: 'rallypro',
     // TODO get actual settings for IOS here
     options: Platform.isIOS
         ? const FirebaseOptions(
-      googleAppID: 'NULL',
-      gcmSenderID: 'NULL',
-      databaseURL: 'NULL',
+      googleAppID: '1:148220971719:ios:4f038984403403c9',
+      gcmSenderID: 'game-schedule-c9299',
+      databaseURL: 'https://game-schedule-c9299.firebaseio.com/',
     )
         : const FirebaseOptions(
-        googleAppID: '1:871930822313:android:4f038984403403c9',
-        apiKey: 'AIzaSyAa-7LsEyLudV4qbOrKk_lKE65nAybmDNw ',
-        databaseURL: 'https://rallydev-40f78.firebaseio.com/',
+      googleAppID: '1:148220971719:android:4f038984403403c9',
+      apiKey: 'AIzaSyBu9GIgBQdPS3CJ87ou_pA9MxWl8Q4Mgt8',
+      databaseURL: 'https://game-schedule-c9299.firebaseio.com/',
     ),
   );
 
-  var storage = FirebaseStorage(app:app, storageBucket: 'gs://rallydev-40f78.appspot.com');
+  var storage = FirebaseStorage(app:app, storageBucket: 'gs://game-schedule-c9299.appspot.com');
   return storage;
 }

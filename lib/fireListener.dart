@@ -33,23 +33,22 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
   var uid = user.uid;
 
   final FirebaseApp app = await FirebaseApp.configure(
-    name: 'rallydev',
-    // TODO get actual settings for IOS here
+    name: 'rallypro',
     options: Platform.isIOS
         ? const FirebaseOptions(
-      googleAppID: 'NULL',
-      gcmSenderID: 'NULL',
-      databaseURL: 'NULL',
+      googleAppID: '1:148220971719:ios:4f038984403403c9',
+      gcmSenderID: 'game-schedule-c9299',
+      databaseURL: 'https://game-schedule-c9299.firebaseio.com/',
     )
         : const FirebaseOptions(
-      googleAppID: '1:871930822313:android:4f038984403403c9',
-      apiKey: 'AIzaSyAa-7LsEyLudV4qbOrKk_lKE65nAybmDNw ',
-      databaseURL: 'https://rallydev-40f78.firebaseio.com/',
+      googleAppID: '1:148220971719:android:4f038984403403c9',
+      apiKey: 'AIzaSyBu9GIgBQdPS3CJ87ou_pA9MxWl8Q4Mgt8',
+      databaseURL: 'https://game-schedule-c9299.firebaseio.com/',
     ),
   );
 
   final FirebaseDatabase database = FirebaseDatabase(app:app);
-  final FirebaseStorage storage = FirebaseStorage(storageBucket: "gs://rallydev-40f78.appspot.com");
+  final FirebaseStorage storage = FirebaseStorage(storageBucket: "gs://game-schedule-c9299.appspot.com");
 
   generateRallyID(){
     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
