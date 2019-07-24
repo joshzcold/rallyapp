@@ -80,6 +80,8 @@ class RallyState extends State<Rally> {
                 '/': (context) => SignInPage(),
                 '/register': (context) => RegisterPage(),
                 '/main': (context) => CalendarPage(),
+                '/settings': (context) => Settings(),
+                '/friends': (context) => FriendsScreen(),
               },
             );
           });
