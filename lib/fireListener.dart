@@ -10,13 +10,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rallyapp/blocs/app/invite.dart';
 import 'package:rallyapp/blocs/app/notifyBloc.dart';
-import 'package:rallyapp/blocs/app/theme.dart';
-
 import 'package:rallyapp/blocs/events/event.dart';
 import 'package:rallyapp/blocs/friends/friends.dart';
 import 'package:rallyapp/blocs/auth/auth.dart';
 import 'package:rallyapp/calendar/calendarScreen.dart';
-import 'package:rallyapp/main.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -26,7 +23,6 @@ setListeners(BuildContext context) async {
   final eventBloc = BlocProvider.of<EventsBloc>(context);
   final inviteBloc = BlocProvider.of<InviteBloc>(context);
   final notifyBloc = BlocProvider.of<NotifyBloc>(context);
-  var notificationCheck = false;
 
   final FirebaseUser user = await _auth.currentUser();
   var uid = user.uid;
@@ -63,7 +59,7 @@ setListeners(BuildContext context) async {
     }
 
     var rallyID =
-        '${user.email == null ? "RallyUser" : user.email.split('@')[0]}-${randomString(5)}';
+        '${user.displayName == null ? "RallyUser" :user.displayName}-${randomString(5)}';
 
     return rallyID;
   }
@@ -332,7 +328,7 @@ setListeners(BuildContext context) async {
             }
           }
         }
-        print(' -- CHANGED -- friend event');
+        print(' -- ADD -- friend event');
         eventBloc.dispatch(ReplaceEventInfo(
             event.snapshot.key, event.snapshot.value, friendID));
       });
@@ -369,19 +365,23 @@ setListeners(BuildContext context) async {
     //////////////////////////////////////////////////////////////////////////////
   }
 
-  void createInitialUserData(rallyID) {
+  void createInitialUserData(rallyID) async {
     print(
         'Creating Initial Data ====================================================');
 
+    var defaultPhoto = await storage.ref().child('photos/default').getDownloadURL();
+    var userName = user.displayName == null ? "RallyUser" : user.displayName;
+    var userPhoto = user.photoUrl == null? defaultPhoto : user.photoUrl;
+
     database.reference().child('rally/$rallyID').set({
       "userID": user.uid,
-      "userName": user.displayName,
+      "userName": userName,
     });
     database.reference().child('user/$uid/info').set({
       "rallyID": rallyID,
       "userEmail": user.email,
-      "userName": user.email == null ? "RallyUser" : user.email.split('@')[0],
-      "userPhoto": user.photoUrl,
+      "userName": userName,
+      "userPhoto": userPhoto,
     }).then((something) {
       setUserFriendListeners();
     });
