@@ -7,25 +7,24 @@ import 'package:rallyapp/blocs/auth/auth_bloc.dart';
 import 'package:rallyapp/blocs/auth/auth_state.dart';
 import 'package:rallyapp/fireActions.dart';
 
-
 FireActions fireActions = new FireActions();
 
-changeUsername(context, closeThemeSelectorModal){
+changeUsername(context, closeThemeSelectorModal) {
   var changeUserNameTextController = TextEditingController();
   ThemeBloc _themeBloc = BlocProvider.of<ThemeBloc>(context);
   ThemeLoaded theme = _themeBloc.currentState;
-  return LayoutBuilder(builder: (context, constraints){
+  return LayoutBuilder(builder: (context, constraints) {
     var maxHeight = constraints.maxHeight;
     var maxWidth = constraints.maxWidth;
     var cardHeightMultiplier = 0.50;
     var cardWidthMultiplier = 0.80;
 
-    if(maxWidth > maxHeight){
+    if (maxWidth > maxHeight) {
       cardHeightMultiplier = 0.80;
       cardWidthMultiplier = 0.50;
     }
     return InkWell(
-      onTap: (){
+      onTap: () {
         closeThemeSelectorModal();
       },
       child: Container(
@@ -50,17 +49,20 @@ changeUsername(context, closeThemeSelectorModal){
             alignment: Alignment.center,
             child: Container(
               width: (maxWidth * cardWidthMultiplier) - 30,
-              child:Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Text('Change Username', style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20,
-                          color: theme.theme['textTitle']
-                      ),),
+                      Text(
+                        'Change Username',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: theme.theme['textTitle']),
+                      ),
                     ],
                   ),
                   Row(
@@ -68,10 +70,10 @@ changeUsername(context, closeThemeSelectorModal){
                     children: <Widget>[
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
                             border: Border.all(color: theme.theme['border']),
-                            color: theme.theme['card']
-                        ),
+                            color: theme.theme['card']),
                         width: (maxWidth * cardWidthMultiplier) * .80,
                         child: TextFormField(
                           autocorrect: false,
@@ -88,42 +90,60 @@ changeUsername(context, closeThemeSelectorModal){
                       ),
                     ],
                   ),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       FlatButton(
                           onPressed: () {
                             var un = changeUserNameTextController.text;
-                            if(un != null && un != "" && un.length > 2){
+                            if (un == null) {
+                              _showDialog("Username is null",
+                                  "please enter in a valid username", context);
+                            } else if (un == "") {
+                              _showDialog("Username is blank",
+                                  "please enter in a valid username", context);
+                            } else if (un.length <= 2) {
+                              _showDialog(
+                                  "Username is too short",
+                                  "please enter in a username larger than 2 characters",
+                                  context);
+                            } else if (un.contains(
+                                new RegExp('[!@#\$%^&*(),.?":{}|<>]'))) {
+                              _showDialog(
+                                  "Username contains special characters ",
+                                  "enter a user name with only alaphanumeric characters 0-9 A-Z",
+                                  context);
+                            } else {
                               saveNewUserName(un, context);
-                            } else{
-                              if(un == null){
-                                _showDialog("Username is null","please enter in a valid username", context);
-                              } else if (un == ""){
-                                _showDialog("Username is blank","please enter in a valid username", context);
-                              } else if(un.length <= 2){
-                                _showDialog("Username is too short","please enter in a username larger than 2 characters", context);
-                              }
                             }
                           },
                           padding: EdgeInsets.all(0),
                           child: Row(
                             children: <Widget>[
                               Container(
-                                  decoration: BoxDecoration(color: theme.theme['colorPrimary'], borderRadius: BorderRadius.all(Radius.circular(8))),
+                                  decoration: BoxDecoration(
+                                      color: theme.theme['colorPrimary'],
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
                                   padding: EdgeInsets.all(10.0),
                                   child: Row(
                                     children: <Widget>[
-                                      Icon(Icons.edit, color: Colors.white,),
-                                      Container(width: 5,),
-                                      Text('Save', style: TextStyle(color: Colors.white, fontSize: 15),),
+                                      Icon(
+                                        Icons.edit,
+                                        color: Colors.white,
+                                      ),
+                                      Container(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        'Save',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 15),
+                                      ),
                                     ],
-                                  )
-                              ),
+                                  )),
                             ],
-                          )
-                      ),
+                          )),
                       FlatButton(
                           onPressed: () {
                             closeThemeSelectorModal();
@@ -132,33 +152,45 @@ changeUsername(context, closeThemeSelectorModal){
                           child: Row(
                             children: <Widget>[
                               Container(
-                                  decoration: BoxDecoration(color: theme.theme['colorSecondary'], borderRadius: BorderRadius.all(Radius.circular(8))),
+                                  decoration: BoxDecoration(
+                                      color: theme.theme['colorSecondary'],
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
                                   padding: EdgeInsets.all(10.0),
                                   child: Row(
                                     children: <Widget>[
-                                      Icon(Icons.close, color: Colors.white,),
-                                      Container(width: 5,),
-                                      Text('Close', style: TextStyle(color: Colors.white, fontSize: 15),),
+                                      Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                      ),
+                                      Container(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        'Close',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 15),
+                                      ),
                                     ],
-                                  )
-                              ),
+                                  )),
                             ],
-                          )
-                      ),
+                          )),
                     ],
                   )
                 ],
               ),
-            )
-        ),
+            )),
       ),
     );
   });
 }
 
-void saveNewUserName(username, context)async {
+void saveNewUserName(username, context) async {
   await fireActions.newUserName(username, context);
-  _showDialog("Changed Username", "New username is $username tell your friends so they aren't confused",context);
+  _showDialog(
+      "Changed Username",
+      "New username is $username tell your friends so they aren't confused by the change",
+      context);
 }
 
 void _showDialog(title, content, context) {
@@ -171,14 +203,20 @@ void _showDialog(title, content, context) {
       // return object of type Dialog
       return AlertDialog(
         backgroundColor: theme.theme['card'],
-        title: new Text(title, style: TextStyle(color: theme.theme['textTitle']),),
-        content: new Text(content,
-          style: TextStyle(color: theme.theme['text']),),
+        title: new Text(
+          title,
+          style: TextStyle(color: theme.theme['textTitle']),
+        ),
+        content: new Text(
+          content,
+          style: TextStyle(color: theme.theme['text']),
+        ),
         actions: <Widget>[
           // usually buttons at the bottom of the dialog
           new FlatButton(
             child: new Text("Close"),
             onPressed: () {
+              Navigator.pop(context);
               Navigator.pop(context);
             },
           ),
