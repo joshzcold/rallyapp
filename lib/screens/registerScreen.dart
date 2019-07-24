@@ -8,33 +8,63 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class RegisterPage extends StatefulWidget {
   final String title = 'Registration';
+
   @override
   State<StatefulWidget> createState() => RegisterPageState();
 }
 
 class RegisterPageState extends State<RegisterPage> {
-
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _success;
   String _userEmail;
+
   @override
   Widget build(BuildContext context) {
     final _themeBloc = BlocProvider.of<ThemeBloc>(context);
     ThemeLoaded theme = _themeBloc.currentState;
     var maxWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-        appBar:  AppBar(
-          leading: IconButton(icon: Icon(Icons.arrow_back, color: theme.theme['headerText'],), onPressed: (){Navigator.pop(context);}),
-          title: Text('Register', style: TextStyle(color: theme.theme['headerText']),), backgroundColor: theme.theme['header'],),
+        appBar: AppBar(
+          leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: theme.theme['headerText'],
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+          title: Text(
+            'Register',
+            style: TextStyle(color: theme.theme['headerText']),
+          ),
+          backgroundColor: theme.theme['header'],
+        ),
         backgroundColor: theme.theme['background'],
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(height: MediaQuery.of(context).size.height/4,),
+              Container(
+                height: MediaQuery.of(context).size.height / 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text(
+                    'Sign up',
+                    style: TextStyle(
+                        color: theme.theme['textTitle'],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 42),
+                  ),
+                ],
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height / 20,
+              ),
               Form(
                 key: _formKey,
                 child: Column(
@@ -46,11 +76,11 @@ class RegisterPageState extends State<RegisterPage> {
                         controller: _emailController,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8.0)),
                             ),
                             hintText: 'Email',
-                            hintStyle: TextStyle(color: theme.theme['text'])
-                        ),
+                            hintStyle: TextStyle(color: theme.theme['text'])),
                         validator: (String value) {
                           if (value.isEmpty) {
                             return 'Please enter some text';
@@ -69,11 +99,11 @@ class RegisterPageState extends State<RegisterPage> {
                         controller: _passwordController,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8.0)),
                             ),
                             hintText: 'Password',
-                            hintStyle: TextStyle(color: theme.theme['text'])
-                        ),
+                            hintStyle: TextStyle(color: theme.theme['text'])),
                         validator: (String value) {
                           if (value.isEmpty) {
                             return 'Please enter some text';
@@ -81,24 +111,28 @@ class RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                     ),
-                    Container(height: 10,),
+                    Container(
+                      height: 10,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         FlatButton(
-                            onPressed: ()  {
+                            onPressed: () {
                               _register();
                             },
                             child: Container(
                               padding: EdgeInsets.all(10.0),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5.0)),
                                 color: theme.theme['colorPrimary'],
                               ),
-                              child: Text('SUBMIT', style: TextStyle(color: Colors.white),),
-                            )
-                        ),
-
+                              child: Text(
+                                'SUBMIT',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            )),
                       ],
                     ),
                   ],
@@ -106,8 +140,7 @@ class RegisterPageState extends State<RegisterPage> {
               ),
             ],
           ),
-        )
-    );
+        ));
   }
 
   @override
@@ -119,11 +152,13 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   // Example code for registration.
-   _register() async {
-    final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    ).catchError((error) => _showAlert(error.code, error.message, context));
+  _register() async {
+    final FirebaseUser user = await _auth
+        .createUserWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        )
+        .catchError((error) => _showAlert(error.code, error.message, context));
     if (user != null) {
       user.sendEmailVerification();
       _showDialog(user.email, context);
@@ -142,15 +177,20 @@ class RegisterPageState extends State<RegisterPage> {
         // return object of type Dialog
         return AlertDialog(
           backgroundColor: theme.theme['card'],
-          title: new Text("Email Verification", style: TextStyle(color: theme.theme['textTitle']),),
-          content: new Text("Sent verification email to $email, please verify your account before signing in. Thank you for using Rally!",
-            style: TextStyle(color: theme.theme['text']),),
+          title: new Text(
+            "Email Verification",
+            style: TextStyle(color: theme.theme['textTitle']),
+          ),
+          content: new Text(
+            "Sent verification email to $email, please verify your account before signing in. Thank you for using Rally!",
+            style: TextStyle(color: theme.theme['text']),
+          ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-              Navigator.pushReplacementNamed(context, '/');
+                Navigator.pushReplacementNamed(context, '/');
               },
             ),
           ],
@@ -159,11 +199,11 @@ class RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _showAlert(title,text, context) {
+  void _showAlert(title, text, context) {
     final _themeBloc = BlocProvider.of<ThemeBloc>(context);
     ThemeLoaded theme = _themeBloc.currentState;
 
-    if(title == "ERROR_INVALID_EMAIL"){
+    if (title == "ERROR_INVALID_EMAIL") {
       title = "Email Formatting Error";
       text = "It looks like you made a typo in your email "
           "make sure it has the format *****@***.***";
@@ -173,8 +213,14 @@ class RegisterPageState extends State<RegisterPage> {
           // return object of type Dialog
           return AlertDialog(
             backgroundColor: theme.theme['card'],
-            title: new Text(title, style: TextStyle(color: theme.theme['textTitle']),),
-            content: new Text(text, style: TextStyle(color: theme.theme['text']),),
+            title: new Text(
+              title,
+              style: TextStyle(color: theme.theme['textTitle']),
+            ),
+            content: new Text(
+              text,
+              style: TextStyle(color: theme.theme['text']),
+            ),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(
@@ -194,8 +240,14 @@ class RegisterPageState extends State<RegisterPage> {
           // return object of type Dialog
           return AlertDialog(
             backgroundColor: theme.theme['card'],
-            title: new Text(title, style: TextStyle(color: theme.theme['textTitle']),),
-            content: new Text(text, style: TextStyle(color: theme.theme['text']),),
+            title: new Text(
+              title,
+              style: TextStyle(color: theme.theme['textTitle']),
+            ),
+            content: new Text(
+              text,
+              style: TextStyle(color: theme.theme['text']),
+            ),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(
