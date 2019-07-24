@@ -98,21 +98,21 @@ changeUsername(context, closeThemeSelectorModal) {
                             var un = changeUserNameTextController.text;
                             if (un == null) {
                               _showDialog("Username is null",
-                                  "please enter in a valid username", context);
+                                  "please enter in a valid username", context,1);
                             } else if (un == "") {
                               _showDialog("Username is blank",
-                                  "please enter in a valid username", context);
+                                  "please enter in a valid username", context,1);
                             } else if (un.length <= 2) {
                               _showDialog(
                                   "Username is too short",
                                   "please enter in a username larger than 2 characters",
-                                  context);
+                                  context,1);
                             } else if (un.contains(
                                 new RegExp('[!@#\$%^&*(),.?":{}|<>]'))) {
                               _showDialog(
                                   "Username contains special characters ",
                                   "enter a user name with only alaphanumeric characters 0-9 A-Z",
-                                  context);
+                                  context,1);
                             } else {
                               saveNewUserName(un, context);
                             }
@@ -190,10 +190,10 @@ void saveNewUserName(username, context) async {
   _showDialog(
       "Changed Username",
       "New username is $username tell your friends so they aren't confused by the change",
-      context);
+      context, 2);
 }
 
-void _showDialog(title, content, context) {
+void _showDialog(title, content, context, numTimes) {
   final _themeBloc = BlocProvider.of<ThemeBloc>(context);
   ThemeLoaded theme = _themeBloc.currentState;
   // flutter defined function
@@ -216,8 +216,9 @@ void _showDialog(title, content, context) {
           new FlatButton(
             child: new Text("Close"),
             onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
+              for(var i = 0; i< numTimes; i++){
+                Navigator.pop(context);
+              }
             },
           ),
         ],
