@@ -263,48 +263,69 @@ class FriendDetails extends StatelessWidget {
   }
 }
 
-class LoadingButton extends StatefulWidget {
+_showUnFriendDialog(context, title, content, friend) {
+  final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+  ThemeLoaded theme = _themeBloc.currentState;
+  // flutter defined function
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        backgroundColor: theme.theme['card'],
+        title: new Text(
+          title,
+          style: TextStyle(color: theme.theme['textTitle']),
+        ),
+        content: new Text(
+          content,
+          style: TextStyle(color: theme.theme['textTitle']),
+        ),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text(
+              "Yes",
+              style: TextStyle(color: theme.theme['colorDanger']),
+            ),
+            onPressed: () {
+              //unfriend friend
+              Navigator.pop(context);
+              Navigator.pop(context);
+              fireActions.removeFriend(friend.key);
+            },
+          ),
+          // usually buttons at the bottom of the dialog
+          new FlatButton(
+            child: new Text(
+              "Close",
+              style: TextStyle(color: theme.theme['colorSecondary']),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+class LoadingButton extends StatelessWidget {
   final MapEntry friend;
 
   LoadingButton({@required this.friend});
 
   @override
-  LoadingButtonState createState() => LoadingButtonState(friend: friend);
-}
-
-class LoadingButtonState extends State<LoadingButton>
-    with SingleTickerProviderStateMixin {
-  AnimationController controller;
-  final MapEntry friend;
-
-  LoadingButtonState({@required this.friend});
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 1));
-    controller.addListener(() {
-      setState(() {});
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final _themeBloc = BlocProvider.of<ThemeBloc>(context);
     ThemeLoaded theme = _themeBloc.currentState;
-
-    return GestureDetector(
-        onTapDown: (_) => controller.forward(),
-        onTapUp: (_) {
-          if (controller.status == AnimationStatus.forward) {
-            controller.reverse();
-          } else {
-            print("Unfriend button animation done");
-            Navigator.pop(context);
-            fireActions.removeFriend(friend.key);
-          }
+    return InkWell(
+        onTap: () {
+          _showUnFriendDialog(
+              context,
+              "Are you sure?",
+              "Are you sure you want to unfriend ${friend.value["userName"]}?",
+              friend);
         },
         child: Container(
             decoration: BoxDecoration(
@@ -320,24 +341,10 @@ class LoadingButtonState extends State<LoadingButton>
                 Container(
                   width: 20,
                 ),
-                Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    CircularProgressIndicator(
-                      value: 1.0,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.theme['colorDanger']),
-                    ),
-                    CircularProgressIndicator(
-                      value: controller.value,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                    Icon(
-                      Icons.cancel,
-                      color: Colors.white,
-                    )
-                  ],
-                ),
+                Icon(
+                  Icons.cancel,
+                  color: Colors.white,
+                )
               ],
             )));
   }
