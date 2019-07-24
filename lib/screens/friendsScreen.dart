@@ -389,13 +389,9 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                               AnimatedSwitcher(
                                                                 // the duration can be adjusted to expand the friend events
                                                                 // faster or slower.
-                                                                duration: Duration(
-                                                                    milliseconds:
-                                                                        300),
-                                                                transitionBuilder: (Widget
-                                                                        child,
-                                                                    Animation<
-                                                                            double>
+                                                                duration: Duration(milliseconds: 300),
+                                                                transitionBuilder: (Widget child,
+                                                                    Animation<double>
                                                                         animation) {
                                                                   return SizeTransition(
                                                                     sizeFactor:
@@ -415,13 +411,13 @@ class FriendsScreenState extends State<FriendsScreen> {
                                                                     friendCardWidth,
                                                                 child:
                                                                     FlatButton(
+                                                                      color: theme.theme['colorPrimary'],
                                                                         child:
                                                                             Center(
                                                                           child:
                                                                               Icon(
                                                                             Icons.keyboard_arrow_down,
-                                                                            color:
-                                                                                theme.theme['solidIconLight'],
+                                                                            color: Colors.white,
                                                                           ),
                                                                         ),
                                                                         onPressed:
@@ -566,10 +562,11 @@ class FriendsScreenState extends State<FriendsScreen> {
                   height: 30,
                   width: friendCardWidth,
                   child: FlatButton(
+                    color: theme.theme['colorPrimary'],
                       child: Center(
                         child: Icon(
                           Icons.keyboard_arrow_up,
-                          color: theme.theme['solidIconLight'],
+                          color: Colors.white
                         ),
                       ),
                       onPressed: () {
@@ -1317,7 +1314,7 @@ class CardCornerClipper extends CustomClipper<Path> {
     path.lineTo(0.0, 0.0);
 
     // Draws a straight line from current point to the first point of the path.
-    // In this case (0, 0), since that's where the paths start by default.
+    // In this case (0, 0), since that's where the paths start by default
     path.close();
     return path;
   }
