@@ -11,7 +11,6 @@ import 'package:rallyapp/widgets/changeUsername.dart';
 import 'package:rallyapp/widgets/themeButton.dart';
 import 'package:rallyapp/widgets/themeSelector.dart';
 import 'package:rallyapp/blocs/app/theme.dart';
-import 'package:rallyapp/widgets/uploadPhotoButton.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Widget modal;
@@ -59,8 +58,10 @@ class SettingsState extends State<Settings> {
       print('cropped Photo');
       try {
         fireAction.uploadUserPhoto(croppedFile, context);
+        _showDialog(context, "Photo upload was good!", "You should see your new photo in your events and on your user card");
       } catch (e) {
         print(e);
+        _showDialog(context, "ERROR PHOTO", "Photo upload failed. either the file was rejected or the database has a network issue");
       }
     }
 
@@ -253,7 +254,7 @@ class SettingsState extends State<Settings> {
                   Text(
                     'Donate',
                     style: TextStyle(
-                        color: theme.theme['text'],
+                        color: theme.theme['headerText'],
                         fontWeight: FontWeight.bold),
                   ),
                   Container(
@@ -267,37 +268,38 @@ class SettingsState extends State<Settings> {
                 // Send an email
                 String now = DateTime.now().toString();
                 String body = 'I found a bug, please fix: ';
-                var url = "mailto:rallydev@rallyup.app?subject=Contact-$now&body=$body";
+                var url =
+                    "mailto:rallydev@rallyup.app?subject=Contact-$now&body=$body";
                 if (await canLaunch(url)) {
                   await launch(url);
                 } else {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                    // return object of type Dialog
-                    return AlertDialog(
-                      backgroundColor: theme.theme['card'],
+                      // return object of type Dialog
+                      return AlertDialog(
+                        backgroundColor: theme.theme['card'],
                         title: new Text(
                           "Could not launch mail app",
                           style: TextStyle(color: theme.theme['textTitle']),
                         ),
                         content: new Text(
-                          "Rally could not launch a valid mail app. "+
-                           "If you have an issue or bug please email rallydev@rallyup.app thank you.",
+                          "Rally could not launch a valid mail app. " +
+                              "If you have an issue or bug please email rallydev@rallyup.app thank you.",
                           style: TextStyle(color: theme.theme['text']),
                         ),
-                      actions: <Widget>[
-                      // usually buttons at the bottom of the dialog
-                      new FlatButton(
-                      child: new Text("Close"),
-                      onPressed: () {
-                      Navigator.of(context).pop();
-                      },
-                      ),
-                      ],
+                        actions: <Widget>[
+                          // usually buttons at the bottom of the dialog
+                          new FlatButton(
+                            child: new Text("Close"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
                       );
-        },
-      );
+                    },
+                  );
                 }
               },
               child: Row(
@@ -309,7 +311,7 @@ class SettingsState extends State<Settings> {
                   Text(
                     'Contact Dev',
                     style: TextStyle(
-                        color: theme.theme['text'],
+                        color: theme.theme['headerText'],
                         fontWeight: FontWeight.bold),
                   ),
                   Container(
@@ -413,44 +415,16 @@ class SettingsState extends State<Settings> {
   }
 }
 
-class DeleteOldEventsButton extends StatefulWidget {
-  @override
-  DeleteOldEventsButtonState createState() => DeleteOldEventsButtonState();
-}
-
-class DeleteOldEventsButtonState extends State<DeleteOldEventsButton>
-    with SingleTickerProviderStateMixin {
-  AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 1));
-    controller.addListener(() {
-      setState(() {});
-    });
-  }
-
+class DeleteOldEventsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _themeBloc = BlocProvider.of<ThemeBloc>(context);
     ThemeLoaded theme = _themeBloc.currentState;
 
     return GestureDetector(
-        onTapDown: (_) => controller.forward(),
-        onTapUp: (_) {
-          if (controller.status == AnimationStatus.forward) {
-            controller.reverse();
-          } else {
-            fireActions.deleteOldEvents();
-            _showDialog(
-                "Deleted Old Events",
-                "Any events before the current time have been deleted",
-                context);
-            controller.animateTo(0);
-          }
+        onTap: () {
+          _showDeleteOldEventsDialog(context, "Are you sure?",
+              "Do you want to delete all events before the current time?");
         },
         child: Container(
             decoration: BoxDecoration(
@@ -466,66 +440,24 @@ class DeleteOldEventsButtonState extends State<DeleteOldEventsButton>
                 Container(
                   width: 20,
                 ),
-                Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    CircularProgressIndicator(
-                      value: 1.0,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.theme['colorSecondary']),
-                    ),
-                    CircularProgressIndicator(
-                      value: controller.value,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                    Icon(
-                      Icons.clear_all,
-                      color: Colors.white,
-                    )
-                  ],
-                ),
+                Icon(
+                  Icons.clear_all,
+                  color: Colors.white,
+                )
               ],
             )));
   }
 }
 
-class DeleteAllEventsButton extends StatefulWidget {
-  @override
-  DeleteAllEventsButtonState createState() => DeleteAllEventsButtonState();
-}
-
-class DeleteAllEventsButtonState extends State<DeleteAllEventsButton>
-    with SingleTickerProviderStateMixin {
-  AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 1));
-    controller.addListener(() {
-      setState(() {});
-    });
-  }
-
+class DeleteAllEventsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _themeBloc = BlocProvider.of<ThemeBloc>(context);
     ThemeLoaded theme = _themeBloc.currentState;
-
-    return GestureDetector(
-        onTapDown: (_) => controller.forward(),
-        onTapUp: (_) {
-          if (controller.status == AnimationStatus.forward) {
-            controller.reverse();
-          } else {
-            // Things happen here
-            fireActions.deleteAllEvents();
-            _showDialog('Deleted All Events',
-                "I sure hope that was on purpose...", context);
-            controller.animateTo(0);
-          }
+    return InkWell(
+        onTap: () {
+          _showDeleteAllEventsDialog(context, "Are you sure?",
+              "do you want to delete all of your events on the calendar?");
         },
         child: Container(
             decoration: BoxDecoration(
@@ -541,30 +473,16 @@ class DeleteAllEventsButtonState extends State<DeleteAllEventsButton>
                 Container(
                   width: 20,
                 ),
-                Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    CircularProgressIndicator(
-                      value: 1.0,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.theme['colorDanger']),
-                    ),
-                    CircularProgressIndicator(
-                      value: controller.value,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                    Icon(
-                      Icons.delete_forever,
-                      color: Colors.white,
-                    )
-                  ],
-                ),
+                Icon(
+                  Icons.delete_forever,
+                  color: Colors.white,
+                )
               ],
             )));
   }
 }
 
-_showDialog(title, content, context) {
+_showDeleteAllEventsDialog(context, title, content) {
   final _themeBloc = BlocProvider.of<ThemeBloc>(context);
   ThemeLoaded theme = _themeBloc.currentState;
   // flutter defined function
@@ -580,12 +498,105 @@ _showDialog(title, content, context) {
         ),
         content: new Text(
           content,
-          style: TextStyle(color: theme.theme['text']),
+          style: TextStyle(color: theme.theme['textTitle']),
+        ),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text(
+              "Yes",
+              style: TextStyle(color: theme.theme['colorDanger']),
+            ),
+            onPressed: () {
+              fireActions.deleteAllEvents();
+              Navigator.pop(context);
+            },
+          ),
+          // usually buttons at the bottom of the dialog
+          new FlatButton(
+            child: new Text(
+              "Close",
+              style: TextStyle(color: theme.theme['colorSecondary']),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+_showDialog(context, title, content) {
+  final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+  ThemeLoaded theme = _themeBloc.currentState;
+  // flutter defined function
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        backgroundColor: theme.theme['card'],
+        title: new Text(
+          title,
+          style: TextStyle(color: theme.theme['textTitle']),
+        ),
+        content: new Text(
+          content,
+          style: TextStyle(color: theme.theme['textTitle']),
         ),
         actions: <Widget>[
           // usually buttons at the bottom of the dialog
           new FlatButton(
-            child: new Text("Close"),
+            child: new Text(
+              "Close",
+              style: TextStyle(color: theme.theme['colorSecondary']),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+_showDeleteOldEventsDialog(context, title, content) {
+  final _themeBloc = BlocProvider.of<ThemeBloc>(context);
+  ThemeLoaded theme = _themeBloc.currentState;
+  // flutter defined function
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        backgroundColor: theme.theme['card'],
+        title: new Text(
+          title,
+          style: TextStyle(color: theme.theme['textTitle']),
+        ),
+        content: new Text(
+          content,
+          style: TextStyle(color: theme.theme['textTitle']),
+        ),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text(
+              "Yes",
+              style: TextStyle(color: theme.theme['colorDanger']),
+            ),
+            onPressed: () {
+              fireActions.deleteOldEvents();
+              Navigator.pop(context);
+            },
+          ),
+          // usually buttons at the bottom of the dialog
+          new FlatButton(
+            child: new Text(
+              "Close",
+              style: TextStyle(color: theme.theme['colorSecondary']),
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
